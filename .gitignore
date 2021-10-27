@@ -1,0 +1,8 @@
+.DS_Store
+
+# Logs
+logs
+*.log
+
+# VSCode dev config
+.vscode/
