@@ -6,9 +6,9 @@ $user="root";
 $password="";
 $db="njctattoodb";
 
-$conn=mysqli_connect($server, $user, $password, $db);
+$conn= new mysqli($server, $user, $password, $db);
 
-if(!$conn){
-    die("Failed to establish connection. ".mysqli_connect_error());
+if($conn->connect_error){
+    die("Failed to establish connection. Error code " . $conn->connect_errno . " - " . $conn->connect_error );
 }
 ?>
