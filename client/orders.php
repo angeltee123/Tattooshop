@@ -50,7 +50,7 @@ $res = mysqli_query($conn, $select);
         </form>
       </td>
       <th scope="row"><?php echo $row['order_id']?></th>
-      <td><?php echo htnlspecialchars($row['order_date']?></td>
+      <td><?php // echo htnlspecialchars($row['order_date'] ?></td>
       <td><?php echo $row['tattoo_name']?></td>
       <td><?php echo $row['tattoo_description']?></td>
       <td><?php echo $row['tattoo_quantity']?></td>
