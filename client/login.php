@@ -13,7 +13,7 @@
     <title>NJC Tattoo | Log In</title>
 </head>
 <body>
-    <form action="queries.php" method="post">
+    <form action="../api/queries.php" method="post">
         <input type="email" name="email" class="" required />
         <input type="password" name="password" class="" required />
         <button type="submit" name="login">Log In</button>
