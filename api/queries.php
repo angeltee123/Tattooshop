@@ -177,10 +177,10 @@ if(isset($_POST['signup'])){
 
             $mysqli_checks = $insert_user->execute();
             if(!$insert_user->error){
-                Header("Location: index.php");
+                Header("Location: ../client/index.php");
             } else {
                 throw new Exception('Execute error: The prepared statement could not be executed.');
-                Header("Location: signup.php");
+                Header("Location: ../client/signup.php");
             }
 
             $mysqli_checks = $insert_user->close();
@@ -233,7 +233,7 @@ if(isset($_POST['login'])){
                 throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
             }
 
-            $mysqli_checks = $query->execute();
+            $query->execute();
             if(!$query->error){
                 if($query->num_rows > 0){
                     $row = $query->fetch_assoc();
@@ -274,11 +274,11 @@ if(isset($_POST['login'])){
                             if ($mysqli_checks===false) {
                                 throw new Exception('The prepared statement could not be closed.');
                             }
-                            
-                            Header("Location: index.php");
+
+                            Header("Location: ../client/index.php");
                         } else {
                             $conn->change_user("admin", "Admin@CIS2104.njctattoodb", $db);
-                            Header("Location: admin.php");
+                            Header("Location: ../client/admin.php");
                         }
                     }
                 } else {
