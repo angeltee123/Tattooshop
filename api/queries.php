@@ -1,14 +1,23 @@
 <?php
 include_once 'connection.php';
 
+/******** HELPER FUNCTIONS ********/
+
+function clean($data){
+    $data = trim($data);
+    $data = stripslashes($data);
+    $data = htmlspecialchars($data);
+    return $data;
+}
+
 /******** USER REGISTRATION ********/
 
 if(isset($_POST['signup'])){
     $errors = array();
 
-    $first_name = $_POST['first_name'];
-    $last_name = $_POST['last_name'];
-    $email = $_POST['email'];
+    $first_name = clean($_POST['first_name']);
+    $last_name = clean($_POST['last_name']);
+    $email = clean($_POST['email']);
     $password = $_POST['password'];
     $confirm_password = $_POST['confirm_password'];
 
@@ -125,8 +134,6 @@ if(isset($_POST['signup'])){
         array_push($errors, $_SESSION['confrm_password_err']);
     }
 
-    print_r($errors);
-
     // Server insertion upon successful validation
     if(empty($errors)){
         $cstrong = true;
@@ -195,7 +202,7 @@ if(isset($_POST['signup'])){
 if(isset($_POST['login'])){
     $errors = array();
 
-    $email = $_POST['email'];
+    $email = clean($_POST['email']);
     $password = $_POST['password'];
 
     if (empty($email)) {
@@ -203,14 +210,20 @@ if(isset($_POST['login'])){
         array_push($errors, $_SESSION['email_err']);
     }
 
+    elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $_SESSION['email_err'] = "Invalid email. ";
+        array_push($errors, $_SESSION['email_err']);
+    }
+
     if (empty($password)) {
         $_SESSION['password_err'] = "Please enter a password. ";
         array_push($errors, $_SESSION['password_err']);
     }
+
     // Server retrieval
     if(empty($errors)){
         try {
-            $query = $conn->prepare("SELECT email FROM client WHERE email=? LIMIT 1");
+            $query = $conn->prepare("SELECT `user_id`, `user_password`, `user_type` FROM user WHERE `user_email`=? LIMIT 1");
             if ($query===false) {
                 throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
             }
@@ -224,18 +237,52 @@ if(isset($_POST['login'])){
             if(!$query->error){
                 if($query->num_rows > 0){
                     $row = $query->fetch_assoc();
-                    $hash = $row[0]['password'];
-        
-                    if (password_verify($password, $hash)) {
-                        setcookie("username", $row[0]['email'], time()+ 3600);
-                        setcookie("password", $row[0]['password'], time()+ 3600);
-                        setcookie("userType", $row[0]['user_type'], time()+ 3600);
-                        Header("Location: orders.php");
-                    }
-                }
+
+                    if (password_verify($password, $row[0]['password'])) {
+                        $_SESSION['user_id'] = $row[0]['user_id'];
+                        $_SESSION['user_type'] = $row[0]['user_type'];
+                        // if(!empty($_POST["remember"])) {
+                        //     setcookie("user", $row[0]['email'], time()+ 3600);
+                        //     setcookie("password", $row[0]['password'], time()+ 3600);
+                        // } else {
+                        //     setcookie("user","");
+                        //     setcookie("password","");
+                        // }
+
+                        if($_SESSION['user_type'] == 'User'){
+                            $conn->change_user("user", "User@CIS2104.njctattoodb", $db);
+
+                            $get_client = $conn->prepare("SELECT `client_id` FROM `user` WHERE `user`.`user_id`=? LIMIT 1");
+                            if ($get_client===false) {
+                                throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                            }
                 
-                else {
-                    $_SESSION['res'] = "Invalid username or password. Please try again.";
+                            $get_client->bind_param("s", $_SESSION['user_id']);
+                            if ($mysqli_checks===false) {
+                                throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
+                            }
+
+                            $get_client->execute();
+                            if(!$client->error) {
+                                $_SESSION['client_id'] = $client->fetch_column(0);
+                            } else {
+                                throw new Exception('Execute error: The prepared statement could not be executed.');
+                                Header("Location: signup.php");
+                            }
+
+                            $mysqli_checks = $unique_email->close();
+                            if ($mysqli_checks===false) {
+                                throw new Exception('The prepared statement could not be closed.');
+                            }
+                            
+                            Header("Location: index.php");
+                        } else {
+                            $conn->change_user("admin", "Admin@CIS2104.njctattoodb", $db);
+                            Header("Location: admin.php");
+                        }
+                    }
+                } else {
+                    $_SESSION['res'] = "User not found. Please try again.";
                     Header("Location: index.php");
                 }
             } else {
