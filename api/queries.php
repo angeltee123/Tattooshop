@@ -45,10 +45,6 @@ if(isset($_POST['signup'])){
     }
 
     // email validation
-    $unique_email = $conn->prepare("SELECT * FROM client WHERE email=?");
-    $unique_email->bind_param("s", $email);
-    $unique_email->execute();
-
     if (empty($email)) {
         $_SESSION['email_err'] = "Email is required. ";
         array_push($errors, $_SESSION['email_err']);
@@ -59,9 +55,38 @@ if(isset($_POST['signup'])){
         array_push($errors, $_SESSION['email_err']);
     }
 
-    elseif ($unique_email->num_rows >= 1) { 
-        $_SESSION['email_err'] = "Email is already taken. ";
-        array_push($errors, $_SESSION['email_err']);
+    try {
+        $unique_email = $conn->prepare("SELECT * FROM user WHERE `user_email`=?");
+        if ($unique_email===false) {
+            throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+        }
+
+        $mysqli_checks = $unique_email->bind_param("s", $email);
+        if ($mysqli_checks===false) {
+            throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
+        }
+
+        $unique_email->execute();
+        if($unique_email->error) {
+            throw new Exception('Execute error: The prepared statement could not be executed.');
+            Header("Location: signup.php");
+        }
+
+        if($unique_email->num_rows >= 1) { 
+            $_SESSION['email_err'] = "Email is already taken. ";
+            array_push($errors, $_SESSION['email_err']);
+        }
+
+        $mysqli_checks = $unique_email->close();
+        if ($mysqli_checks===false) {
+            throw new Exception('The prepared statement could not be closed.');
+        }
+    } catch (mysqli_sql_exception $e) {
+        echo 'Error: ' . $e->getCode() . ' - ' . $e->getMessage();
+        exit();
+    } catch (Exception $e) {
+        echo $e->getMessage();
+        exit();
     }
     
     // password validation
@@ -100,32 +125,58 @@ if(isset($_POST['signup'])){
         array_push($errors, $_SESSION['confrm_password_err']);
     }
 
+    print_r($errors);
+
     // Server insertion upon successful validation
     if(empty($errors)){
         $cstrong = true;
-        password_hash($password, PASSWORD_BCRYPT);
+        $password = password_hash($password, PASSWORD_BCRYPT);
         $id = bin2hex(openssl_random_pseudo_bytes(11, $cstrong));
+        $uid = bin2hex(openssl_random_pseudo_bytes(11, $cstrong));
 
         try {
-            $query = $conn->prepare("INSERT INTO `client` (`id`, `first_name`, `last_name`, `password`) VALUES(?,?,?,?)");
-            if ($query===false) {
+            // Insert into client table
+            $insert_client = $conn->prepare("INSERT INTO `client` (`client_id`, `client_fname`, `client_lname`) VALUES(?,?,?)");
+            if ($insert_client===false) {
                 throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
             }
 
-            $mysqli_checks = $query->bind_param("sssss", $id, $first_name, $last_name, $email, $password);
+            $mysqli_checks = $insert_client->bind_param("sss", $id, $first_name, $last_name);
             if ($mysqli_checks===false) {
                 throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
             }
 
-            $mysqli_checks = $query->execute();
-            if(!$query->error){
+            $mysqli_checks = $insert_client->execute();
+            if($insert_client->error) {
+                throw new Exception('Execute error: The prepared statement could not be executed.');
+                Header("Location: signup.php");
+            }
+
+            $mysqli_checks = $insert_client->close();
+            if ($mysqli_checks===false) {
+                throw new Exception('The prepared statement could not be closed.');
+            }
+
+            // Insert into user table
+            $insert_user = $conn->prepare("INSERT INTO `user` (`user_id`, `client_id`, `user_email`, `user_password`, `user_type`) VALUES(?,?,?,?,'User')");
+            if ($insert_user===false) {
+                throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+            }
+
+            $mysqli_checks = $insert_user->bind_param("ssss", $uid, $id, $email, $password);
+            if ($mysqli_checks===false) {
+                throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
+            }
+
+            $mysqli_checks = $insert_user->execute();
+            if(!$insert_user->error){
                 Header("Location: index.php");
             } else {
                 throw new Exception('Execute error: The prepared statement could not be executed.');
                 Header("Location: signup.php");
             }
 
-            $mysqli_checks = $query->close();
+            $mysqli_checks = $insert_user->close();
             if ($mysqli_checks===false) {
                 throw new Exception('The prepared statement could not be closed.');
             }
