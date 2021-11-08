@@ -13,8 +13,14 @@
     <title>NJC Tattoo | Sign Up</title>
 </head>
 <body>
-    <form action="queries.php" method="post">
-        <button type="submit" name="login">Sign Up</button>
+    <h1>Create Account</h1>
+    <form action="../api/queries.php" method="post">
+        <input type="text" class="form-control rounded-pill" name="first_name" id="first_name" placeholder="First Name" />
+        <input type="text" class="form-control rounded-pill" name="last_name" id="last_name" placeholder="Last Name" />
+        <input type="email" class="form-control rounded-pill" name="email" id="email" placeholder="Email" />
+        <input type="password" class="form-control rounded-pill" name="password" id="password" placeholder="Password" />
+        <input type="password" class="form-control rounded-pill" name="confirm_password" id="confirm_password" placeholder="Re-enter Password" />
+        <button type="submit" class="btn btn-dark rounded-pill" name="login">Sign Up</button>
     </form>
 </body>
 </html>
