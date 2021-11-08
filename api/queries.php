@@ -24,7 +24,7 @@ if(isset($_POST['signup'])){
     }
     
     elseif(ctype_space($first_name) || preg_match("/['^£$%&*()}{@#~?><>,|=_+¬-]/", $first_name)){
-        $_SESSION['first_name_err'] = "First name must not contain any spaces or uppercase letters";
+        $_SESSION['first_name_err'] = "First name must not contain any spaces or special characters.";
         array_push($errors, $_SESSION['first_name_err']);
     }
 
@@ -40,7 +40,7 @@ if(isset($_POST['signup'])){
     }
     
     elseif(ctype_space($last_name) || preg_match("/['^£$%&*()}{@#~?><>,|=_+¬-]/", $last_name)){
-        $_SESSION['last_name_err'] = "Last name must not contain any spaces or uppercase letters";
+        $_SESSION['last_name_err'] = "Last name must not contain any spaces or special characters";
         array_push($errors, $_SESSION['last_name_err']);
     }
 
@@ -102,9 +102,9 @@ if(isset($_POST['signup'])){
 
     // Server insertion upon successful validation
     if(empty($errors)){
+        $cstrong = true;
         password_hash($password, PASSWORD_BCRYPT);
-        $id = uniqid('', true);
-        $id = str_replace(".", "", $id);
+        $id = bin2hex(openssl_random_pseudo_bytes(11, $cstrong));
 
         try {
             $query = $conn->prepare("INSERT INTO `client` (`id`, `first_name`, `last_name`, `password`) VALUES(?,?,?,?)");
