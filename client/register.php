@@ -13,13 +13,13 @@
     <title>NJC Tattoo | Sign Up</title>
 </head>
 <body>
-    <h1>Create Account</h1>
+    <h1>Sign Up</h1>
     <form action="../api/queries.php" method="post">
-        <input type="text" class="form-control form-control-lg rounded-pill" name="first_name" id="first_name" placeholder="First Name" />
-        <input type="text" class="form-control form-control-lg rounded-pill" name="last_name" id="last_name" placeholder="Last Name" />
-        <input type="email" class="form-control form-control-lg rounded-pill" name="email" id="email" placeholder="Email" />
-        <input type="password" class="form-control form-control-lg rounded-pill" name="password" id="password" placeholder="Password" />
-        <input type="password" class="form-control form-control-lg rounded-pill" name="confirm_password" id="confirm_password" placeholder="Re-enter Password" />
+        <input type="text" class="form-control form-control-lg py-2 ps-4 border-2 rounded-pill" name="first_name" id="first_name" placeholder="First Name" />
+        <input type="text" class="form-control form-control-lg py-2 ps-4 border-2 rounded-pill" name="last_name" id="last_name" placeholder="Last Name" />
+        <input type="email" class="form-control form-control-lg py-2 ps-4 border-2 rounded-pill" name="email" id="email" placeholder="Email" />
+        <input type="password" class="form-control form-control-lg py-2 ps-4 border-2 rounded-pill" name="password" id="password" placeholder="Password" />
+        <input type="password" class="form-control form-control-lg py-2 ps-4 border-2 rounded-pill" name="confirm_password" id="confirm_password" placeholder="Re-enter Password" />
         <button type="submit" class="btn btn-lg btn-dark rounded-pill" name="signup">Sign Up</button>
     </form>
 </body>
