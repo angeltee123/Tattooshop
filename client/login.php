@@ -14,9 +14,17 @@
 </head>
 <body>
     <form action="../api/queries.php" method="post">
-        <input type="email" name="email" class="" required />
-        <input type="password" name="password" class="" required />
-        <button type="submit" name="login">Log In</button>
+        <input type="email" class="form-control form-control-lg py-2 ps-4 rounded-pill" name="email" id="email" placeholder="Email" required />
+        <input type="password" class="form-control form-control-lg py-2 ps-4 rounded-pill" name="password" id="password" placeholder="Password" required />
+        <button type="submit" class="btn btn-lg btn-dark rounded-pill" name="login">Log In</button>
     </form>
 </body>
 </html>
+<?php
+    if(isset($_SESSION['email_err'])){
+        unset($_SESSION['email_err']);
+    }
+    if(isset($_SESSION['password_err'])){
+        unset($_SESSION['password_err']);
+    }
+?>
