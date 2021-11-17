@@ -82,7 +82,7 @@ if(isset($_POST['signup'])){
         }
 
         if($unique_email->num_rows >= 1) { 
-            $_SESSION['email_err'] = "Email is already taken. ";
+            $_SESSION['email_err'] = "Email already taken. ";
             array_push($errors, $_SESSION['email_err']);
         }
 
@@ -204,6 +204,7 @@ if(isset($_POST['login'])){
 
     $email = clean($_POST['email']);
     $password = $_POST['password'];
+    $hash = "";
 
     if (empty($email)) {
         $_SESSION['email_err'] = "Please enter an email. ";
@@ -228,27 +229,18 @@ if(isset($_POST['login'])){
                 throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
             }
 
-            $query->bind_param("s", $email);
+            $mysqli_checks = $query->bind_param("s", $email);
             if ($mysqli_checks===false) {
                 throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
             }
 
             $query->execute();
             if(!$query->error){
+                $query->store_result();
+                $query->bind_result($_SESSION['user_id'], $hash, $_SESSION['user_type']);
+                $query->fetch();
                 if($query->num_rows > 0){
-                    $row = $query->fetch_assoc();
-
-                    if (password_verify($password, $row[0]['password'])) {
-                        $_SESSION['user_id'] = $row[0]['user_id'];
-                        $_SESSION['user_type'] = $row[0]['user_type'];
-                        // if(!empty($_POST["remember"])) {
-                        //     setcookie("user", $row[0]['email'], time()+ 3600);
-                        //     setcookie("password", $row[0]['password'], time()+ 3600);
-                        // } else {
-                        //     setcookie("user","");
-                        //     setcookie("password","");
-                        // }
-
+                    if (password_verify($password, $hash)) {
                         if($_SESSION['user_type'] == 'User'){
                             $conn->change_user("user", "User@CIS2104.njctattoodb", $db);
 
@@ -263,19 +255,20 @@ if(isset($_POST['login'])){
                             }
 
                             $get_client->execute();
-                            if(!$client->error) {
-                                $_SESSION['client_id'] = $client->fetch_column(0);
+                            if(!$get_client->error) {
+                                $query->bind_result($_SESSION['client_id']);
+                                print_r($_SESSION);
                             } else {
                                 throw new Exception('Execute error: The prepared statement could not be executed.');
-                                Header("Location: signup.php");
+                                // Header("Location: ../client/login.php");
                             }
 
-                            $mysqli_checks = $unique_email->close();
+                            $mysqli_checks = $get_client->close();
                             if ($mysqli_checks===false) {
                                 throw new Exception('The prepared statement could not be closed.');
                             }
 
-                            Header("Location: ../client/index.php");
+                            // Header("Location: ../client/index.php");
                         } else {
                             $conn->change_user("admin", "Admin@CIS2104.njctattoodb", $db);
                             Header("Location: ../client/admin.php");
@@ -283,11 +276,12 @@ if(isset($_POST['login'])){
                     }
                 } else {
                     $_SESSION['res'] = "User not found. Please try again.";
-                    Header("Location: index.php");
+                    print_r($_SESSION);
+                    // Header("Location: ../client/login.php");
                 }
             } else {
                 throw new Exception('Execute error: The prepared statement could not be executed.');
-                Header("Location: index.php");
+                Header("Location: ../client/login.php");
             }
 
             $mysqli_checks = $query->close();
