@@ -244,23 +244,23 @@ if(isset($_POST['login'])){
                         if($_SESSION['user_type'] == 'User'){
                             $conn->change_user("user", "User@CIS2104.njctattoodb", $db);
 
-                            $get_client = $conn->prepare("SELECT `client_id` FROM `user` WHERE `user`.`user_id`=? LIMIT 1");
+                            $get_client = $conn->prepare("SELECT `client_id` FROM `user` WHERE `user`.`user_id`=?");
                             if ($get_client===false) {
                                 throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
                             }
-                
-                            $get_client->bind_param("s", $_SESSION['user_id']);
+
+                            $mysqli_checks = $get_client->bind_param("s", $_SESSION['user_id']);
                             if ($mysqli_checks===false) {
                                 throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
                             }
 
                             $get_client->execute();
-                            if(!$get_client->error) {
-                                $query->bind_result($_SESSION['client_id']);
-                                print_r($_SESSION);
-                            } else {
+                            $get_client->store_result();
+                            $get_client->bind_result($_SESSION['client_id']);
+                            $get_client->fetch();
+                            if($get_client->error) {
                                 throw new Exception('Execute error: The prepared statement could not be executed.');
-                                // Header("Location: ../client/login.php");
+                                Header("Location: ../client/login.php");
                             }
 
                             $mysqli_checks = $get_client->close();
@@ -268,7 +268,7 @@ if(isset($_POST['login'])){
                                 throw new Exception('The prepared statement could not be closed.');
                             }
 
-                            // Header("Location: ../client/index.php");
+                            Header("Location: ../client/index.php");
                         } else {
                             $conn->change_user("admin", "Admin@CIS2104.njctattoodb", $db);
                             Header("Location: ../client/admin.php");
