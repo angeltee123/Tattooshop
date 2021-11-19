@@ -163,8 +163,26 @@ class API {
 
     /***** QUERYING *****/
 
-    public function query($query){
-        return mysqli_query($this->conn, $query);
+    public function prepare($query){
+        try {
+            return $this->conn->prepare($query);
+        } catch (mysqli_sql_exception $e) {
+            echo 'Error: ' . $e->getCode() . ' - ' . $e->getMessage();
+        } catch (Exception $e) {
+            echo $e->getMessage();
+        }
+    }
+
+    public function bind_params(&$statement, $types, $params = array()){
+        try {
+            $param_ref[] = &$types;
+            for ($i = 0; $i < count($params); $i++) {
+                $param_ref[] = &$params[$i];
+            }
+            call_user_func_array(array($statement, 'bind_param'), $param_ref);
+        } catch (Exception $e) {
+            echo $e->getMessage();
+        }
     }
 }
 ?>
