@@ -84,6 +84,10 @@ class API {
         }
     }
 
+    public function change_user($user, $password){
+        $this->conn->change_user($user, $password, $this->$db);
+    }
+
     /***** SELECT *****/
 
     public function select(){
@@ -179,9 +183,23 @@ class API {
             for ($i = 0; $i < count($params); $i++) {
                 $param_ref[] = &$params[$i];
             }
-            call_user_func_array(array($statement, 'bind_param'), $param_ref);
+            return call_user_func_array(array($statement, 'bind_param'), $param_ref);
         } catch (Exception $e) {
             echo $e->getMessage();
+        }
+    }
+
+    public function execute($statement){
+        return $statement->execute();
+    }
+
+    public function bind_result($statement, &$params){
+        if(!is_array($params)){
+            return $statement->bind_result($params);
+        } else {
+            if(!empty($params)){
+                return call_user_func_array(array($statement, 'bind_result'), $params);
+            }
         }
     }
 }
