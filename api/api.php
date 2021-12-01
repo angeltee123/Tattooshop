@@ -167,7 +167,7 @@ class API {
 
     /***** QUERYING *****/
 
-    public function prepare($query){
+    public function prepare(&$query){
         try {
             return $this->conn->prepare($query);
         } catch (mysqli_sql_exception $e) {
@@ -189,18 +189,32 @@ class API {
         }
     }
 
-    public function execute($statement){
+    public function execute(&$statement){
         return $statement->execute();
     }
 
-    public function bind_result($statement, &$params){
-        if(!is_array($params)){
-            return $statement->bind_result($params);
-        } else {
-            if(!empty($params)){
-                return call_user_func_array(array($statement, 'bind_result'), $params);
+    public function store_result(&$statement){
+        return $statement->store_result();
+    }
+
+    public function bind_result(&$statement, $params = array()){
+        if(!empty($params)){
+            try {
+                for ($i = 0; $i < count($params); $i++) {
+                    $param_ref[] = &$params[$i];
+                }
+                call_user_func_array(array($statement, 'bind_result'), $param_ref);
+                $statement->fetch();
+                return $param_ref;
+            }
+            catch (Exception $e) {
+                echo $e->getMessage();
             }
         }
+    }
+
+    public function get_bound_result(&$param, $bound_result){
+        $param = $bound_result;
     }
 }
 ?>
