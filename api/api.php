@@ -1,6 +1,10 @@
 <?php
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
+/*  TO DO
+    - ADD ERROR CATCHING FOR PREPARED STATEMENT QUERYING
+*/
+
 class API {
     private $server = "localhost";
     private $user = "root";
@@ -176,25 +180,45 @@ class API {
             echo $e->getMessage();
         }
     }
-
-    public function bind_params(&$statement, $types, $params = array()){
-        try {
-            $param_ref[] = &$types;
-            for ($i = 0; $i < count($params); $i++) {
-                $param_ref[] = &$params[$i];
-            }
-            return call_user_func_array(array($statement, 'bind_param'), $param_ref);
-        } catch (Exception $e) {
-            echo $e->getMessage();
-        }
-    }
-
+    
     public function execute(&$statement){
         return $statement->execute();
     }
 
     public function store_result(&$statement){
         return $statement->store_result();
+    }
+
+    public function num_rows($res){
+        return $res->num_rows;
+    }
+
+    public function bind_params(&$statement, $types, $params){
+        if(!is_array($params)){
+            try {
+                $param_ref[] = &$types;
+                if (is_string($params)){
+                    $params = $this->clean($params);
+                }
+                $param_ref[] = &$params;
+                return call_user_func_array(array($statement, 'bind_param'), $param_ref);
+            } catch (Exception $e) {
+                echo $e->getMessage();
+            }
+        } else {
+            try {
+                $param_ref[] = &$types;
+                for ($i = 0; $i < count($params); $i++) {
+                    if (is_string($params[$i])){
+                        $params[$i] = $this->clean($params[$i]);
+                    }
+                    $param_ref[] = &$params[$i];
+                }
+                return call_user_func_array(array($statement, 'bind_param'), $param_ref);
+            } catch (Exception $e) {
+                echo $e->getMessage();
+            }
+        }
     }
 
     public function bind_result(&$statement, $params = array()){
@@ -215,6 +239,18 @@ class API {
 
     public function get_bound_result(&$param, $bound_result){
         $param = $bound_result;
+    }
+
+    public function get_result(&$statement){
+        return $statement->get_result();
+    }
+
+    public function free_result(&$statement){
+        $statement->free_result();
+    }
+
+    public function close(&$statement){
+        return $statement->get_result();
     }
 }
 ?>
