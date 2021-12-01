@@ -1,5 +1,6 @@
 <?php
-include_once 'connection.php';
+require_once 'api.php';
+$_SESSION['api'] = new api();
 
 /******** HELPER FUNCTIONS ********/
 
@@ -203,7 +204,7 @@ if(isset($_POST['login'])){
     $errors = array();
 
     $email = clean($_POST['email']);
-    $password = $_POST['password'];
+    $password = trim($_POST['password']);
     $hash = "";
 
     if (empty($email)) {
@@ -224,70 +225,80 @@ if(isset($_POST['login'])){
     // Server retrieval
     if(empty($errors)){
         try {
-            $query = $conn->prepare("SELECT `user_id`, `user_password`, `user_type` FROM user WHERE `user_email`=? LIMIT 1");
-            if ($query===false) {
+            $query = $_SESSION['api']->select();
+            $query = $_SESSION['api']->params($query, array("user_id","user_password","user_type"));
+            $query = $_SESSION['api']->from($query);
+            $query = $_SESSION['api']->table($query, "user");
+            $query = $_SESSION['api']->where($query, array("user_email"), array("?"));
+            $query = $_SESSION['api']->limit($query, 1);
+            $statement = $_SESSION['api']->prepare($query);
+            if ($statement===false) {
                 throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
             }
 
-            $mysqli_checks = $query->bind_param("s", $email);
+            $mysqli_checks = $_SESSION['api']->bind_params($statement, "s", array($email));
             if ($mysqli_checks===false) {
                 throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
             }
 
-            $query->execute();
-            if(!$query->error){
-                $query->store_result();
-                $query->bind_result($_SESSION['user_id'], $hash, $_SESSION['user_type']);
-                $query->fetch();
-                if($query->num_rows > 0){
-                    if (password_verify($password, $hash)) {
-                        if($_SESSION['user_type'] == 'User'){
-                            $conn->change_user("user", "User@CIS2104.njctattoodb", $db);
+            $mysqli_checks = $_SESSION['api']->execute($statement);
+            if($mysqli_checks===true){
+                $_SESSION['api']->store_result($statement);
+                $_SESSION['user_id'] = $_SESSION['user_type'] = $hash = "";
 
-                            $get_client = $conn->prepare("SELECT `client_id` FROM `user` WHERE `user`.`user_id`=?");
-                            if ($get_client===false) {
-                                throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
-                            }
+                $res = $_SESSION['api']->bind_result($statement, array($_SESSION['user_id'], $hash, $_SESSION['user_type']));
+                $_SESSION['api']->get_bound_result($_SESSION['user_id'], $res[0]);
+                $_SESSION['api']->get_bound_result($hash, $res[1]);
+                $_SESSION['api']->get_bound_result($_SESSION['user_type'], $res[2]);
+                // if($query->num_rows > 0){
+                //     if (password_verify($password, $hash)) {
+                //         if($_SESSION['user_type'] == 'User'){
+                //             $conn->change_user("user", "User@CIS2104.njctattoodb", $db);
 
-                            $mysqli_checks = $get_client->bind_param("s", $_SESSION['user_id']);
-                            if ($mysqli_checks===false) {
-                                throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
-                            }
+                //             $get_client = $conn->prepare("SELECT `client_id` FROM `user` WHERE `user`.`user_id`=?");
+                //             if ($get_client===false) {
+                //                 throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                //             }
 
-                            $get_client->execute();
-                            $get_client->store_result();
-                            $get_client->bind_result($_SESSION['client_id']);
-                            $get_client->fetch();
-                            if($get_client->error) {
-                                throw new Exception('Execute error: The prepared statement could not be executed.');
-                                Header("Location: ../client/login.php");
-                            }
+                //             $mysqli_checks = $get_client->bind_param("s", $_SESSION['user_id']);
+                //             if ($mysqli_checks===false) {
+                //                 throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
+                //             }
 
-                            $mysqli_checks = $get_client->close();
-                            if ($mysqli_checks===false) {
-                                throw new Exception('The prepared statement could not be closed.');
-                            }
+                //             $get_client->execute();
+                //             $get_client->store_result();
+                //             $get_client->bind_result($_SESSION['client_id']);
+                //             $get_client->fetch();
+                //             if($get_client->error) {
+                //                 throw new Exception('Execute error: The prepared statement could not be executed.');
+                //                 Header("Location: ../client/login.php");
+                //             }
 
-                            Header("Location: ../client/index.php");
-                        } else {
-                            $conn->change_user("admin", "Admin@CIS2104.njctattoodb", $db);
-                            Header("Location: ../client/admin.php");
-                        }
-                    }
-                } else {
-                    $_SESSION['res'] = "User not found. Please try again.";
-                    print_r($_SESSION);
-                    // Header("Location: ../client/login.php");
-                }
+                //             $mysqli_checks = $get_client->close();
+                //             if ($mysqli_checks===false) {
+                //                 throw new Exception('The prepared statement could not be closed.');
+                //             }
+
+                //             Header("Location: ../client/index.php");
+                //         } else {
+                //             $conn->change_user("admin", "Admin@CIS2104.njctattoodb", $db);
+                //             Header("Location: ../client/admin.php");
+                //         }
+                //     }
+                // } else {
+                //     $_SESSION['res'] = "User not found. Please try again.";
+                //     print_r($_SESSION);
+                //     // Header("Location: ../client/login.php");
+                // }
             } else {
                 throw new Exception('Execute error: The prepared statement could not be executed.');
-                Header("Location: ../client/login.php");
+                // Header("Location: ../client/login.php");
             }
 
-            $mysqli_checks = $query->close();
-            if ($mysqli_checks===false) {
-                throw new Exception('The prepared statement could not be closed.');
-            }
+            // $mysqli_checks = $query->close();
+            // if ($mysqli_checks===false) {
+            //     throw new Exception('The prepared statement could not be closed.');
+            // }
         } catch (mysqli_sql_exception $e) {
             echo 'Error: ' . $e->getCode() . ' - ' . $e->getMessage();
             exit();
