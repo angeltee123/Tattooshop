@@ -16,7 +16,18 @@
     <h1>Sign In</h1>
     <form action="../api/queries.php" method="post">
         <input type="email" class="form-control form-control-lg py-2 ps-4 border-2 rounded-pill" name="email" id="email" placeholder="Email" required />
+        <?php if(isset($_SESSION['email_err'])){ ?>
+            <span class="invalid-feedback"><?php echo $_SESSION['email_err']; ?></span>
+        <?php } ?>
+
         <input type="password" class="form-control form-control-lg py-2 ps-4 border-2 rounded-pill" name="password" id="password" placeholder="Password" required />
+        <?php if(isset($_SESSION['password_err'])){ ?>
+            <span class="invalid-feedback"><?php echo $_SESSION['password_err']; ?></span>
+        <?php } ?>
+
+        <?php if(isset($_SESSION['res'])){ ?>
+            <span class="invalid-feedback"><?php echo $_SESSION['res']; ?></span>
+        <?php } ?>
         <button type="submit" class="btn btn-lg btn-dark rounded-pill" name="login">Sign In</button>
     </form>
 </body>
