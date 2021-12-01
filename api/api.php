@@ -250,7 +250,7 @@ class API {
     }
 
     public function close(&$statement){
-        return $statement->get_result();
+        return $statement->close();
     }
 }
 ?>
