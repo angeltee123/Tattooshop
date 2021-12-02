@@ -89,7 +89,7 @@ class API {
     }
 
     public function change_user($user, $password){
-        $this->conn->change_user($user, $password, $this->$db);
+        $this->conn->change_user($user, $password, $this->db);
     }
 
     /***** SELECT *****/
