@@ -245,6 +245,10 @@ class API {
         return $statement->get_result();
     }
 
+    public function fetch_assoc(&$result){
+        return $result->fetch_assoc();
+    }
+
     public function free_result(&$statement){
         $statement->free_result();
     }

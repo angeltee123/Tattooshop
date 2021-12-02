@@ -1,4 +1,5 @@
 <?php
+session_start();
 require_once 'api.php';
 $api = new api();
 
