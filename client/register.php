@@ -1,4 +1,3 @@
-<?php include_once '../api/connection.php'; ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,11 +15,43 @@
     <h1>Sign Up</h1>
     <form action="../api/queries.php" method="post">
         <input type="text" class="form-control form-control-lg py-2 ps-4 border-2 rounded-pill" name="first_name" id="first_name" placeholder="First Name" />
+        <?php if(isset($_SESSION['first_name_err'])){ ?>
+            <span class="invalid-feedback"><?php echo $_SESSION['first_name_err']; ?></span>
+        <?php } ?>
         <input type="text" class="form-control form-control-lg py-2 ps-4 border-2 rounded-pill" name="last_name" id="last_name" placeholder="Last Name" />
+        <?php if(isset($_SESSION['last_name_err'])){ ?>
+            <span class="invalid-feedback"><?php echo $_SESSION['last_name_err']; ?></span>
+        <?php } ?>
         <input type="email" class="form-control form-control-lg py-2 ps-4 border-2 rounded-pill" name="email" id="email" placeholder="Email" />
+        <?php if(isset($_SESSION['email_err'])){ ?>
+            <span class="invalid-feedback"><?php echo $_SESSION['email_err']; ?></span>
+        <?php } ?>
         <input type="password" class="form-control form-control-lg py-2 ps-4 border-2 rounded-pill" name="password" id="password" placeholder="Password" />
+        <?php if(isset($_SESSION['password_err'])){ ?>
+            <span class="invalid-feedback"><?php echo $_SESSION['password_err']; ?></span>
+        <?php } ?>
         <input type="password" class="form-control form-control-lg py-2 ps-4 border-2 rounded-pill" name="confirm_password" id="confirm_password" placeholder="Re-enter Password" />
+        <?php if(isset($_SESSION['confirm_password_err'])){ ?>
+            <span class="invalid-feedback"><?php echo $_SESSION['confirm_password_err']; ?></span>
+        <?php } ?>
         <button type="submit" class="btn btn-lg btn-dark rounded-pill" name="signup">Sign Up</button>
     </form>
 </body>
 </html>
+<?php
+    if(isset($_SESSION['first_name_err'])){
+        unset($_SESSION['first_name_err']);
+    }
+    if(isset($_SESSION['last_name_err'])){
+        unset($_SESSION['last_name_err']);
+    }
+    if(isset($_SESSION['email_err'])){
+        unset($_SESSION['email_err']);
+    }
+    if(isset($_SESSION['password_err'])){
+        unset($_SESSION['password_err']);
+    }
+    if(isset($_SESSION['confirm_password_err'])){
+        unset($_SESSION['confirm_password_err']);
+    }
+?>
