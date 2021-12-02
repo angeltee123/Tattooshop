@@ -1,4 +1,4 @@
-<?php include_once '../api/connection.php'; ?>
+<?php session_start(); ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
