@@ -3,6 +3,8 @@ session_start();
 require_once 'api.php';
 $api = new api();
 
+print_r($_POST);
+
 /******** USER REGISTRATION ********/
 
 if(isset($_POST['signup'])){
@@ -303,9 +305,11 @@ if(isset($_POST['login'])){
                         }
                     } else {
                         $_SESSION['res'] = "Incorrect password.";
+                        Header("Location: ../client/login.php");
                     }
                 } else {
                     $_SESSION['res'] = "User not found. Please try again.";
+                    Header("Location: ../client/login.php");
                 }
             } else {
                 throw new Exception('Execute error: The prepared statement could not be executed.');
@@ -319,9 +323,17 @@ if(isset($_POST['login'])){
         } catch (Exception $e) {
             exit();
             $_SESSION['res'] = $e->getMessage();
-            Header("Location: ..client/login.php");
+            Header("Location: ../client/login.php");
         }
     }
+}
+
+/******** USER LOGOUT ********/
+
+if(isset($_POST['logout'])){
+    setcookie(session_id(), "", time() - 3600);
+    session_destroy();
+    session_write_close();
 }
 
 /******** ORDER MANAGEMENT ********/
@@ -373,7 +385,7 @@ if(isset($_POST['remove_item'])){
 
 /******** ILLEGAL ACCESS CATCHING ********/
 
-if(!isset($_SESSION['user_id'])){
+if(!isset($_SESSION['user_id']) || empty($_POST)){
     Header("Location: ../client/index.php");
     die();
 }
