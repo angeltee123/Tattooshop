@@ -196,8 +196,8 @@ if(isset($_POST['signup'])){
                 throw new Exception('The prepared statement could not be closed.');
             }
         } catch (Exception $e) {
-            $_SESSION['res'] = $e->getMessage();
             exit();
+            $_SESSION['res'] = $e->getMessage();
             Header("Location: ..client/register.php");
         }
     }
@@ -259,7 +259,7 @@ if(isset($_POST['login'])){
                     $api->get_bound_result($_SESSION['user_type'], $res[2]);
                     
                     if(password_verify($password, $hash)) {
-                        if($_SESSION['user_type'] == 'User'){
+                        if(strcasecmp($_SESSION['user_type'], 'User') == 0){
                             $api->change_user("user", "User@CIS2104.njctattoodb");
 
                             $query = $api->select();
@@ -301,6 +301,8 @@ if(isset($_POST['login'])){
                             $api->change_user("admin", "Admin@CIS2104.njctattoodb");
                             Header("Location: ../client/admin.php");
                         }
+                    } else {
+                        $_SESSION['res'] = "Incorrect password.";
                     }
                 } else {
                     $_SESSION['res'] = "User not found. Please try again.";
@@ -315,8 +317,8 @@ if(isset($_POST['login'])){
                 throw new Exception('The prepared statement could not be closed.');
             }
         } catch (Exception $e) {
-            $_SESSION['res'] = $e->getMessage();
             exit();
+            $_SESSION['res'] = $e->getMessage();
             Header("Location: ..client/login.php");
         }
     }
@@ -324,11 +326,55 @@ if(isset($_POST['login'])){
 
 /******** ORDER MANAGEMENT ********/
 
+// if(isset($_POST['update_item'])){
+//     $id = $_POST['item_id']; 
+//     // $delete = "DELETE FROM `order_item` WHERE `item_id`='$id'";
+//     // Header("Location: ../client/index.php");
+// }
+
 if(isset($_POST['remove_item'])){
-    $id = $_POST['item_id']; 
-    // $delete = "DELETE FROM `order_item` WHERE `item_id`='$id'";
-    // Header("Location: ../client/index.php");
+    try {
+        $id = $api->clean($_POST['item_id']);
+
+        $query = $api->delete();
+        $query = $api->from($query);
+        $query = $api->table($query, "order_item");
+        $query = $api->where($query, array("item_id", "client_id"), array("?","?"));
+
+        $statement = $api->prepare($query);
+        if ($statement===false) {
+            throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+        }
+
+        $mysqli_checks = $api->bind_params($statement, "ss", array($id, $_SESSION['client_id']));
+        if ($mysqli_checks===false) {
+            throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
+        }
+
+        $mysqli_checks = $api->execute($statement);
+        if($mysqli_checks===false) {
+            throw new Exception('Execute error: The prepared statement could not be executed.');
+        }
+
+        $mysqli_checks = $api->close($statement);
+        if ($mysqli_checks===false) {
+            throw new Exception('The prepared statement could not be closed.');
+        }
+
+        Header("Location: ../client/orders.php");
+    } catch (Exception $e) {
+        exit();
+        $_SESSION['res'] = $e->getMessage();
+        Header("Location: ..client/orders.php");
+    }
 }
 
 /******** BOOKING MANAGEMENT ********/
+
+/******** ILLEGAL ACCESS CATCHING ********/
+
+if(!isset($_SESSION['user_id'])){
+    Header("Location: ../client/index.php");
+    die();
+}
 ?>

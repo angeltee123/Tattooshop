@@ -1,3 +1,10 @@
+<?php
+    session_start();
+    if(!isset($_SESSION['user_id'])){
+        Header("Location: ../client/login.php");
+        die();
+    }
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,5 +19,6 @@
     <title>Orders</title>
 </head>
 <body>
+    <?php print_r($_SESSION); ?>
 </body>
 </html>

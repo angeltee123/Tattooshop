@@ -1,7 +1,12 @@
 <?php
   session_start();
-  require_once '../api/api.php';
-  $api = new api();
+  if(!isset($_SESSION['user_id'])){
+    Header("Location: ../client/index.php");
+    die();
+  } else {
+    require_once '../api/api.php';
+    $api = new api();
+  }
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -41,13 +46,13 @@
   $api->execute($statement);
   $res = $api->get_result($statement);
 ?>
-<table class="table w-75">
+<table class="table w-75 mx-auto">
   <thead class="align-middle" style="height: 4em;">
     <tr>
       <th scope="col">Actions</th>
       <th scope="col">Order ID</th>
       <th scope="col">Date Ordered</th>
-      <th scope="col">Tattoo Name</th>
+      <th scope="col">Tattoo</th>
       <th scope="col">Description</th>
       <th scope="col">Quantity</th>
       <th scope="col">Price</th>
@@ -69,7 +74,12 @@
         </td>
         <th><?php echo $api->clean($row['order_id']) ?></th>
         <td><?php echo $api->clean($row['order_date']) ?></td>
-        <td><?php echo $api->clean($row['tattoo_name']) ?></td>
+        <td>
+          <?php
+            echo $api->clean($row['tattoo_id']);
+            echo $api->clean($row['tattoo_name'])
+          ?>
+        </td>
         <td><?php echo $api->clean($row['tattoo_description'])?></td>
         <td>
           <input type="number" class="form-control" name="quantity" min="1" value="<?php echo $row['tattoo_quantity']?>"/>
@@ -85,7 +95,7 @@
     </tfoot>
     <?php } else { ?>
       <tfoot>
-        <td colspan="7" class="p-5"><h1 class="m-3 display-4 fst-italic text-muted">No items ordered.</h1></td>
+        <td colspan="7" class="p-5"><h1 class="m-3 display-4 fst-italic text-muted">No tattoos ordered.</h1></td>
       </tfoot>
     <?php } ?>
   </tbody>
