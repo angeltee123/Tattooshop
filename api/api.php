@@ -169,6 +169,12 @@ class API {
         }
     }
 
+    /***** DELETING *****/
+
+    public function delete(){
+        return "DELETE ";
+    }
+
     /***** QUERYING *****/
 
     public function prepare(&$query){

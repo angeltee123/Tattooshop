@@ -3,8 +3,6 @@ session_start();
 require_once 'api.php';
 $api = new api();
 
-print_r($_POST);
-
 /******** USER REGISTRATION ********/
 
 if(isset($_POST['signup'])){
@@ -338,11 +336,43 @@ if(isset($_POST['logout'])){
 
 /******** ORDER MANAGEMENT ********/
 
-// if(isset($_POST['update_item'])){
-//     $id = $_POST['item_id']; 
-//     // $delete = "DELETE FROM `order_item` WHERE `item_id`='$id'";
-//     // Header("Location: ../client/index.php");
-// }
+if(isset($_POST['update_item'])){
+    try {
+        $id = $api->clean($_POST['item_id']);
+        $quantity = $_POST['quantity'];
+
+        $query = $api->update();
+        $query = $api->table($query, "order_item");
+        $query = $api->set($query, "tattoo_quantity", "?");
+        $query = $api->where($query, array("client_id"), array("?"));
+
+        $statement = $api->prepare($query);
+        if ($statement===false) {
+            throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+        }
+
+        $mysqli_checks = $api->bind_params($statement, "sis", array($id, $quantity, $_SESSION['client_id']));
+        if ($mysqli_checks===false) {
+            throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
+        }
+
+        $mysqli_checks = $api->execute($statement);
+        if($mysqli_checks===false) {
+            throw new Exception('Execute error: The prepared statement could not be executed.');
+        }
+
+        $mysqli_checks = $api->close($statement);
+        if ($mysqli_checks===false) {
+            throw new Exception('The prepared statement could not be closed.');
+        }
+
+        Header("Location: ../client/orders.php");
+    } catch (Exception $e) {
+        exit();
+        $_SESSION['res'] = $e->getMessage();
+        Header("Location: ..client/orders.php");
+    }
+}
 
 if(isset($_POST['remove_item'])){
     try {
