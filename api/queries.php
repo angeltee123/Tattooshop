@@ -8,8 +8,8 @@ $api = new api();
 if(isset($_POST['signup'])){
     $errors = array();
 
-    $first_name = $api->clean($_POST['first_name']);
-    $last_name = $api->clean($_POST['last_name']);
+    $first_name = $api->clean(ucfirst($_POST['first_name']));
+    $last_name = $api->clean(ucfirst($_POST['last_name']));
     $email = $api->clean($_POST['email']);
     $password = trim($_POST['password']);
     $confirm_password = trim($_POST['confirm_password']);
@@ -123,17 +123,17 @@ if(isset($_POST['signup'])){
     }
 
     if (empty($confirm_password)) {
-        $_SESSION['confrm_password_err'] = "Confirm password field must not be empty. ";
-        array_push($errors, $_SESSION['confrm_password_err']);
+        $_SESSION['confirm_password_err'] = "Confirm password field must not be empty. ";
+        array_push($errors, $_SESSION['confirm_password_err']);
     }
 
     if (strcasecmp($password, $confirm_password) != 0) {
-        $_SESSION['confrm_password_err'] = "Passwords must match. ";
-        array_push($errors, $_SESSION['confrm_password_err']);
+        $_SESSION['confirm_password_err'] = "Passwords must match. ";
+        array_push($errors, $_SESSION['confirm_password_err']);
     }
 
     // Server insertion upon successful validation
-    if(empty($errors)){
+    if(count($errors)== 0){
         $cstrong = true;
         $password = password_hash($password, PASSWORD_BCRYPT);
         $id = bin2hex(openssl_random_pseudo_bytes(11, $cstrong));
@@ -186,6 +186,9 @@ if(isset($_POST['signup'])){
 
             $mysqli_checks = $api->execute($insert_user);
             if($mysqli_checks===true){
+                $_SESSION['user_id'] = $uid;
+                $_SESSION['client_id'] = $id;
+                $_SESSION['user_type'] = "User";
                 Header("Location: ../client/index.php");
             } else {
                 throw new Exception('Execute error: The prepared statement could not be executed.');
@@ -198,8 +201,10 @@ if(isset($_POST['signup'])){
         } catch (Exception $e) {
             exit();
             $_SESSION['res'] = $e->getMessage();
-            Header("Location: ..client/register.php");
+            Header("Location: ../client/register.php");
         }
+    } else {
+        Header("Location: ../client/register.php");
     }
 }
 
@@ -415,7 +420,7 @@ if(isset($_POST['remove_item'])){
 
 /******** ILLEGAL ACCESS CATCHING ********/
 
-if(!isset($_SESSION['user_id']) || empty($_POST)){
+if(empty($_POST)){
     Header("Location: ../client/index.php");
     die();
 }
