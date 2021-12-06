@@ -232,7 +232,7 @@ if(isset($_POST['login'])){
         array_push($errors, $_SESSION['password_err']);
     }
 
-    // Server retrieval
+    // User retrieval from server
     if(empty($errors)){
         try {
             $query = $api->select();
@@ -257,13 +257,13 @@ if(isset($_POST['login'])){
                 $api->store_result($statement);
                 if($api->num_rows($statement) > 0){
                     $_SESSION['user_id'] = $_SESSION['user_type']= "";
-
                     $res = $api->bind_result($statement, array($_SESSION['user_id'], $hash, $_SESSION['user_type']));
-                    $api->get_bound_result($_SESSION['user_id'], $res[0]);
                     $api->get_bound_result($hash, $res[1]);
-                    $api->get_bound_result($_SESSION['user_type'], $res[2]);
-                    
+
+                    // User auth
                     if(password_verify($password, $hash)) {
+                        $api->get_bound_result($_SESSION['user_id'], $res[0]);
+                        $api->get_bound_result($_SESSION['user_type'], $res[2]);
                         if(strcasecmp($_SESSION['user_type'], 'User') == 0){
                             $api->change_user("user", "User@CIS2104.njctattoodb");
 
@@ -307,6 +307,8 @@ if(isset($_POST['login'])){
                             Header("Location: ../client/admin.php");
                         }
                     } else {
+                        unset($_SESSION['user_id']);
+                        unset($_SESSION['user_type']);
                         $_SESSION['res'] = "Incorrect password.";
                         Header("Location: ../client/login.php");
                     }
