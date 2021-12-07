@@ -4,12 +4,16 @@
 <p>
 
 <details><summary>SELECT</summary>
+<p>$api->select()</p>
 <p>
-### $api->select();
 Returns 'SELECT ' to the string.
 ```php
 $query = $api->select();
-// $query = 'SELECT '
+```
+</p>
+<p>
+```php
+// $query = 'SELECT ';
 ```
 </p>
 
