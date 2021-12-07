@@ -293,10 +293,9 @@ $query = $api->where($query, 'column', 'value');
 </p>
 </details>
 
-<details><summary>UPDATE FUNCTIONS</summary>
+<details><summary>DELETE FUNCTION</summary>
 <p>
 
-DELETE FUNCTION
 ## $api->delete()
 Returns SQL DELETE to the calling string.
 ```php
