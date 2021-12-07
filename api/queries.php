@@ -1,4 +1,5 @@
 <?php
+session_name("sess_id");
 session_start();
 require_once 'api.php';
 $api = new api();
@@ -62,7 +63,7 @@ if(isset($_POST['signup'])){
         $query = $api->params($query, "*");
         $query = $api->from($query);
         $query = $api->table($query, "user");
-        $query = $api->where($query, array("user_email"), array("?"));
+        $query = $api->where($query, "user_email", "?");
 
         $unique_email = $api->prepare($query);
         if ($unique_email===false) {
@@ -239,7 +240,7 @@ if(isset($_POST['login'])){
             $query = $api->params($query, array("user_id","user_password","user_type"));
             $query = $api->from($query);
             $query = $api->table($query, "user");
-            $query = $api->where($query, array("user_email"), array("?"));
+            $query = $api->where($query, "user_email", "?");
             $query = $api->limit($query, 1);
 
             $statement = $api->prepare($query);
@@ -271,7 +272,7 @@ if(isset($_POST['login'])){
                             $query = $api->params($query,"client_id");
                             $query = $api->from($query);
                             $query = $api->table($query, "user");
-                            $query = $api->where($query, array("user_id"), array("?"));
+                            $query = $api->where($query, "user_id", "?");
                             $query = $api->limit($query, 1);
 
                             $get_client = $api->prepare($query);
@@ -351,7 +352,7 @@ if(isset($_POST['update_item'])){
         $query = $api->update();
         $query = $api->table($query, "order_item");
         $query = $api->set($query, "tattoo_quantity", "?");
-        $query = $api->where($query, array("client_id"), array("?"));
+        $query = $api->where($query, "client_id", "?");
 
         $statement = $api->prepare($query);
         if ($statement===false) {
