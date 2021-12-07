@@ -1,9 +1,6 @@
 # NJC Tattoo
 ## API Documentation
-<details><summary>ALL FUNCTIONS</summary>
-<p>
 
-HELPER FUNCTIONS
 ## $api->clean()
 Santizes the given string for output. Returns the sanitized data.
 ```php
@@ -448,9 +445,6 @@ $statement = $api->prepare($query);
 $api->free($statement);
 $boolean = $api->close($statement);
 ```
-
-</p>
-</details>
 
 </p>
 </details>
