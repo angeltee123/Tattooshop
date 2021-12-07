@@ -1,5 +1,17 @@
 # NJC Tattoo
 ## API Documentation
+<details><summary>ALL FUNCTIONS</summary>
+<p>
+
+HELPER FUNCTIONS
+## $api->clean()
+Santizes the given string for output. Returns the sanitized data.
+```php
+$data = " <script>console.log('This is an attack.')</script> ";
+$data = $api->clean($data);
+// $data = '&lt;script&gt;console.log(&#039;This is an attack&#039;)&lt;/script&gt;';
+```
+
 <details><summary>MYSQLI FUNCTIONS</summary>
 <p>
 
@@ -414,6 +426,9 @@ $statement = $api->prepare($query);
 $api->free($statement);
 $boolean = $api->close($statement);
 ```
+
+</p>
+</details>
 
 </p>
 </details>
