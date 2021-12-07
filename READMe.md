@@ -301,14 +301,11 @@ $query = $api->where($query, 'column', 'value');
 // $query = 'DELETE FROM table WHERE column=value';
 ```
 
-</p>
-</details>
-
 <details><summary>PREPARED STATEMENT FUNCTIONS</summary>
 <p>
 
 ## $api->prepare($query)
-Prepares the given SQL query string for execution. If successful, $api->prepare() returns a statement object, else, it returns false.
+Prepares the given SQL query string for execution. Returns a statement object on success, false on failure.
 ```php
 $query = $api->select();
 $query = $api->params($query, '*');
@@ -319,8 +316,35 @@ $statement = $api->prepare($query);
 ```
 
 
+## $api->bind_params(&$statement, $types, $params)
+Binds variables to the given prepared statement. Returns true on success, false on failure.
+To bind a single variable, do
+```php
+$query = $api->select();
+$query = $api->params($query, '*');
+$query = $api->from($query);
+$query = $api->table($query, 'table');
+$query = $api->where($query, 'column', '?');
+
+$statement = $api->prepare($query);
+$boolean = $api->bind_params($statement, "i", 1);
+```
+
+To bind multiple variables, do
+```php
+$query = $api->select();
+$query = $api->params($query, '*');
+$query = $api->from($query);
+$query = $api->table($query, 'table');
+$query = $api->where($query, array('column1', 'column2', 'column3'), array('?', '?', '?'));
+
+$statement = $api->prepare($query);
+$boolean = $api->bind_params($statement, "sis", array('value1', 2, 'value2'));
+```
+
+
 ## $api->execute(&$statement)
-Executes the given prepared statement. If successful, $api->execute() returns true, else, it returns false.
+Executes the given prepared statement. Returns true on success, false on failure.
 ```php
 $query = $api->select();
 ...
@@ -330,7 +354,7 @@ $boolean = $api->execute($statement);
 
 
 ## $api->store_result(&$statement)
-Stores the result set of a successfully executed statement in an internal buffer. If successful, $api->execute() returns true, else, it returns false.
+Stores the result set of a successfully executed statement in an internal buffer. Returns true on success, false on failure.
 ```php
 $query = $api->select();
 ...
@@ -369,19 +393,19 @@ $row = $api->fetch_assoc($res);
 ```
 
 
-## $api->fetch_assoc(&$statement)
+## $api->free_result(&$statement)
 Frees the memory associated with a result.
 ```php
 $query = $api->select();
 ...
 $statement = $api->prepare($query);
 ...
-$api->free($statement);
+$api->free_result($statement);
 ```
 
 
 ## $api->close(&$statement)
-Closes the given prepared statement. If successful, $api->close() returns true, else, false.
+Closes the given prepared statement. Returns true on success, false on failure.
 ```php
 $query = $api->select();
 ...
@@ -390,6 +414,9 @@ $statement = $api->prepare($query);
 $api->free($statement);
 $boolean = $api->close($statement);
 ```
+
+</p>
+</details>
 
 </p>
 </details>
