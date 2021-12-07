@@ -131,26 +131,26 @@ $query = $api->limit($query, 2);
 Returns the given query string with the specified order.
 To specify ordering by a single column, do
 ```php
-$query = $api->order($query, $column);
+$query = $api->order($query, $column, $type);
 
 Example:
 $query = $api->select();
 $query = $api->params($query, '*');
 $query = $api->from($query);
 $query = $api->table($query, 'table');
-$query = $api->order($query, 'column ASC');
+$query = $api->order($query, 'column', 'ASC');
 // $query = 'SELECT * FROM table ORDER BY column ASC';
 ```
 To specify ordering by multiple columns, do
 ```php
-$query = $api->order($query, array($arg1, $arg2, ..., $argN));
+$query = $api->order($query, array($arg1, $arg2, ..., $argN), array($arg1, $arg2, ..., $argN));
 
 Example:
 $query = $api->select();
 $query = $api->params($query, '*');
 $query = $api->from($query);
 $query = $api->table($query, 'table');
-$query = $api->order($query, array('column1 ASC', 'column2 DESC'));
+$query = $api->order($query, array('column1', 'column2'), array('ASC', 'DESC'));
 // $query = 'SELECT * FROM table ORDER BY column1 ASC, column2 DESC';
 ```
 
@@ -342,16 +342,38 @@ $statement = $api->prepare($query);
 $boolean = $api->bind_params($statement, "i", 1);
 ```
 
-To bind multiple variables, do
+
+## $api->bind_result(&$statement, $types, $params)
+Binds variables to the given prepared statement. Returns an array of all the bound variables, false on failure.
 ```php
 $query = $api->select();
-$query = $api->params($query, '*');
+$query = $api->params($query, array('column1', 'column2', 'column3'));
 $query = $api->from($query);
 $query = $api->table($query, 'table');
-$query = $api->where($query, array('column1', 'column2', 'column3'), array('?', '?', '?'));
+$query = $api->where($query, 'column', '?');
 
 $statement = $api->prepare($query);
-$boolean = $api->bind_params($statement, "sis", array('value1', 2, 'value2'));
+$api->bind_params($statement, "s", $value);
+$api->execute($statement);
+$api->store_result($statement);
+$boolean = $api->bind_result($statement, array($key1, $key2, $key3));
+```
+
+
+## $api->get_bound_result(&$param, $bound_result)
+Sets the value of $param to $bound_result. api->get_bound_result() is used to get the values from the array returned by api->bind_result().
+```php
+$query = $api->select();
+$query = $api->params($query, array('column1', 'column2', 'column3'));
+$query = $api->from($query);
+$query = $api->table($query, 'table');
+$query = $api->where($query, 'column', '?');
+
+$statement = $api->prepare($query);
+$api->bind_params($statement, "s", $value);
+$api->execute($statement);
+$api->store_result($statement);
+$boolean = $api->bind_result($statement, array($key1, $key2, $key3));
 ```
 
 
