@@ -17,7 +17,7 @@ $query = $api->select();
 $query = $api->params($query, '*');
 $query = $api->from($query);
 $query = $api->table($query, 'table');
-// $query = 'SELECT * table';
+// $query = 'SELECT * FROM table';
 ```
 
 To specify multiple tables, do
@@ -39,19 +39,19 @@ Returns a join clause string with the specified join type.
 To construct a default JOIN (INNER), do
 ```php
 $join_clause = $api->join('', 'tableLeft', 'tableRight', 'tableLeft.column', 'tableRight.column');
-// $query = '(tableLeft JOIN tableRight ON tableLeft.column=tableRight.column)';
+// $join_clause = '(tableLeft JOIN tableRight ON tableLeft.column=tableRight.column)';
 ```
 
 To construct a LEFT JOIN, do
 ```php
 $join_clause = $api->join('left', 'tableLeft', 'tableRight', 'tableLeft.column', 'tableRight.column');
-// $query = '(tableLeft LEFT JOIN tableRight ON tableLeft.column=tableRight.column)';
+// $join_clause = '(tableLeft LEFT JOIN tableRight ON tableLeft.column=tableRight.column)';
 ```
 
 To construct a RIGHT JOIN, do
 ```php
 $join_clause = $api->join('right', 'tableLeft', 'tableRight', 'tableLeft.column', 'tableRight.column');
-// $query = '(tableLeft RIGHT JOIN tableRight ON tableLeft.column=tableRight.column)';
+// $join_clause = '(tableLeft RIGHT JOIN tableRight ON tableLeft.column=tableRight.column)';
 ```
 
 To construct a nested JOIN, do
@@ -59,7 +59,7 @@ To construct a nested JOIN, do
 $nested_join= $api->join('', 'table1', 'table2', 'table1.column', 'table2.column');
 
 $join_clause = $api->join('', $nested_join, 'table3', 'table2.column', 'table3.column');
-// $query = '((table1 JOIN table2 ON table1.column=table2.column) JOIN table3 ON table2.column=table3.column)';
+// $join_clause = '((table1 JOIN table2 ON table1.column=table2.column) JOIN table3 ON table2.column=table3.column)';
 ```
 
 
@@ -299,6 +299,96 @@ $query = $api->from($query);
 $query = $api->table($query, 'table');
 $query = $api->where($query, 'column', 'value');
 // $query = 'DELETE FROM table WHERE column=value';
+```
+
+</p>
+</details>
+
+<details><summary>PREPARED STATEMENT FUNCTIONS</summary>
+<p>
+
+## $api->prepare($query)
+Prepares the given SQL query string for execution. If successful, $api->prepare() returns a statement object, else, it returns false.
+```php
+$query = $api->select();
+$query = $api->params($query, '*');
+$query = $api->from($query);
+$query = $api->table($query, 'table');
+
+$statement = $api->prepare($query);
+```
+
+
+## $api->execute(&$statement)
+Executes the given prepared statement. If successful, $api->execute() returns true, else, it returns false.
+```php
+$query = $api->select();
+...
+$statement = $api->prepare($query);
+$boolean = $api->execute($statement);
+```
+
+
+## $api->store_result(&$statement)
+Stores the result set of a successfully executed statement in an internal buffer. If successful, $api->execute() returns true, else, it returns false.
+```php
+$query = $api->select();
+...
+$api->execute($statement);
+$boolean = $api->store_result($statement);
+```
+
+
+## $api->get_result(&$statement)
+Gets the result set of a prepared statement. If the prepared statement was successfully executed, $api->get_result() returns it's result set, else, it returns false.
+```php
+$query = $api->select();
+...
+$api->execute($statement);
+$res = $api->get_result($statement);
+```
+
+
+## $api->num_rows($res)
+Returns the number of rows in a given result set. If no rows are found, $api->num_rows() returns 0.
+```php
+$query = $api->select();
+...
+$res = $api->get_result($statement);
+$count = $api->num_rows($res);
+```
+
+
+## $api->fetch_assoc(&$result)
+Fetches a single row from a given result set. $api->fetch_assoc() returns an associative array representing the fetched row, null if there are no more rows in the result set, or false on failure.
+```php
+$query = $api->select();
+...
+$res = $api->get_result($statement);
+$row = $api->fetch_assoc($res);
+```
+
+
+## $api->fetch_assoc(&$statement)
+Frees the memory associated with a result.
+```php
+$query = $api->select();
+...
+$statement = $api->prepare($query);
+...
+$api->free($statement);
+```
+
+
+## $api->close(&$statement)
+Closes the given prepared statement. If successful, $api->close() returns true, else, false.
+```php
+$query = $api->select();
+...
+$statement = $api->prepare($query);
+...
+$api->free($statement);
+$boolean = $api->close($statement);
 ```
 
 </p>
