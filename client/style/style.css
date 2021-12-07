@@ -1,7 +1,13 @@
 body {
-    width: 100%;
-    height: auto;
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  width: 100%;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Open Sans', 'Yeseva One', 'Arial', sans-serif;
+}
+
+html a, a:link, a:visited {
+  text-decoration: none;
+  color: #000000;
 }

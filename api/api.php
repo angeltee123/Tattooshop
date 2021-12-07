@@ -32,18 +32,21 @@ class API {
     /***** MYSQL HELPERS *****/
 
     public function table($string, $params){
-        if(!is_array($params)){
-            return $string . $params . " ";
-        } else {
-            if(!empty($params)){
-                for ($k = 0; $k < count($params); $k++) {
-                    $string = $string . $this->clean($params[$k]) . ", ";
+        if(!empty($string) && !empty($params)){
+            if(!is_array($params)){
+                $string = $string . $params . " ";
+            } else {
+                if(!empty($params)){
+                    for ($k = 0; $k < count($params); $k++) {
+                        $string = $string . $this->clean($params[$k]) . ", ";
+                    }
+        
+                    $string = substr($string, 0, -2);
+                    $string = $string . " ";
                 }
-    
-                $string = substr($string, 0, -2);
-                $string = $string . " ";
-                return $string;
             }
+
+            return $string;
         }
     }
 
@@ -53,43 +56,65 @@ class API {
         return $join;
     }
 
-    public function where($string, $cols = array(), $params = array()){
+    public function where($string, $cols, $params){
         if(!empty($params) && !empty($params)){
-            $col_count = count($cols);
-            $param_count = count($params);
+            $string = $string . "WHERE ";
+            if(!is_array($cols) && !is_array($params)){
+                $cols = is_string($cols) ? $this->clean($cols) : $cols;
+                $cols = is_string($params) ? $this->clean($params) : $params;
+                $string = $string . $cols[$k] . "=" . $params . " ";
+            } else {
+                $col_count = count($cols);
+                $param_count = count($params);
 
-            if($col_count == $param_count){
-                $string = $string . "WHERE ";
-                for ($k = 0; $k < $col_count; $k++) {
-                    $string = $string . $this->clean($cols[$k]) . "=" . $this->clean($params[$k]) . ", ";
+                if($col_count == $param_count){
+                    for ($k = 0; $k < $col_count; $k++) {
+                        $cols[$k] = is_string($cols[$k]) ? $this->clean($cols[$k]) : $cols[$k];
+                        $params[$k] = is_string($params[$k]) ? $this->clean($params[$k]) : $params[$k];
+                        $string = $string . $cols[$k] . "=" . $params[$k] . "AND ";
+                    }
+        
+                    $string = substr($string, 0, -4);
+                    $string = $string . " ";
                 }
-    
-                $string = substr($string, 0, -2);
-                $string = $string . " ";
-                return $string;
             }
+
+            return $string;
         }
     }
 
     public function limit($string, $limit){
-        return $string . "LIMIT " . $limit;
+        if(is_int($limit)){
+            return $string . "LIMIT " . $limit;
+        }
     }
 
-    public function order($string, $params = array()){
-        if(!empty($params)){
-            $string = $string . "ORDER BY ";
-            for ($k = 0; $k < count($params); $k++) {
-                $string = $string . $this->clean($params[$k]) . ", ";
+    public function order($string, $params, $order){
+        if(!empty($params) && !empty($order)){
+            if(!is_array($params)){
+                $string = $string . "ORDER BY " . $this->clean($params) . " " . $this->clean($order);
+            } else {
+                $param_count = count($params);
+                $order_count = count($order);
+
+                if($param_count == $order_count){
+                    $string = $string . "ORDER BY ";
+                    
+                    for ($k = 0; $k < count($params); $k++) {
+                        $string = $string . $this->clean($params[$k]) . " " . $this->clean($order[$k]) . ", ";
+                    }
+
+                    $string = substr($string, 0, -2);
+                    $string = $string . " ";
+                }
             }
 
-            $string = substr($string, 0, -2);
-            $string = $string . " ";
             return $string;
         }
     }
 
     public function change_user($user, $password){
-        $this->conn->change_user($user, $password, $this->$db);
+        $this->conn->change_user($user, $password, $this->db);
     }
 
     /***** SELECT *****/
@@ -148,37 +173,39 @@ class API {
     }
 
     public function set($string, $cols, $params){
-        if(!is_array($cols) && !is_array($params)){
-            return $string . $this->clean($cols) . "=" . $this->clean($params);
-        } else {
-            if(!empty($params) && !empty($params)){
+        if(!empty($cols) && !empty($params)){
+            if(!is_array($cols) && !is_array($params)){
+                $string = $string . $this->clean($cols) . "=" . $this->clean($params);
+            } else {
                 $col_count = count($cols);
                 $param_count = count($params);
-    
+
                 if($col_count == $param_count){
                     $string = $string . "SET ";
+
                     for ($k = 0; $k < $col_count; $k++) {
                         $string = $string . $this->clean($cols[$k]) . "=" . $this->clean($params[$k]) . ", ";
                     }
         
                     $string = substr($string, 0, -2);
                     $string = $string . " ";
-                    return $string;
                 }
             }
+
+            return $string;
         }
+    }
+
+    /***** DELETING *****/
+
+    public function delete(){
+        return "DELETE ";
     }
 
     /***** QUERYING *****/
 
-    public function prepare(&$query){
-        try {
-            return $this->conn->prepare($query);
-        } catch (mysqli_sql_exception $e) {
-            echo 'Error: ' . $e->getCode() . ' - ' . $e->getMessage();
-        } catch (Exception $e) {
-            echo $e->getMessage();
-        }
+    public function prepare($query){
+        return $this->conn->prepare($query);
     }
     
     public function execute(&$statement){
@@ -243,6 +270,10 @@ class API {
 
     public function get_result(&$statement){
         return $statement->get_result();
+    }
+
+    public function fetch_assoc(&$result){
+        return $result->fetch_assoc();
     }
 
     public function free_result(&$statement){
