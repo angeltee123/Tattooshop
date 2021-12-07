@@ -341,7 +341,7 @@ $boolean = $api->bind_params($statement, "i", 1);
 
 
 ## $api->bind_result(&$statement, $types, $params)
-Binds variables to the given prepared statement. Returns an array of all the bound variables, false on failure.
+Binds variables to the given prepared statement. Returns an array of all the bound variables on success, false on failure.
 ```php
 $query = $api->select();
 $query = $api->params($query, array('column1', 'column2', 'column3'));
