@@ -3,6 +3,134 @@
 <details><summary>MYSQLI FUNCTIONS</summary>
 <p>
 
+<details><summary>CLAUSE FUNCTIONS</summary>
+<p>
+
+## $api->table($string, $params)
+Returns the given query string with the specified table.
+To specify a single table, do
+```php
+$query = $api->table($query, 'table');
+// $query = 'SELECT * ';
+```
+
+To specify multiple parameters, do
+```php
+$query = $api->table($query, array($arg1, $arg2, ..., $argN));
+
+Example:
+$query = $api->select();
+$query = $api->params($query, '*');
+$query = $api->from($query);
+$query = $api->table($query, array('table1', 'table2'));
+// $query = 'SELECT * FROM table1, table2';
+```
+
+
+## $api->join($type, $left, $right, $left_kv, $right_kv)
+Returns a join clause string with the specified join type.
+
+To construct a default JOIN (INNER), do
+```php
+$join_clause = $api->join('', 'tableLeft', 'tableRight', 'tableLeft.column', 'tableRight.column');
+// $query = '(tableLeft JOIN tableRight ON tableLeft.column=tableRight.column)';
+```
+
+To construct a LEFT JOIN, do
+```php
+$join_clause = $api->join('left', 'tableLeft', 'tableRight', 'tableLeft.column', 'tableRight.column');
+// $query = '(tableLeft LEFT JOIN tableRight ON tableLeft.column=tableRight.column)';
+```
+
+To construct a RIGHT JOIN, do
+```php
+$join_clause = $api->join('right', 'tableLeft', 'tableRight', 'tableLeft.column', 'tableRight.column');
+// $query = '(tableLeft RIGHT JOIN tableRight ON tableLeft.column=tableRight.column)';
+```
+
+
+## $api->where($string, $cols, $params)
+Returns the given query string with the specified SQL WHERE clause.
+To specify a single condition, do
+```php
+$query = $api->where($query, $column, $param);
+
+Example:
+$query = $api->select();
+$query = $api->params($query, '*');
+$query = $api->from($query);
+$query = $api->table($query, 'table');
+$query = $api->where($query, 'column', 1);
+// $query = 'SELECT * FROM table WHERE column=1';
+
+Another example:
+$query = $api->select();
+$query = $api->params($query, '*');
+$query = $api->from($query);
+$query = $api->table($query, array('table1', 'table2'));
+$query = $api->where($query, 'table1.column', 'table2.column');
+// $query = 'SELECT * FROM table1, table2 WHERE table1.column=table2.column';
+```
+
+
+To specify multiple conditions, do
+```php
+$query = $api->order($query, array($arg1, $arg2, ..., $argN), array($arg1, $arg2, ..., $argN));
+
+Example:
+$query = $api->select();
+$query = $api->params($query, '*');
+$query = $api->from($query);
+$query = $api->table($query, 'table');
+$query = $api->order($query, array('column1', 'column2'), array('value1', 'value2'));
+// $query = 'SELECT * FROM table WHERE column1=value1 AND column2=value2;
+```
+
+
+## $api->limit($string, $limit)
+Returns the given query string with the specified limit.
+```php
+$query = $api->limit($query, $int);
+
+Example:
+$query = $api->select();
+$query = $api->params($query, '*');
+$query = $api->from($query);
+$query = $api->table($query, 'table');
+$query = $api->limit($query, 2);
+// $query = 'SELECT * FROM table LIMIT 2';
+```
+
+## $api->order($string, $params)
+Returns the given query string with the specified order.
+To specify ordering by a single column, do
+```php
+$query = $api->order($query, $column);
+
+Example:
+$query = $api->select();
+$query = $api->params($query, '*');
+$query = $api->from($query);
+$query = $api->table($query, 'table');
+$query = $api->order($query, 'column ASC');
+// $query = 'SELECT * FROM table ORDER BY column ASC';
+```
+To specify ordering by multiple columns, do
+```php
+$query = $api->order($query, array($arg1, $arg2, ..., $argN));
+
+Example:
+$query = $api->select();
+$query = $api->params($query, '*');
+$query = $api->from($query);
+$query = $api->table($query, 'table');
+$query = $api->order($query, array('column1 ASC', 'column2 DESC'));
+// $query = 'SELECT * FROM table ORDER BY column1 ASC, column2 DESC';
+```
+
+</p>
+</details>
+
 <details><summary>SELECT FUNCTIONS</summary>
 <p>
 
@@ -137,6 +265,26 @@ $query = $api->table($query, 'table');
 $query = $api->set($query, array('column1', 'column2', 'column3'), array('value1', 'value2', 'value3'));
 $query = $api->where($query, 'column', 'value');
 // $query = 'UPDATE table SET column1=value1, column2=value2, column3=value3 WHERE column=value';
+```
+
+</p>
+</details>
+
+DELETE FUNCTION
+## $api->delete()
+Returns SQL DELETE to the calling string.
+```php
+$query = $api->delete();
+// $query = 'DELETE ';
+```
+
+To construct a delete query, do
+```php
+$query = $api->delete();
+$query = $api->from($query);
+$query = $api->table($query, 'table');
+$query = $api->where($query, 'column', 'value');
+// $query = 'DELETE FROM table WHERE column=value';
 ```
 
 </p>
