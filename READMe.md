@@ -3,18 +3,15 @@
 <details><summary>MYSQLI FUNCTIONS</summary>
 <p>
 
-<details><summary>SELECT</summary>
-<p>$api->select()</p>
+<details><summary>### SELECT FUNCTIONS</summary>
 <p>
+
+## $api->select()
 Returns 'SELECT ' to the string.
 ```php
 $query = $api->select();
-```
-</p>
-<p>
-```php
 // $query = 'SELECT ';
 ```
-</p>
 
+</p>
 </details>
