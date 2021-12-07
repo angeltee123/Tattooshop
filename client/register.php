@@ -1,4 +1,5 @@
 <?php
+  session_name("sess_id");
   session_start();
 ?>
 <!DOCTYPE html>
@@ -24,7 +25,6 @@
   <style>
     .content h1{
       font-family: 'Yeseva One', cursive;
-      font-size: 3em;
     }
 
     .bg-img {
@@ -47,7 +47,7 @@
     <div class="col order-last d-flex justify-content-center align-items-center">
       <div class="flex-grow-1">
         <div style="margin-left: 7.5rem; width: 48%">
-          <h1 class="display-3">Create Account</h1>
+          <h1 class="display-4">Create Account</h1>
           <form action="../api/queries.php" method="post">
             <div class="my-4">
               <input type="text" class="form-control form-control py-2 ps-3 border-2 rounded-pill" name="first_name" id="first_name" placeholder="First Name" />
@@ -85,7 +85,7 @@
               <label class="form-check-label" for="tos_agreed" style="font-size: .85em">By clicking "Sign Up Now", I agree to NJC Tattoo's Terms and Conditions.</label>
             </div>
             <?php if(isset($_SESSION['res'])){ ?>
-              <div class="text-danger my-2">An error occured with the server. Please try again later.</div>
+              <div class="text-danger my-3">An error occured with the server. Please try again later.</div>
             <?php } ?>
           </form>
         </div>
@@ -123,5 +123,8 @@
   }
   if(isset($_SESSION['confirm_password_err'])){
     unset($_SESSION['confirm_password_err']);
+  }
+  if(isset($_SESSION['res'])){
+    unset($_SESSION['res']);
   }
 ?>

@@ -1,4 +1,5 @@
 <?php
+  session_name("sess_id");
   session_start();
   if(!isset($_SESSION['user_id'])){
     Header("Location: ../client/index.php");
@@ -44,7 +45,7 @@
   $query = $api->from($query);
   // $query = $api->table($query, $joined_table);
   $query = $api->table($query, "orders");
-  $query = $api->where($query, array("client_id"), array("?"));
+  $query = $api->where($query, "client_id", "?");
 
   try {
     $statement = $api->prepare($query);
