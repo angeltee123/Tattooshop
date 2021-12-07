@@ -7,14 +7,20 @@
 <p>
 
 ## $api->table($string, $params)
-Returns the given query string with the specified table.
+Returns the given query string with the specified tables.
 To specify a single table, do
 ```php
+$query = $api->table($query, $table);
+
+Example:
+$query = $api->select();
+$query = $api->params($query, '*');
+$query = $api->from($query);
 $query = $api->table($query, 'table');
-// $query = 'SELECT * ';
+// $query = 'SELECT * table';
 ```
 
-To specify multiple parameters, do
+To specify multiple tables, do
 ```php
 $query = $api->table($query, array($arg1, $arg2, ..., $argN));
 
@@ -46,6 +52,14 @@ To construct a RIGHT JOIN, do
 ```php
 $join_clause = $api->join('right', 'tableLeft', 'tableRight', 'tableLeft.column', 'tableRight.column');
 // $query = '(tableLeft RIGHT JOIN tableRight ON tableLeft.column=tableRight.column)';
+```
+
+To construct a nested JOIN, do
+```php
+$nested_join= $api->join('', 'table1', 'table2', 'table1.column', 'table2.column');
+
+$join_clause = $api->join('', $nested_join, 'table3', 'table2.column', 'table3.column');
+// $query = '((table1 JOIN table2 ON table1.column=table2.column) JOIN table3 ON table2.column=table3.column)';
 ```
 
 
