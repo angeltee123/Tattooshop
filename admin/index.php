@@ -47,6 +47,7 @@
     </li>
   </ul>
   <div class="tab-content" id="myTabContent">
+    <?php print_r($_SESSION); ?>
     <div class="tab-pane fade" id="reservations" role="tabpanel" aria-labelledby="reservations-tab">...</div>
     <div class="tab-pane fade" id="workorders" role="tabpanel" aria-labelledby="workorders-tab">...</div>
     <div class="tab-pane fade show active" id="clients" role="tabpanel" aria-labelledby="clients-tab">
@@ -83,6 +84,7 @@
         </div>
         <button type="button" id="client_form select-all" class="btn btn-link">Select All</button>
         <button type="submit" class="btn btn-outline-primary" name="update_client">Update</button>
+        <button type="submit" class="btn btn-outline-danger" name="delete_client">Delete</button>
         <table class="table w-100">
           <thead class="align-middle" style="height: 4em;">
             <tr>
@@ -143,7 +145,7 @@
           });
 
           client_change_rows.addEventListener('click', function() {
-            this.checked ? client_editing_label.innerText = "Stop Editing" : client_editing_label.innerText = "Change Rows";
+            this.checked ? client_editing_label.innerText = "Stop Editing" : client_editing_label.innerText = "Edit";
             
             for(var i=0, count=client_row_fields.length; i < count; i++){
               if(this.checked) {
@@ -163,3 +165,8 @@
 </body>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 </html>
+<?php 
+  if(isset($_SESSION['res'])){
+    unset($_SESSION['res']);
+  }
+?>
