@@ -61,8 +61,8 @@ class API {
             $string = $string . "WHERE ";
             if(!is_array($cols) && !is_array($params)){
                 $cols = is_string($cols) ? $this->clean($cols) : $cols;
-                $cols = is_string($params) ? $this->clean($params) : $params;
-                $string = $string . $cols[$k] . "=" . $params . " ";
+                $params = is_string($params) ? $this->clean($params) : $params;
+                $string = $string . $cols . "=" . $params . " ";
             } else {
                 $col_count = count($cols);
                 $param_count = count($params);

@@ -70,7 +70,7 @@ if(isset($_POST['signup'])){
             throw new Exception('prepare() error: The statement could not be prepared.');
         }
 
-        $mysqli_checks = $api->bind_params($unique_email, "s", array($email));
+        $mysqli_checks = $api->bind_params($unique_email, "s", $email);
         if ($mysqli_checks===false) {
             throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
         }
