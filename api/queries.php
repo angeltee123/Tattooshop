@@ -177,7 +177,7 @@ if(isset($_POST['signup'])){
 
             $insert_user = $api->prepare($query);
             if ($insert_user===false) {
-                throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                throw new Exception('prepare() error: The statement could not be prepared.');
             }
 
             $mysqli_checks = $api->bind_params($insert_user, "ssss", array($uid, $id, $email, $password));
@@ -277,7 +277,7 @@ if(isset($_POST['login'])){
 
                             $get_client = $api->prepare($query);
                             if ($get_client===false) {
-                                throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                                throw new Exception('prepare() error: The statement could not be prepared.');
                             }
 
                             $mysqli_checks = $api->bind_params($get_client, "s", array($_SESSION['user_id']));
@@ -356,7 +356,7 @@ if(isset($_POST['update_item'])){
 
         $statement = $api->prepare($query);
         if ($statement===false) {
-            throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+            throw new Exception('prepare() error: ' . $statement->errno . ' - ' . $statement->error);
         }
 
         $mysqli_checks = $api->bind_params($statement, "sis", array($id, $quantity, $_SESSION['client_id']));
@@ -378,7 +378,7 @@ if(isset($_POST['update_item'])){
     } catch (Exception $e) {
         exit();
         $_SESSION['res'] = $e->getMessage();
-        Header("Location: ..client/orders.php");
+        Header("Location: ../client/orders.php");
     }
 }
 
