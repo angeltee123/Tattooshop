@@ -248,7 +248,7 @@ if(isset($_POST['login'])){
                 throw new Exception('prepare() error: The statement could not be prepared.');
             }
 
-            $mysqli_checks = $api->bind_params($statement, "s", array($email));
+            $mysqli_checks = $api->bind_params($statement, "s", $email);
             if ($mysqli_checks===false) {
                 throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
             }
