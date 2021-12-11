@@ -46,29 +46,172 @@
       <button class="nav-link p-3" id="users-tab" data-bs-toggle="tab" data-bs-target="#users" type="button" role="tab" aria-controls="users" aria-selected="false">Users</button>
     </li>
   </ul>
-  <div class="tab-content" id="myTabContent">
-    <?php print_r($_SESSION); ?>
+  <div class="tab-content">
     <div class="tab-pane fade" id="reservations" role="tabpanel" aria-labelledby="reservations-tab">...</div>
-    <div class="tab-pane fade" id="workorders" role="tabpanel" aria-labelledby="workorders-tab">...</div>
-    <div class="tab-pane fade show active" id="clients" role="tabpanel" aria-labelledby="clients-tab">
+    <div class="tab-pane fade" id="workorders" role="tabpanel" aria-labelledby="workorders-tab">
+      <h1 class="display-6">Ongoing Workorders</h1>
       <?php
-        $query = $api->select();
-        $query = $api->params($query, "*");
-        $query = $api->from($query);
-        $query = $api->table($query, "client");
-
         try {
-          $statement = $api->prepare($query);
-          if($statement===false){
+          $get_workorders = $api->prepare("SELECT * FROM workorder WHERE status=?");
+          if($get_workorders===false){
             throw new Exception("prepare() error: The statement could not be prepared.");
           }
-      
-          $mysqli_checks = $api->execute($statement);
+
+          $mysqli_checks = $api->bind_params($get_workorders, "s", "Ongoing");
           if($mysqli_checks===false){
             throw new Exception('Execute error: The prepared statement could not be executed.');
           }
       
-          $res = $api->get_result($statement);
+          $mysqli_checks = $api->execute($get_workorders);
+          if($mysqli_checks===false){
+            throw new Exception('Execute error: The prepared statement could not be executed.');
+          }
+      
+          $res = $api->get_result($get_workorders);
+          if($res===false){
+            throw new Exception('get_result() error: Getting result set from statement failed.');
+          }
+        } catch (Exception $e){
+          exit;
+          echo $e->getMessage();
+        }
+      ?>
+      <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" id="change_workorder_rows" />
+        <label class="form-check-label" for="change_workorder_rows" id="workorder_editing_label">Edit</label>
+      </div>
+      <button type="button" id="workorder_form select-all" class="btn btn-link">Select All</button>
+      <form method="POST" action="./queries.php">
+        <button type="submit" class="btn btn-outline-primary" name="update_workorder">Update</button>
+        <button type="submit" class="btn btn-outline-danger" name="delete_workorder">Delete</button>
+        <table class="table w-100">
+          <thead class="align-middle" style="height: 4em;">
+            <tr>
+              <th scope="col"></th>
+              <th scope="col">order_id</th>
+              <th scope="col">client_id</th>
+              <th scope="col">order_date</th>
+              <th scope="col">amount_due</th>
+              <th scope="col">incentive</th>
+              <th scope="col">status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <?php
+              if($api->num_rows($res) > 0){
+                while($row = $api->fetch_assoc($res)){
+            ?>
+            <tr class="align-middle" style="height: 5em;">
+              <td scope="row"><input type="checkbox" class="workorder form-check-input" name="item[]" value="<?php echo $row['order_id']?>"/></td>
+              <th><input type="text" readonly class="form-control-plaintext" name="order_id[]" value="<?php echo $api->clean($row['order_id']) ?>"/></th>
+              <td><input type="text" readonly class="form-control-plaintext" name="client_id[]" value="<?php echo $api->clean($row['client_id']) ?>" required/></td>
+              <td><input type="date" readonly class="form-control-plaintext" name="order_date[]" value="<?php echo $row['order_date'] ?>" required/></td>
+              <td><input type="text" inputmode="numeric" readonly class="workorder form-control-plaintext" name="amount_due[]" value="<?php echo $row['amount_due'] ?>" required/></td>
+              <td>
+                <select class="form-select" name="incentive" disabled>
+                  <option value="None" <?php if(strcasecmp($api->clean($row['incentive']), 'None') == 0){ echo 'selected'; } ?>>None</option>
+                  <option value="Free 3x3 Tattoo" <?php if(strcasecmp($api->clean($row['incentive']), 'Free 3x3 Tattoo') == 0){ echo 'selected'; } ?>>Free 3x3 Tattoo</option>
+                  <option value="15% Discount" <?php if(strcasecmp($api->clean($row['incentive']), '15% Discount') == 0){ echo 'selected'; } ?>>15% discount</option>
+                </select>
+              </td>
+              <td>
+                <select class="form-select" name="status" disabled>
+                  <option value="Ongoing" <?php if(strcasecmp($api->clean($row['status']), 'Ongoing') == 0){ echo 'selected'; } ?>>Ongoing</option>
+                  <option value="Finished" <?php if(strcasecmp($api->clean($row['status']), 'Finished') == 0){ echo 'selected'; } ?>>Finished</option>
+                </select>
+              </td>
+            </tr>
+            <?php } ?>
+            <?php
+              }
+
+              $api->free_result($get_workorders);
+              $api->close($get_workorders);
+            ?>
+          </tbody>
+        </table>
+      </form>
+      <h1 class="display-6">Finished Workorders</h1>
+      <?php
+        try {
+          $get_workorders_finished = $api->prepare("SELECT * FROM workorder WHERE status=?");
+          if($get_workorders===false){
+            throw new Exception("prepare() error: The statement could not be prepared.");
+          }
+
+          $mysqli_checks = $api->bind_params($get_workorders_finished, "s", "Finished");
+          if($mysqli_checks===false){
+            throw new Exception('Execute error: The prepared statement could not be executed.');
+          }
+      
+          $mysqli_checks = $api->execute($get_workorders_finished);
+          if($mysqli_checks===false){
+            throw new Exception('Execute error: The prepared statement could not be executed.');
+          }
+      
+          $res = $api->get_result($get_workorders_finished);
+          if($res===false){
+            throw new Exception('get_result() error: Getting result set from statement failed.');
+          }
+        } catch (Exception $e){
+          exit;
+          echo $e->getMessage();
+        }
+      ?>
+      <form method="POST" action="./queries.php">
+        <button type="submit" class="btn btn-outline-danger" name="delete_workorder">Delete</button>
+        <table class="table w-100">
+          <thead class="align-middle" style="height: 4em;">
+            <tr>
+              <th scope="col"></th>
+              <th scope="col">order_id</th>
+              <th scope="col">client_id</th>
+              <th scope="col">order_date</th>
+              <th scope="col">amount_due</th>
+              <th scope="col">incentive</th>
+              <th scope="col">status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <?php
+              if($api->num_rows($res) > 0){
+                while($row = $api->fetch_assoc($res)){
+            ?>
+            <tr class="align-middle" style="height: 5em;">
+              <td scope="row"><input type="checkbox" class="workorder form-check-input" name="item[]" value="<?php echo $row['order_id']?>"/></td>
+              <th><?php echo $api->clean($row['order_id']) ?></th>
+              <td><?php echo $api->clean($row['client_id']) ?></td>
+              <td><?php echo $row['order_date'] ?></td>
+              <td><?php echo $row['amount_due'] ?></td>
+              <td><?php echo $row['amount_due'] ?></td>
+              <td><?php echo $row['incentive'] ?></td>
+              <td><?php echo $row['status'] ?></td>
+            </tr>
+            <?php } ?>
+            <?php
+              }
+
+              $api->free_result($get_workorders_finished);
+              $api->close($get_workorders_finished);
+            ?>
+          </tbody>
+        </table>
+      </form>
+    </div>
+    <div class="tab-pane fade show active" id="clients" role="tabpanel" aria-labelledby="clients-tab">
+      <?php
+        try {
+          $get_clients = $api->prepare("SELECT * FROM client");
+          if($get_clients===false){
+            throw new Exception("prepare() error: The statement could not be prepared.");
+          }
+      
+          $mysqli_checks = $api->execute($get_clients);
+          if($mysqli_checks===false){
+            throw new Exception('Execute error: The prepared statement could not be executed.');
+          }
+      
+          $res = $api->get_result($get_clients);
           if($res===false){
             throw new Exception('get_result() error: Getting result set from statement failed.');
           }
@@ -121,52 +264,16 @@
             <?php
               }
 
-              $api->free_result($statement);
-              $api->close($statement);
+              $api->free_result($get_clients);
+              $api->close($get_clients);
             ?>
           </tbody>
         </table>
-        <script>
-          var client_change_rows = document.getElementById('change_client_rows');
-          var client_editing_label = document.getElementById('client_editing_label');
-          var client_row_fields = document.querySelectorAll(".client.form-control-plaintext");
-
-          var client_all_selected = false;
-          var client_select_all = document.getElementById('client_form select-all');
-          var client_row_checkboxes = document.getElementsByClassName('client form-check-input');
-
-          client_select_all.addEventListener('click', function() {
-            client_all_selected = !client_all_selected;
-            client_all_selected ? this.innerText = "Deselect" : this.innerText = "Select All";
-            
-            for(var i=0, count=client_row_checkboxes.length; i < count; i++){
-              client_row_checkboxes[i].checked = client_all_selected;
-            }
-          });
-
-          client_change_rows.addEventListener('click', function() {
-            this.checked ? client_editing_label.innerText = "Stop Editing" : client_editing_label.innerText = "Edit";
-            
-            for(var i=0, count=client_row_fields.length; i < count; i++){
-              if(this.checked) {
-                client_row_fields[i].readOnly = false;
-                client_row_fields[i].className = "client form-control";
-              } else {
-                client_row_fields[i].readOnly = true;
-                client_row_fields[i].className = "client form-control-plaintext";
-              }
-            }
-          });
-        </script>
       </form>
     </div>
     <div class="tab-pane fade" id="users" role="tabpanel" aria-labelledby="users-tab">...</div>
   </div>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+<script src="script.js"></script>
 </html>
-<?php 
-  if(isset($_SESSION['res'])){
-    unset($_SESSION['res']);
-  }
-?>
