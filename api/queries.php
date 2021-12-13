@@ -675,31 +675,73 @@ if(isset($_POST['update_items'])){
             $item = $api->clean($item);
             $index = array_search($item, $_POST['index']);
 
+            $width = intval($_POST['width'][$index]);
+            $height = intval($_POST['height'][$index]);
             $quantity = intval($_POST['quantity'][$index]);
 
+            if(empty($width)) {
+                $_SESSION['width_err'] = "Item width is required.";
+                array_push($errors, $_SESSION['width_err']);
+            }
+            
+            elseif (!is_int($width)) {
+                $_SESSION['width_err'] = "Item width must be an integer.";
+                array_push($errors, $_SESSION['width_err']);
+            }
+            
+            elseif($width < 0){
+                $_SESSION['width_err'] = "Item width must not be negative.";
+                array_push($errors, $_SESSION['width_err']);
+            }
+        
+            elseif($width > 24){
+                $_SESSION['width_err'] = "Item width must not exceed 24 inches.";
+                array_push($errors, $_SESSION['width_err']);
+            }
+        
+            if(empty($height)) {
+                $_SESSION['height_err'] = "Item height is required.";
+                array_push($errors, $_SESSION['height_err']);
+            }
+            
+            elseif (!is_int($height)) {
+                $_SESSION['width_err'] = "Item height must be an integer.";
+                array_push($errors, $_SESSION['height_err']);
+            }
+            
+            elseif($height < 0){
+                $_SESSION['height_err'] = "Item height must not be negative.";
+                array_push($errors, $_SESSION['height_err']);
+            }
+        
+            elseif($height > 36){
+                $_SESSION['height_err'] = "Item width must not exceed 36 inches.";
+                array_push($errors, $_SESSION['height_err']);
+            }
+        
             if(empty($quantity)) {
-                $_SESSION['res'] = "Item quantity is required.";
-                array_push($errors, $_SESSION['res']);
+                $_SESSION['quantity_err'] = "Item quantity is required.";
+                array_push($errors, $_SESSION['quantity_err']);
             }
             
             elseif (!is_int($quantity)) {
-                $_SESSION['res'] = "Item quantity must be an integer.";
-                array_push($errors, $_SESSION['res']);
+                $_SESSION['quantity_err'] = "Item quantity must be an integer.";
+                array_push($errors, $_SESSION['quantity_err']);
             }
             
             elseif($quantity < 0){
-                $_SESSION['res'] = "Item quantity must not be negative.";
-                array_push($errors, $_SESSION['res']);
+                $_SESSION['quantity_err'] = "Item quantity must not be negative.";
+                array_push($errors, $_SESSION['quantity_err']);
             }
 
             if(empty($errors)){
                 try {   
-                    $statement = $api->prepare("UPDATE order_item SET tattoo_quantity=? WHERE item_id=?");
+                    $statement = $api->prepare("UPDATE order_item SET tattoo_height=?, tattoo_width=?, tattoo_quantity=? WHERE item_id=?");
                     if ($statement===false) {
                         throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
                     }
             
-                    $mysqli_checks = $api->bind_params($statement, "is", array($quantity, $item));
+                    $mysqli_checks = $api->bind_params($statement, "iiis", array($width, $height, $quantity, $item));
                     if ($mysqli_checks===false) {
                         throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
                     }
