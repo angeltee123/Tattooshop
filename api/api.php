@@ -52,7 +52,7 @@ class API {
 
     public function join($type, $left, $right, $left_kv, $right_kv){
         $join = (is_string($type)) ? "(" . $this->clean($left) . " " . strtoupper($type) . " JOIN " : "(" . $this->clean($left) . " JOIN ";
-        $join = $join . $this->clean($right) . " ON " . $this->clean($left_kv) . "=" . $this->clean($right_kv) . ")";
+        $join = $join . $this->clean($right) . " ON " . $this->clean($left) . "." . $this->clean($left_kv) . "=" . $this->clean($right) . "." . $this->clean($right_kv) . ")";
         return $join;
     }
 
@@ -175,7 +175,8 @@ class API {
     public function set($string, $cols, $params){
         if(!empty($cols) && !empty($params)){
             if(!is_array($cols) && !is_array($params)){
-                $string = $string . $this->clean($cols) . "=" . $this->clean($params);
+                $string = $string . "SET ";
+                $string = $string . $this->clean($cols) . "=" . $this->clean($params) . " ";
             } else {
                 $col_count = count($cols);
                 $param_count = count($params);
