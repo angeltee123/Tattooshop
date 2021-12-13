@@ -9,7 +9,7 @@
     $api = new api();
   }
     
-  if(!isset($_SESSION['user_id'])){
+  if(!isset($_SESSION['order_id']) || empty($_SESSION['order_id'])){
     try {
       $client_id = $_SESSION['client_id'];
       // get existing order
@@ -42,9 +42,10 @@
           $res = $api->bind_result($statement, array($_SESSION['order_id']));
           $api->get_bound_result($_SESSION['order_id'], $res[0]);
       } else {
-          unset($_SESSION['order_id']);
+          $_SESSION['order_id'] = "";
       }
   
+      $api->free_result($statement);
       $mysqli_checks = $api->close($statement);
       if ($mysqli_checks===false) {
           throw new Exception('The prepared statement could not be closed.');
@@ -221,6 +222,18 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 </html>
 <?php
+  try {
+    $api->free_result($statement);
+
+    $mysqli_checks = $api->close($statement);
+    if ($mysqli_checks===false) {
+        throw new Exception('The prepared statement could not be closed.');
+    }
+  } catch (Exception $e) {
+    echo $e->getMessage();
+    Header("Location: ./orders.php");
+  }
+
   if(isset($_SESSION['width_err'])){
     unset($_SESSION['width_err']);
   }
