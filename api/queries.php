@@ -412,6 +412,54 @@ if(isset($_POST['order_item'])){
     }
 
     if(empty($errors)){
+        try {
+            // get existing order
+            $get_order = $api->select();
+            $get_order = $api->params($get_order, "order_id");
+            $get_order = $api->from($get_order);
+            $get_order = $api->table($get_order, "workorder");
+            $get_order = $api->where($get_order, array("client_id", "status"), array("?", "?"));
+            $get_order = $api->limit($get_order, 1);
+
+            echo $get_order;
+
+            $statement = $api->prepare($get_order);
+            if ($statement===false) {
+                throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+            }
+
+            $mysqli_checks = $api->bind_params($statement, "ss", array($client_id, "Ongoing"));
+            if ($mysqli_checks===false) {
+                throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
+            }
+
+            $mysqli_checks = $api->execute($statement);
+            if($mysqli_checks===false) {
+                throw new Exception('Execute error: The prepared statement could not be executed.');
+            }
+
+            $api->store_result($statement);
+            $_SESSION['order_id'] = "";
+            
+            if($api->num_rows($statement) > 0){
+                $res = $api->bind_result($statement, array($_SESSION['order_id']));
+                $api->get_bound_result($_SESSION['order_id'], $res[0]);
+            } else {
+                unset($_SESSION['order_id']);
+            }
+
+            $mysqli_checks = $api->close($statement);
+            if ($mysqli_checks===false) {
+                throw new Exception('The prepared statement could not be closed.');
+            } else {
+                $statement = null;
+            }
+        } catch (Exception $e) {
+            exit();
+            $_SESSION['res'] = $e->getMessage();
+            Header("Location: ../client/explore.php#".$name);
+        }
+
         if(isset($_SESSION['order_id']) && !empty($_SESSION['order_id'])){
             $order_id = $_SESSION['order_id'];
             $total = (double) 0.00; 
