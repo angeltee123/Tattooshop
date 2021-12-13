@@ -342,6 +342,329 @@ if(isset($_POST['logout'])){
     session_write_close();
 }
 
+/******** ORDERING TATTOOS ********/
+
+if(isset($_POST['order_item'])){
+    $cstrong = true;
+    $errors = array();
+
+    $id = $api->clean($_POST['tattoo_id']);
+    $name = $api->clean($_POST['tattoo_name']);
+    $width = intval($_POST['width']);
+    $height = intval($_POST['height']);
+    $quantity = intval($_POST['quantity']);
+    $item_id = bin2hex(openssl_random_pseudo_bytes(11, $cstrong));
+    $client_id = $_SESSION['client_id'];
+
+    if(empty($width)) {
+        $_SESSION['width_err'] = "Item width is required.";
+        array_push($errors, $_SESSION['width_err']);
+    }
+    
+    elseif (!is_int($width)) {
+        $_SESSION['width_err'] = "Item width must be an integer.";
+        array_push($errors, $_SESSION['width_err']);
+    }
+    
+    elseif($width < 0){
+        $_SESSION['width_err'] = "Item width must not be negative.";
+        array_push($errors, $_SESSION['width_err']);
+    }
+
+    elseif($width > 24){
+        $_SESSION['width_err'] = "Item width must not exceed 24 inches.";
+        array_push($errors, $_SESSION['width_err']);
+    }
+
+    if(empty($height)) {
+        $_SESSION['height_err'] = "Item height is required.";
+        array_push($errors, $_SESSION['height_err']);
+    }
+    
+    elseif (!is_int($height)) {
+        $_SESSION['width_err'] = "Item height must be an integer.";
+        array_push($errors, $_SESSION['height_err']);
+    }
+    
+    elseif($height < 0){
+        $_SESSION['height_err'] = "Item height must not be negative.";
+        array_push($errors, $_SESSION['height_err']);
+    }
+
+    elseif($height > 36){
+        $_SESSION['height_err'] = "Item width must not exceed 36 inches.";
+        array_push($errors, $_SESSION['height_err']);
+    }
+
+    if(empty($quantity)) {
+        $_SESSION['quantity_err'] = "Item quantity is required.";
+        array_push($errors, $_SESSION['quantity_err']);
+    }
+    
+    elseif (!is_int($quantity)) {
+        $_SESSION['quantity_err'] = "Item quantity must be an integer.";
+        array_push($errors, $_SESSION['quantity_err']);
+    }
+    
+    elseif($quantity < 0){
+        $_SESSION['quantity_err'] = "Item quantity must not be negative.";
+        array_push($errors, $_SESSION['quantity_err']);
+    }
+
+    if(empty($errors)){
+        if(isset($_SESSION['order_id']) && !empty($_SESSION['order_id'])){
+            $order_id = $_SESSION['order_id'];
+            $total = (double) 0.00; 
+
+            try {
+                // creating order_item                
+                $insert_order_item = $api->insert();
+                $insert_order_item = $api->table($insert_order_item, "order_item");
+                $insert_order_item = $api->columns($insert_order_item, array("item_id", "order_id", "tattoo_id", "tattoo_quantity", "tattoo_width", "tattoo_height", "item_status"));
+                $insert_order_item = $api->values($insert_order_item);
+                $insert_order_item = $api->columns($insert_order_item, array("?", "?", "?", "?", "?", "?", "?"));
+
+                $statement = $api->prepare($insert_order_item);
+                if ($statement===false) {
+                    throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                }
+
+                $mysqli_checks = $api->bind_params($statement, "sssiiis", array($item_id, $order_id, $id, $quantity, $width, $height, "Standing"));
+                if ($mysqli_checks===false) {
+                    throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
+                }
+
+                $mysqli_checks = $api->execute($statement);
+                if($mysqli_checks===false) {
+                    throw new Exception('Execute error: The prepared statement could not be executed.');
+                }
+
+                $mysqli_checks = $api->close($statement);
+                if ($mysqli_checks===false) {
+                    throw new Exception('The prepared statement could not be closed.');
+                } else {
+                    $statement = null;
+                }
+
+                // update order amount_due_total
+                $join = $api->join("", "order_item", "tattoo", "tattoo_id", "tattoo_id");
+                $get_total = $api->select();
+                $get_total = $api->params($get_total, array("tattoo_price", "tattoo_quantity"));
+                $get_total = $api->from($get_total);
+                $get_total = $api->table($get_total, $join);
+                $get_total = $api->where($get_total, "order_id", "?");
+
+                $statement = $api->prepare($get_total);
+                if ($statement===false) {
+                    throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                }
+
+                $mysqli_checks = $api->bind_params($statement, "s", $order_id);
+                if ($mysqli_checks===false) {
+                    throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
+                }
+
+                $mysqli_checks = $api->execute($statement);
+                if($mysqli_checks===false) {
+                    throw new Exception('Execute error: The prepared statement could not be executed.');
+                }
+
+                $res = $api->get_result($statement);
+                if($res===false){
+                    throw new Exception('get_result() error: Getting result set from statement failed.');
+                }
+
+                if($api->num_rows($res)){
+                    while($row = $api->fetch_assoc($res)){
+                        $total += $row['tattoo_price'] * $row['tattoo_quantity'];
+                    }
+                }
+
+                $api->free_result($statement);
+                $mysqli_checks = $api->close($statement);
+                if ($mysqli_checks===false) {
+                    throw new Exception('The prepared statement could not be closed.');
+                } else {
+                    $statement = null;
+                }
+
+                $total = doubleval($total);
+
+                $update_total = $api->update();
+                $update_total = $api->table($update_total, "workorder");
+                $update_total = $api->set($update_total, "amount_due_total", "?");
+                $update_total = $api->where($update_total, "order_id", "?");
+
+                $statement = $api->prepare($update_total);
+                if ($statement===false) {
+                    throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                }
+
+                $mysqli_checks = $api->bind_params($statement, "ds", array($total, $order_id));
+                if ($mysqli_checks===false) {
+                    throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
+                }
+
+                $mysqli_checks = $api->execute($statement);
+                if($mysqli_checks===false) {
+                    throw new Exception('Execute error: The prepared statement could not be executed.');
+                }
+
+                $mysqli_checks = $api->close($statement);
+                if ($mysqli_checks===false) {
+                    throw new Exception('The prepared statement could not be closed.');
+                }
+            } catch (Exception $e) {
+                exit();
+                $_SESSION['res'] = $e->getMessage();
+                Header("Location: ../client/explore.php#".$name);
+            }
+        } else {
+            // creating new order
+            $order_id = bin2hex(openssl_random_pseudo_bytes(11, $cstrong));
+            $total = (double) 0.00; 
+
+            $insert_workorder = $api->insert();
+            $insert_workorder = $api->table($insert_workorder, "workorder");
+            $insert_workorder = $api->columns($insert_workorder, array("order_id", "client_id", "incentive", "status"));
+            $insert_workorder = $api->values($insert_workorder);
+            $insert_workorder = $api->columns($insert_workorder, array("?", "?", "?", "?"));
+
+            try {
+                $statement = $api->prepare($insert_workorder);
+                if ($statement===false) {
+                    throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                }
+
+                $mysqli_checks = $api->bind_params($statement, "ssss", array($order_id, $client_id, "None", "Ongoing"));
+                if ($mysqli_checks===false) {
+                    throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
+                }
+
+                $mysqli_checks = $api->execute($statement);
+                if($mysqli_checks===false) {
+                    throw new Exception('Execute error: The prepared statement could not be executed.');
+                }
+
+                $mysqli_checks = $api->close($statement);
+                if ($mysqli_checks===false) {
+                    throw new Exception('The prepared statement could not be closed.');
+                } else {
+                    $statement = null;
+                }
+
+                // creating order_item                
+                $insert_order_item = $api->insert();
+                $insert_order_item = $api->table($insert_order_item, "order_item");
+                $insert_order_item = $api->columns($insert_order_item, array("item_id", "order_id", "tattoo_id", "tattoo_quantity", "tattoo_width", "tattoo_height", "item_status"));
+                $insert_order_item = $api->values($insert_order_item);
+                $insert_order_item = $api->columns($insert_order_item, array("?", "?", "?", "?", "?", "?", "?"));
+
+                $statement = $api->prepare($insert_order_item);
+                if ($statement===false) {
+                    throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                }
+
+                $mysqli_checks = $api->bind_params($statement, "sssiiis", array($item_id, $order_id, $id, $quantity, $width, $height, "Standing"));
+                if ($mysqli_checks===false) {
+                    throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
+                }
+
+                $mysqli_checks = $api->execute($statement);
+                if($mysqli_checks===false) {
+                    throw new Exception('Execute error: The prepared statement could not be executed.');
+                }
+
+                $mysqli_checks = $api->close($statement);
+                if ($mysqli_checks===false) {
+                    throw new Exception('The prepared statement could not be closed.');
+                } else {
+                    $statement = null;
+                }
+
+                // update order amount_due_total
+                $join = $api->join("", "order_item", "tattoo", "tattoo_id", "tattoo_id");
+                $get_total = $api->select();
+                $get_total = $api->params($get_total, array("tattoo_price", "tattoo_quantity"));
+                $get_total = $api->from($get_total);
+                $get_total = $api->table($get_total, $join);
+                $get_total = $api->where($get_total, "order_id", "?");
+
+                $statement = $api->prepare($get_total);
+                if ($statement===false) {
+                    throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                }
+
+                $mysqli_checks = $api->bind_params($statement, "s", $order_id);
+                if ($mysqli_checks===false) {
+                    throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
+                }
+
+                $mysqli_checks = $api->execute($statement);
+                if($mysqli_checks===false) {
+                    throw new Exception('Execute error: The prepared statement could not be executed.');
+                }
+
+                $res = $api->get_result($statement);
+                if($res===false){
+                    throw new Exception('get_result() error: Getting result set from statement failed.');
+                }
+
+                if($api->num_rows($res)){
+                    while($row = $api->fetch_assoc($res)){
+                        $total += $row['tattoo_price'] * $row['tattoo_quantity'];
+                    }
+                }
+
+                $api->free_result($statement);
+                $mysqli_checks = $api->close($statement);
+                if ($mysqli_checks===false) {
+                    throw new Exception('The prepared statement could not be closed.');
+                } else {
+                    $statement = null;
+                }
+
+                $total = doubleval($total);
+
+                $update_total = $api->update();
+                $update_total = $api->table($update_total, "workorder");
+                $update_total = $api->set($update_total, "amount_due_total", "?");
+                $update_total = $api->where($update_total, "order_id", "?");
+
+                $statement = $api->prepare($update_total);
+                if ($statement===false) {
+                    throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                }
+
+                $mysqli_checks = $api->bind_params($statement, "ds", array($total, $order_id));
+                if ($mysqli_checks===false) {
+                    throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
+                }
+
+                $mysqli_checks = $api->execute($statement);
+                if($mysqli_checks===false) {
+                    throw new Exception('Execute error: The prepared statement could not be executed.');
+                }
+
+                $mysqli_checks = $api->close($statement);
+                if ($mysqli_checks===false) {
+                    throw new Exception('The prepared statement could not be closed.');
+                }
+
+                $_SESSION['order_id'] = $order_id;
+            } catch (Exception $e) {
+                exit();
+                $_SESSION['res'] = $e->getMessage();
+                Header("Location: ../client/explore.php#".$name);
+            }
+        }
+
+        Header("Location: ../client/explore.php");
+    } else {
+        Header("Location: ../client/explore.php#".$name);
+    }
+}
+
 /******** ORDER MANAGEMENT ********/
 
 if(isset($_POST['update_item'])){
