@@ -52,7 +52,7 @@ class API {
 
     public function join($type, $left, $right, $left_kv, $right_kv){
         $join = (is_string($type)) ? "(" . $this->clean($left) . " " . strtoupper($type) . " JOIN " : "(" . $this->clean($left) . " JOIN ";
-        $join = $join . $this->clean($right) . " ON " . $this->clean($left_kv) . "=" . $this->clean($right_kv) . ")";
+        $join = $join . $this->clean($right) . " ON " . $this->clean($left) . "." . $this->clean($left_kv) . "=" . $this->clean($right) . "." . $this->clean($right_kv) . ")";
         return $join;
     }
 
@@ -61,8 +61,8 @@ class API {
             $string = $string . "WHERE ";
             if(!is_array($cols) && !is_array($params)){
                 $cols = is_string($cols) ? $this->clean($cols) : $cols;
-                $cols = is_string($params) ? $this->clean($params) : $params;
-                $string = $string . $cols[$k] . "=" . $params . " ";
+                $params = is_string($params) ? $this->clean($params) : $params;
+                $string = $string . $cols . "=" . $params . " ";
             } else {
                 $col_count = count($cols);
                 $param_count = count($params);
@@ -71,7 +71,7 @@ class API {
                     for ($k = 0; $k < $col_count; $k++) {
                         $cols[$k] = is_string($cols[$k]) ? $this->clean($cols[$k]) : $cols[$k];
                         $params[$k] = is_string($params[$k]) ? $this->clean($params[$k]) : $params[$k];
-                        $string = $string . $cols[$k] . "=" . $params[$k] . "AND ";
+                        $string = $string . $cols[$k] . "=" . $params[$k] . " AND ";
                     }
         
                     $string = substr($string, 0, -4);
@@ -175,7 +175,8 @@ class API {
     public function set($string, $cols, $params){
         if(!empty($cols) && !empty($params)){
             if(!is_array($cols) && !is_array($params)){
-                $string = $string . $this->clean($cols) . "=" . $this->clean($params);
+                $string = $string . "SET ";
+                $string = $string . $this->clean($cols) . "=" . $this->clean($params) . " ";
             } else {
                 $col_count = count($cols);
                 $param_count = count($params);

@@ -1,13 +1,56 @@
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
 body {
   width: 100%;
   height: auto;
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Open Sans', 'Yeseva One', 'Arial', sans-serif;
+  font-family: 'Open Sans', 'Libre Caslon Text', 'Arial', sans-serif;
 }
 
 html a, a:link, a:visited {
   text-decoration: none;
   color: #000000;
+}
+
+.header {
+  width: 100%;
+  height: auto;
+  background: #fff;
+  position: sticky;
+  z-index: 1075;
+}
+
+.header .nav-bar ul {
+  list-style-type: none;
+}
+
+.header .nav-bar #nav-links {
+  font-family: 'Libre Caslon Text', 'Arial', sans-serif;
+}
+
+.header .nav-bar #nav-links li {
+  float: left;
+  padding: 40px 1.5rem;
+  transition: border .2s;
+}
+
+.header .nav-bar ul .active {
+  border-bottom: solid 5px #000;
+}
+
+.header .nav-bar ul li a {
+  font-size: 1.5em;
+}
+
+.header .nav-bar #nav-links li:hover {
+  border-bottom: solid 5px #000;
+}
+
+.header .nav-bar #nav-user ul li button, .header .nav-bar #nav-user ul li a {
+  font-size: 1.10em;
+  padding: .5rem 1.25rem;
 }

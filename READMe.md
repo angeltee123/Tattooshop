@@ -293,7 +293,9 @@ $query = $api->where($query, 'column', 'value');
 </p>
 </details>
 
-DELETE FUNCTION
+<details><summary>DELETE FUNCTION</summary>
+<p>
+
 ## $api->delete()
 Returns SQL DELETE to the calling string.
 ```php
@@ -309,6 +311,9 @@ $query = $api->table($query, 'table');
 $query = $api->where($query, 'column', 'value');
 // $query = 'DELETE FROM table WHERE column=value';
 ```
+
+</p>
+</details>
 
 <details><summary>PREPARED STATEMENT FUNCTIONS</summary>
 <p>
@@ -337,6 +342,18 @@ $query = $api->where($query, 'column', '?');
 
 $statement = $api->prepare($query);
 $boolean = $api->bind_params($statement, "i", 1);
+```
+
+To bind multiple variables, do
+```php
+$query = $api->select();
+$query = $api->params($query, '*');
+$query = $api->from($query);
+$query = $api->table($query, 'table');
+$query = $api->where($query, array('column1', 'column2', 'column3'), array('?', '?', '?'));
+
+$statement = $api->prepare($query);
+$boolean = $api->bind_params($statement, "sis", array('param1', 2, 'param3'));
 ```
 
 
