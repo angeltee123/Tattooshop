@@ -340,6 +340,7 @@ if(isset($_POST['logout'])){
     setcookie(session_id(), "", time() - 3600);
     session_destroy();
     session_write_close();
+    Header("Location: ../client/login.php");
 }
 
 /******** ORDERING TATTOOS ********/
@@ -412,54 +413,6 @@ if(isset($_POST['order_item'])){
     }
 
     if(empty($errors)){
-        try {
-            // get existing order
-            $get_order = $api->select();
-            $get_order = $api->params($get_order, "order_id");
-            $get_order = $api->from($get_order);
-            $get_order = $api->table($get_order, "workorder");
-            $get_order = $api->where($get_order, array("client_id", "status"), array("?", "?"));
-            $get_order = $api->limit($get_order, 1);
-
-            echo $get_order;
-
-            $statement = $api->prepare($get_order);
-            if ($statement===false) {
-                throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
-            }
-
-            $mysqli_checks = $api->bind_params($statement, "ss", array($client_id, "Ongoing"));
-            if ($mysqli_checks===false) {
-                throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
-            }
-
-            $mysqli_checks = $api->execute($statement);
-            if($mysqli_checks===false) {
-                throw new Exception('Execute error: The prepared statement could not be executed.');
-            }
-
-            $api->store_result($statement);
-            $_SESSION['order_id'] = "";
-            
-            if($api->num_rows($statement) > 0){
-                $res = $api->bind_result($statement, array($_SESSION['order_id']));
-                $api->get_bound_result($_SESSION['order_id'], $res[0]);
-            } else {
-                unset($_SESSION['order_id']);
-            }
-
-            $mysqli_checks = $api->close($statement);
-            if ($mysqli_checks===false) {
-                throw new Exception('The prepared statement could not be closed.');
-            } else {
-                $statement = null;
-            }
-        } catch (Exception $e) {
-            exit();
-            $_SESSION['res'] = $e->getMessage();
-            Header("Location: ../client/explore.php#".$name);
-        }
-
         if(isset($_SESSION['order_id']) && !empty($_SESSION['order_id'])){
             $order_id = $_SESSION['order_id'];
             $total = (double) 0.00; 
@@ -715,79 +668,107 @@ if(isset($_POST['order_item'])){
 
 /******** ORDER MANAGEMENT ********/
 
-if(isset($_POST['update_item'])){
-    try {
-        $id = $api->clean($_POST['item_id']);
-        $quantity = $_POST['quantity'];
+if(isset($_POST['update_items'])){
+    if(isset($_POST['item'])){
+        foreach($_POST['item'] as $item){
+            $errors = array();
+            $item = $api->clean($item);
+            $index = array_search($item, $_POST['index']);
 
-        $query = $api->update();
-        $query = $api->table($query, "order_item");
-        $query = $api->set($query, "tattoo_quantity", "?");
-        $query = $api->where($query, "client_id", "?");
+            $quantity = intval($_POST['quantity'][$index]);
 
-        $statement = $api->prepare($query);
-        if ($statement===false) {
-            throw new Exception('prepare() error: ' . $statement->errno . ' - ' . $statement->error);
+            if(empty($quantity)) {
+                $_SESSION['res'] = "Item quantity is required.";
+                array_push($errors, $_SESSION['res']);
+            }
+            
+            elseif (!is_int($quantity)) {
+                $_SESSION['res'] = "Item quantity must be an integer.";
+                array_push($errors, $_SESSION['res']);
+            }
+            
+            elseif($quantity < 0){
+                $_SESSION['res'] = "Item quantity must not be negative.";
+                array_push($errors, $_SESSION['res']);
+            }
+
+            if(empty($errors)){
+                try {   
+                    $statement = $api->prepare("UPDATE order_item SET tattoo_quantity=? WHERE item_id=?");
+                    if ($statement===false) {
+                        throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                    }
+            
+                    $mysqli_checks = $api->bind_params($statement, "is", array($quantity, $item));
+                    if ($mysqli_checks===false) {
+                        throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
+                    }
+            
+                    $mysqli_checks = $api->execute($statement);
+                    if($mysqli_checks===false) {
+                        throw new Exception('Execute error: The prepared statement could not be executed.');
+                    }
+            
+                    $mysqli_checks = $api->close($statement);
+                    if ($mysqli_checks===false) {
+                        throw new Exception('The prepared statement could not be closed.');
+                    } else {
+                        $statement = null;
+                    }
+                } catch (Exception $e) {
+                    exit();
+                    $_SESSION['res'] = $e->getMessage();
+                    Header("Location: ../client/orders.php");
+                }
+            } else {
+                $_SESSION['res'] = $errors;
+            }
         }
-
-        $mysqli_checks = $api->bind_params($statement, "sis", array($id, $quantity, $_SESSION['client_id']));
-        if ($mysqli_checks===false) {
-            throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
-        }
-
-        $mysqli_checks = $api->execute($statement);
-        if($mysqli_checks===false) {
-            throw new Exception('Execute error: The prepared statement could not be executed.');
-        }
-
-        $mysqli_checks = $api->close($statement);
-        if ($mysqli_checks===false) {
-            throw new Exception('The prepared statement could not be closed.');
-        }
-
-        Header("Location: ../client/orders.php");
-    } catch (Exception $e) {
-        exit();
-        $_SESSION['res'] = $e->getMessage();
-        Header("Location: ../client/orders.php");
+    } else {
+        $_SESSION['res'] = "No rows selected.";
     }
+
+    Header("Location: ../client/orders.php");
 }
 
-if(isset($_POST['remove_item'])){
-    try {
-        $id = $api->clean($_POST['item_id']);
+if(isset($_POST['remove_items'])){
+    if(isset($_POST['item'])){
+        foreach($_POST['item'] as $item){
+            $item = $api->clean($item);
 
-        $query = $api->delete();
-        $query = $api->from($query);
-        $query = $api->table($query, "order_item");
-        $query = $api->where($query, array("item_id", "client_id"), array("?","?"));
-
-        $statement = $api->prepare($query);
-        if ($statement===false) {
-            throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+            try {
+                $statement = $api->prepare("DELETE FROM order_item WHERE item_id=?");
+                if ($statement===false) {
+                    throw new Exception('prepare() error: ' . $statement->errno . ' - ' . $statement->error);
+                }
+        
+                $mysqli_checks = $api->bind_params($statement, "s", $item);
+                if ($mysqli_checks===false) {
+                    throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
+                }
+        
+                $mysqli_checks = $api->execute($statement);
+                if($mysqli_checks===false) {
+                    throw new Exception('Execute error: The prepared statement could not be executed.');
+                }
+        
+                $mysqli_checks = $api->close($statement);
+                if ($mysqli_checks===false) {
+                    throw new Exception('The prepared statement could not be closed.');
+                } else {
+                    $statement = null;
+                }
+            } catch (Exception $e) {
+                exit();
+                $_SESSION['res'] = $e->getMessage();
+                Header("Location: ../client/orders.php");
+            }
         }
-
-        $mysqli_checks = $api->bind_params($statement, "ss", array($id, $_SESSION['client_id']));
-        if ($mysqli_checks===false) {
-            throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
-        }
-
-        $mysqli_checks = $api->execute($statement);
-        if($mysqli_checks===false) {
-            throw new Exception('Execute error: The prepared statement could not be executed.');
-        }
-
-        $mysqli_checks = $api->close($statement);
-        if ($mysqli_checks===false) {
-            throw new Exception('The prepared statement could not be closed.');
-        }
-
-        Header("Location: ../client/orders.php");
-    } catch (Exception $e) {
-        exit();
-        $_SESSION['res'] = $e->getMessage();
-        Header("Location: ..client/orders.php");
+    } else {
+        $_SESSION['res'] = "No rows selected.";
     }
+
+    Header("Location: ../client/orders.php");
 }
 
 /******** BOOKING MANAGEMENT ********/
