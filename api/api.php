@@ -71,7 +71,7 @@ class API {
                     for ($k = 0; $k < $col_count; $k++) {
                         $cols[$k] = is_string($cols[$k]) ? $this->clean($cols[$k]) : $cols[$k];
                         $params[$k] = is_string($params[$k]) ? $this->clean($params[$k]) : $params[$k];
-                        $string = $string . $cols[$k] . "=" . $params[$k] . "AND ";
+                        $string = $string . $cols[$k] . "=" . $params[$k] . " AND ";
                     }
         
                     $string = substr($string, 0, -4);
