@@ -1,5 +1,6 @@
 <?php
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+date_default_timezone_set("Asia/Manila");
 
 /*  TO DO
     - ADD ERROR CATCHING FOR PREPARED STATEMENT QUERYING
@@ -29,6 +30,65 @@ class API {
         return $data;
     }
 
+    public function is_valid_date($date){
+        $checks = false;
+
+        $checks = strtotime($date);
+        if($checks){
+            $hour = explode(':', $time)[0];
+            $checks = checkdate($ymd[1], $ymd[2], $ymd[0]);
+            if($checks){
+                $d = DateTime::createFromFormat("Y-m-d", $date);
+
+                $checks = ($d && $d->format("Y-m-d") === $date) ? true : false;
+                if($checks){
+                    $date = new DateTime($date);
+                    
+                    $today = new DateTime();
+
+                    $checks = ($date >= $today);
+                }
+            }
+        }
+
+        return $checks;
+    }
+
+    public function is_valid_time($time){
+        $checks = false;
+
+        $time = strtotime($time);
+        $checks = (bool) $time;
+        if($checks){
+            $time = date("G:i:s", $time);
+
+            $hms = explode(':', $time);
+            $checks = ($hms[0] >= 0 && $hms[0] <= 24);
+            if($checks){
+                $checks = ($hms[1] >= 0 && $hms[1] <= 60);
+                if($checks){
+                    $checks = ($hms[2] >= 0 && $hms[2] <= 60);
+                }
+            }
+        }
+
+        return $checks;
+    }
+
+    /*  check if scheduled time exceeds service hours,
+        adjust if business changes their service hours
+    public function exceeds_service_hours($time){
+        $checks = false;
+        if($this->is_valid_time($time)){
+            $hour = date("H", strtotime($time));
+
+            $checks = ($hour >= 8 && $hour <= 18);
+        }
+
+        return $checks;
+    } */
+
+
     /***** MYSQL HELPERS *****/
 
     public function table($string, $params){
@@ -52,7 +112,7 @@ class API {
 
     public function join($type, $left, $right, $left_kv, $right_kv){
         $join = (is_string($type)) ? "(" . $this->clean($left) . " " . strtoupper($type) . " JOIN " : "(" . $this->clean($left) . " JOIN ";
-        $join = $join . $this->clean($right) . " ON " . $this->clean($left) . "." . $this->clean($left_kv) . "=" . $this->clean($right) . "." . $this->clean($right_kv) . ")";
+        $join = $join . $this->clean($right) . " ON " . $this->clean($left_kv) . "=" . $this->clean($right_kv) . ")";
         return $join;
     }
 
