@@ -33,9 +33,9 @@ class API {
     public function is_valid_date($date){
         $checks = false;
 
-        $checks = strtotime($date);
+        $checks = (bool) strtotime($date);
         if($checks){
-            $hour = explode(':', $time)[0];
+            $ymd = explode('-', $date);
             $checks = checkdate($ymd[1], $ymd[2], $ymd[0]);
             if($checks){
                 $d = DateTime::createFromFormat("Y-m-d", $date);
@@ -46,7 +46,7 @@ class API {
                     
                     $today = new DateTime();
 
-                    $checks = ($date >= $today);
+                    $checks = ($date >= $today) ? true : false;
                 }
             }
         }
@@ -55,7 +55,7 @@ class API {
     }
 
     public function is_valid_time($time){
-        $checks = false;
+        $checks = true;
 
         $time = strtotime($time);
         $checks = (bool) $time;
@@ -63,11 +63,11 @@ class API {
             $time = date("G:i:s", $time);
 
             $hms = explode(':', $time);
-            $checks = ($hms[0] >= 0 && $hms[0] <= 24);
+            $checks = ($hms[0] >= 0 && $hms[0] <= 24) ? true : false;
             if($checks){
-                $checks = ($hms[1] >= 0 && $hms[1] <= 60);
+                $checks = ($hms[1] >= 0 && $hms[1] <= 60) ? true : false;
                 if($checks){
-                    $checks = ($hms[2] >= 0 && $hms[2] <= 60);
+                    $checks = ($hms[2] >= 0 && $hms[2] <= 60) ? true : false;
                 }
             }
         }
@@ -87,7 +87,6 @@ class API {
 
         return $checks;
     } */
-
 
     /***** MYSQL HELPERS *****/
 
