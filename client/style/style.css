@@ -24,6 +24,288 @@ html a, a:link, a:visited {
   z-index: 1075;
 }
 
+/* CUSTOM BOOTSTRAP-STYLE CLASSES */
+
+/* custom widths */
+
+.w-60 {
+  width: 60%;
+}
+
+.w-65 {
+  width: 65%;
+}
+
+.w-70 {
+  width: 70%;
+}
+
+.w-80 {
+  width: 80%;
+}
+
+.w-85 {
+  width: 85%;
+}
+
+.w-90 {
+  width: 90%;
+}
+
+/* custom font-weights */
+
+.fw-semibold {
+  font-weight: 600;
+}
+
+.fw-extrabold {
+  font-weight: 800;
+}
+
+/* custom spacing */
+
+/*
+  margin: 0 auto;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 0;
+    margin-bottom: 0;
+*/
+
+.m-6 {
+  margin: 3.5rem;
+}
+
+.mx-6 {
+  margin: 0 3.5rem;
+}
+
+.ms-6 {
+  margin-left: 3.5rem;
+}
+
+.me-6 {
+  margin-right: 3.5rem;
+}
+
+.my-6 {
+  margin: 3.5rem 0;
+}
+
+.mt-6 {
+  margin-top: 3.5rem;
+}
+
+.mb-6 {
+  margin-top: 3.5rem;
+}
+
+.m-7 {
+  margin: 3.5rem;
+}
+
+.mx-7 {
+  margin: 0 4rem;
+}
+
+.ms-7 {
+  margin-left: 4rem;
+}
+
+.me-7 {
+  margin-right: 4rem;
+}
+
+.my-7 {
+  margin: 4rem 0;
+}
+
+.mt-7 {
+  margin-top: 4rem;
+}
+
+.mb-7 {
+  margin-top: 4rem;
+}
+
+.m-8 {
+  margin: 4.5rem;
+}
+
+.mx-8 {
+  margin: 0 4.5rem;
+}
+
+.ms-8 {
+  margin-left: 4.5rem;
+}
+
+.me-8 {
+  margin-right: 4.5rem;
+}
+
+.my-8 {
+  margin: 4.5rem 0;
+}
+
+.mt-8 {
+  margin-top: 4.5rem;
+}
+
+.mb-8 {
+  margin-top: 4.5rem;
+}
+
+.m-9 {
+  margin: 5rem;
+}
+
+.mx-9 {
+  margin: 0 5rem;
+}
+
+.ms-9 {
+  margin-left: 5rem;
+}
+
+.me-9 {
+  margin-right: 5rem;
+}
+
+.my-9 {
+  margin: 5rem 0;
+}
+
+.mt-9 {
+  margin-top: 5rem;
+}
+
+.mb-9 {
+  margin-top: 5rem;
+}
+
+/*
+  padding: 0 auto;
+    padding-left: auto;
+    padding-right: auto;
+    padding-top: 0;
+    padding-bottom: 0;
+*/ 
+
+.p-6 {
+  padding: 3.5rem;
+}
+
+.px-6 {
+  padding: 0 3.5rem;
+}
+
+.ps-6 {
+  padding-left: 3.5rem;
+}
+
+.pe-6 {
+  padding-right: 3.5rem;
+}
+
+.py-6 {
+  padding: 3.5rem 0;
+}
+
+.pt-6 {
+  padding-top: 3.5rem;
+}
+
+.pb-6 {
+  padding-top: 3.5rem;
+}
+
+.p-7 {
+  padding: 4rem;
+}
+
+.px-7 {
+  padding: 0 4rem;
+}
+
+.ps-7 {
+  padding-left: 4rem;
+}
+
+.pe-7 {
+  padding-right: 4rem;
+}
+
+.py-7 {
+  padding: 4rem 0;
+}
+
+.pt-7 {
+  padding-top: 4rem;
+}
+
+.pb-7 {
+  padding-top: 4rem;
+}
+
+.p-8 {
+  padding: 4.5rem;
+}
+
+.px-8 {
+  padding: 0 4.5rem;
+}
+
+.ps-8 {
+  padding-left: 4.5rem;
+}
+
+.pe-8 {
+  padding-right: 4.5rem;
+}
+
+.py-8 {
+  padding: 4.5rem 0;
+}
+
+.pt-8 {
+  padding-top: 4.5rem;
+}
+
+.p-9 {
+  padding: 5rem;
+}
+
+.px-9 {
+  padding: 0 5rem;
+}
+
+.ps-9 {
+  padding-left: 5rem;
+}
+
+.pe-9 {
+  padding-right: 5rem;
+}
+
+.py-9 {
+  padding: 5rem 0;
+}
+
+.pt-9 {
+  padding-top: 5rem;
+}
+
+.pb-9 {
+  padding-top: 5rem;
+}
+
+.pb-8 {
+  padding-top: 5rem;
+}
+
+/* NAVBAR STYLE */
+
 .header .nav-bar ul {
   list-style-type: none;
 }
