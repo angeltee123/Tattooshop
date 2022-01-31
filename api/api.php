@@ -2,10 +2,6 @@
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 date_default_timezone_set("Asia/Manila");
 
-/*  TO DO
-    - ADD ERROR CATCHING FOR PREPARED STATEMENT QUERYING
-*/
-
 class API {
     private $server = "localhost";
     private $user = "root";
@@ -55,7 +51,7 @@ class API {
     }
 
     public function is_valid_time($time){
-        $checks = true;
+        $checks = false;
 
         $time = strtotime($time);
         $checks = (bool) $time;
@@ -75,9 +71,9 @@ class API {
         return $checks;
     }
 
-    /*  check if scheduled time exceeds service hours,
+    /*  check if scheduled time is within service hours,
         adjust if business changes their service hours
-    public function exceeds_service_hours($time){
+    public function within_service_hours($time){
         $checks = false;
         if($this->is_valid_time($time)){
             $hour = date("H", strtotime($time));
@@ -151,7 +147,7 @@ class API {
     public function order($string, $params, $order){
         if(!empty($params) && !empty($order)){
             if(!is_array($params)){
-                $string = $string . "ORDER BY " . $this->clean($params) . " " . $this->clean($order);
+                $string = $string . "ORDER BY " . $this->clean($params) . " " . $this->clean($order) . " ";
             } else {
                 $param_count = count($params);
                 $order_count = count($order);
@@ -172,8 +168,288 @@ class API {
         }
     }
 
-    public function change_user($user, $password){
+    public function change_user($user){
+        $user = $this->clean($user);
+        $password = "";
+
+        if (strcasecmp($user, "user") == 0){
+            $password = "User@CIS2104.njctattoodb";
+        }
+        
+        elseif (strcasecmp($user, "admin") == 0){
+            $password = "Admin@CIS2104.njctattoodb";
+        }
+
         $this->conn->change_user($user, $password, $this->db);
+    }
+
+    public function get_workorder($client_id){
+        if(!empty($client_id)){
+            $_SESSION['order_id'] = "";
+            
+            try {
+                // get existing order
+                $get_order = $this->select();
+                $get_order = $this->params($get_order, array("order_id", "amount_due_total"));
+                $get_order = $this->from($get_order);
+                $get_order = $this->table($get_order, "workorder");
+                $get_order = $this->where($get_order, array("client_id", "status"), array("?", "?"));
+                $get_order = $this->order($get_order, "order_date", "DESC");
+                $get_order = $this->limit($get_order, 1);
+            
+                $statement = $this->prepare($get_order);
+                if ($statement===false) {
+                    throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                }
+            
+                $mysqli_checks = $this->bind_params($statement, "ss", array($client_id, "Ongoing"));
+                if ($mysqli_checks===false) {
+                    throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
+                }
+            
+                $mysqli_checks = $this->execute($statement);
+                if($mysqli_checks===false) {
+                    throw new Exception('Execute error: The prepared statement could not be executed.');
+                }
+            
+                $res = $this->get_result($statement);
+                if($res===false){
+                    throw new Exception('get_result() error: Getting result set from statement failed.');
+                }
+
+                if($this->num_rows($res) > 0){
+                    $workorder = $this->fetch_assoc($res);
+                    $_SESSION['order_id'] = $workorder['order_id'];
+                    $amount_due_total = $workorder['amount_due_total'];
+
+                    $this->free_result($statement);
+                    $mysqli_checks = $this->close($statement);
+                    if ($mysqli_checks===false) {
+                        throw new Exception('The prepared statement could not be closed.');
+                    } else {
+                        $statement = null;
+                        $res = null;
+                    }
+
+                    // updating status of existing order - getting all items
+                    $get_all_items = $this->select();
+                    $get_all_items = $this->params($get_all_items, "*");
+                    $get_all_items = $this->from($get_all_items);
+                    $get_all_items = $this->table($get_all_items, "order_item");
+                    $get_all_items = $this->where($get_all_items, "order_id", "?");
+                
+                    $statement = $this->prepare($get_all_items);
+                    if ($statement===false) {
+                        throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                    }
+
+                    $mysqli_checks = $this->bind_params($statement, "s", $_SESSION['order_id']);
+                    if ($mysqli_checks===false) {
+                        throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
+                    }
+                
+                    $mysqli_checks = $this->execute($statement);
+                    if ($statement===false) {
+                        throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                    }
+
+                    $res = $this->get_result($statement);
+                    if($res===false){
+                        throw new Exception('get_result() error: Getting result set from statement failed.');
+                    }
+
+                    $unfiltered_row_count = $this->num_rows($res);
+            
+                    $this->free_result($statement);
+                    $mysqli_checks = $this->close($statement);
+                    if ($mysqli_checks===false) {
+                        throw new Exception('The prepared statement could not be closed.');
+                    } else {
+                        $statement = null;
+                        $res = null;
+                    }
+
+                    // updating status of existing order - getting completed items
+                    $get_completed_items = $this->select();
+                    $get_completed_items = $this->params($get_completed_items, "*");
+                    $get_completed_items = $this->from($get_completed_items);
+                    $get_completed_items = $this->table($get_completed_items, "order_item");
+                    $get_completed_items = $this->where($get_completed_items, array("order_id", "paid", "item_status"), array("?", "?", "?"));
+                
+                    $statement = $this->prepare($get_completed_items);
+                    if ($statement===false) {
+                        throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                    }
+
+                    $mysqli_checks = $this->bind_params($statement, "sss", array($_SESSION['order_id'], "Fully Paid", "Applied"));
+                    if ($mysqli_checks===false) {
+                        throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
+                    }
+                
+                    $mysqli_checks = $this->execute($statement);
+                    if ($statement===false) {
+                        throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                    }
+
+                    $res = $this->get_result($statement);
+                    if($res===false){
+                        throw new Exception('get_result() error: Getting result set from statement failed.');
+                    }
+
+                    $filtered_row_count = $this->num_rows($res);
+            
+                    $this->free_result($statement);
+                    $mysqli_checks = $this->close($statement);
+                    if ($mysqli_checks===false) {
+                        throw new Exception('The prepared statement could not be closed.');
+                    } else {
+                        $statement = null;
+                    }
+
+                    // updating status of existing order - finishing order
+                    if($unfiltered_row_count == $filtered_row_count && $amount_due_total == 0){
+                        $statement = $this->prepare("UPDATE workorder SET status=? WHERE order_id=? AND client_id=?");
+                        if ($statement===false) {
+                            throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                        }
+
+                        $mysqli_checks = $this->bind_params($statement, "sss", array("Finished", $_SESSION['order_id'], $client_id));
+                        if ($mysqli_checks===false) {
+                            throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
+                        }
+
+                        $mysqli_checks = $this->execute($statement);
+                        if($mysqli_checks===false) {
+                            throw new Exception('Execute error: The prepared statement could not be executed.');
+                        }
+
+                        $mysqli_checks = $this->close($statement);
+                        if ($mysqli_checks===false) {
+                            throw new Exception('The prepared statement could not be closed.');
+                        } else {
+                            $statement = null;
+                        }
+
+                        $_SESSION['order_id'] = "";
+                    }
+                } else {
+                    // no exsiting order found
+                    $this->free_result($statement);
+                    $mysqli_checks = $this->close($statement);
+                    if ($mysqli_checks===false) {
+                        throw new Exception('The prepared statement could not be closed.');
+                    } else {
+                        $statement = null;
+                    }
+
+                    $_SESSION['order_id'] = "";
+                }
+
+                return true;
+            } catch (Exception $e) {
+                exit();
+                return $e;
+            }
+        }
+    }
+
+    public function update_total($order_id, $client_id){
+        if(!empty($order_id) && !empty($client_id)){
+            try {
+                $total = (double) 0.00;
+
+                // update order amount_due_total
+                $left = $this->join("INNER", "order_item", "workorder", "order_item.order_id", "workorder.order_id");
+                $right = $this->join("LEFT", $left, "reservation", "order_item.item_id", "reservation.item_id");
+                $join = $this->join("INNER", $right, "tattoo", "order_item.tattoo_id", "tattoo.tattoo_id");
+
+                $get_total = $this->select();
+                $get_total = $this->params($get_total, array("tattoo_price", "tattoo_quantity", "paid", "item_status", "amount_addon"));
+                $get_total = $this->from($get_total);
+                $get_total = $this->table($get_total, $join);
+                $get_total = $this->where($get_total, array("client_id", "workorder.order_id"), array("?", "?"));
+                $not = "AND status!=? AND paid!=? ";
+                $get_total = $get_total . $not;
+
+                $statement = $this->prepare($get_total);
+                if ($statement===false) {
+                    throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                }
+
+                $mysqli_checks = $this->bind_params($statement, "ssss", array($client_id, $order_id, "Finished", "Fully Paid"));
+                if ($mysqli_checks===false) {
+                    throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
+                }
+
+                $mysqli_checks = $this->execute($statement);
+                if($mysqli_checks===false) {
+                    throw new Exception('Execute error: The prepared statement could not be executed.');
+                }
+
+                $res = $this->get_result($statement);
+                if($res===false){
+                    throw new Exception('get_result() error: Getting result set from statement failed.');
+                }
+
+                if($this->num_rows($res) > 0){
+                    while($row = $this->fetch_assoc($res)){
+                        if(strcasecmp($row['item_status'], "Standing") == 0 && strcasecmp($row['paid'], "Unpaid") == 0) {
+                            $total += $row['tattoo_price'] * $row['tattoo_quantity'];
+                        }
+
+                        elseif(in_array($row['item_status'], array("Reserved", "Applied"))){
+                            if(strcasecmp($row['paid'], "Unpaid") == 0){
+                                $total += ($row['tattoo_price'] * $row['tattoo_quantity']) + $row['amount_addon'];
+                            }
+
+                            elseif(strcasecmp($row['paid'], "Partially Paid") == 0){
+                                $total += $row['amount_addon'];
+                            }
+                        }
+                    }
+                }
+
+                $this->free_result($statement);
+                $mysqli_checks = $this->close($statement);
+                if ($mysqli_checks===false) {
+                    throw new Exception('The prepared statement could not be closed.');
+                } else {
+                    $statement = null;
+                }
+
+                $total = doubleval($total);
+
+                $update_total = $this->update();
+                $update_total = $this->table($update_total, "workorder");
+                $update_total = $this->set($update_total, "amount_due_total", "?");
+                $update_total = $this->where($update_total, "order_id", "?");
+
+                $statement = $this->prepare($update_total);
+                if ($statement===false) {
+                    throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                }
+
+                $mysqli_checks = $this->bind_params($statement, "ds", array($total, $order_id));
+                if ($mysqli_checks===false) {
+                    throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
+                }
+
+                $mysqli_checks = $this->execute($statement);
+                if($mysqli_checks===false) {
+                    throw new Exception('Execute error: The prepared statement could not be executed.');
+                }
+
+                $mysqli_checks = $this->close($statement);
+                if ($mysqli_checks===false) {
+                    throw new Exception('The prepared statement could not be closed.');
+                }
+
+                return true;
+            } catch (Exception $e) {
+                exit();
+                return false;
+            }
+        }
     }
 
     /***** SELECT *****/
