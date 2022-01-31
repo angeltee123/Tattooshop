@@ -2,7 +2,7 @@
   session_name("sess_id");
   session_start();
   if(isset($_SESSION['user_id'])){
-    Header("Location: index.php");
+    Header("Location: ./index.php");
   }
 ?>
 <!DOCTYPE html>
@@ -22,7 +22,8 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
   
   <!-- native style -->
-  <link href="./style/style.css" rel="stylesheet">
+  <link href="../style/bootstrap.css" rel="stylesheet">
+  <link href="../style/style.css" rel="stylesheet">
   <style>
     .content h1{
       font-family: 'Libre Caslon Text', 'Arial', sans-serif;

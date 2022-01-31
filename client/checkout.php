@@ -2,7 +2,7 @@
   session_name("sess_id");
   session_start();
   if(!isset($_SESSION['user_id'])){
-    Header("Location: ../client/index.php");
+    Header("Location: ./index.php");
     die();
   } else {
     require_once '../api/api.php';
@@ -11,44 +11,51 @@
     $order_id = $_SESSION['order_id'];
   }
 
-  if(!isset($_SESSION['order_id']) || !empty($_SESSION['order_id'])){
+  // navigation guard
+  if(empty($_SESSION['order_id'])){
+    $_SESSION['res'] = "Illegal navigation error: Client cannot checkout without an ongoing workorder.";
+    Header("Location: ./orders.php");
+  } else {
     try {
-      $left = $api->join("INNER", "order_item", "workorder", "order_item.order_id", "workorder.order_id");
-      $right = $api->join("LEFT", $left, "reservation", "order_item.item_id", "reservation.item_id");
-      $join = $api->join("INNER", $right, "tattoo", "order_item.tattoo_id", "tattoo.tattoo_id");
+      $mysqli_checks = $api->get_workorder($client_id);
+      if ($mysqli_checks!==true) {
+        throw new Exception('Error: Retrieving client workorder failed.');
+      } else {
+        $left = $api->join("INNER", "order_item", "workorder", "order_item.order_id", "workorder.order_id");
+        $right = $api->join("LEFT", $left, "reservation", "order_item.item_id", "reservation.item_id");
+        $join = $api->join("INNER", $right, "tattoo", "order_item.tattoo_id", "tattoo.tattoo_id");
 
-      $query = $api->select();
-      $query = $api->params($query, array("order_item.item_id", "predecessor_id", "item_status", "paid", "order_item.tattoo_id", "order_item.tattoo_width", "order_item.tattoo_height", "tattoo_name", "tattoo_image", "tattoo_quantity", "tattoo_price", "amount_addon"));
-      $query = $api->from($query);
-      $query = $api->table($query, $join);
-      $query = $api->where($query, array("client_id", "workorder.order_id"), array("?", "?"));
-      $where = "AND item_status!=? AND paid!=? ";
-      $query = $query . $where;
-      $query = $api->order($query, array("item_status", "paid"), array("DESC", "DESC"));
+        $query = $api->select();
+        $query = $api->params($query, array("order_item.item_id", "item_status", "paid", "order_item.tattoo_id", "order_item.tattoo_width", "order_item.tattoo_height", "tattoo_name", "tattoo_image", "tattoo_quantity", "tattoo_price", "amount_addon"));
+        $query = $api->from($query);
+        $query = $api->table($query, $join);
+        $query = $api->where($query, array("client_id", "workorder.order_id"), array("?", "?"));
+        $query = $api->order($query, array("item_status", "paid"), array("DESC", "DESC"));
 
-      $statement = $api->prepare($query);
-      if ($statement===false) {
-          throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
-      }
-  
-      $mysqli_checks = $api->bind_params($statement, "ssss", array($client_id, $order_id, "Applied", "Fully Paid"));
-      if ($mysqli_checks===false) {
-          throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
-      }
-  
-      $mysqli_checks = $api->execute($statement);
-      if($mysqli_checks===false) {
-          throw new Exception('Execute error: The prepared statement could not be executed.');
-      }
+        $statement = $api->prepare($query);
+        if ($statement===false) {
+            throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+        }
+    
+        $mysqli_checks = $api->bind_params($statement, "ss", array($client_id, $order_id));
+        if ($mysqli_checks===false) {
+            throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
+        }
+    
+        $mysqli_checks = $api->execute($statement);
+        if($mysqli_checks===false) {
+            throw new Exception('Execute error: The prepared statement could not be executed.');
+        }
 
-      $res = $api->get_result($statement);
-      if($res===false){
-        throw new Exception('get_result() error: Getting result set from statement failed.');
+        $res = $api->get_result($statement);
+        if($res===false){
+          throw new Exception('get_result() error: Getting result set from statement failed.');
+        }
       }
     } catch (Exception $e) {
       exit();
       $_SESSION['res'] = $e->getMessage();
-      Header("Location: ./client/orders.php");
+      Header("Location: ./orders.php");
     }
   }
 ?>
@@ -71,8 +78,8 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
   
   <!-- native style -->
-  <link href="./style/bootstrap.css" rel="stylesheet">
-  <link href="./style/style.css" rel="stylesheet">
+  <link href="../style/bootstrap.css" rel="stylesheet">
+  <link href="../style/style.css" rel="stylesheet">
   <title>Order Checkout | NJC Tattoo</title>
 </head>
 <body>
@@ -116,22 +123,21 @@
         </thead>
         <tbody>
           <?php
-            // $amount_total = (double) 0.00;
+            $amount_total = (double) 0.00;
 
             if($api->num_rows($res) > 0){
               while($row = $api->fetch_assoc($res)){
-                if(strcasecmp($row['item_status'], 'Standing') == 0 && strcasecmp($row['paid'], 'Partially Paid') != 0){
-                // if(strcasecmp($row['paid'], 'Unpaid') == 0){
-                //   $amount_total += ($row['tattoo_price'] * $row['tattoo_quantity']) + $row['amount_addon'];
-                // } else if(strcasecmp($row['paid'], 'Partially Paid') == 0){
-                //   $amount_total += $row['amount_addon'];
-                // }
+                if(!(strcasecmp($row['item_status'], 'Standing') == 0 && strcasecmp($row['paid'], 'Partially Paid') == 0) && !(strcasecmp($row['item_status'], 'Applied') == 0 && strcasecmp($row['paid'], 'Fully Paid') == 0)){
+                  if(strcasecmp($row['paid'], 'Unpaid') == 0){
+                    $amount_total += ($row['tattoo_price'] * $row['tattoo_quantity']) + $row['amount_addon'];
+                  } else if(strcasecmp($row['paid'], 'Partially Paid') == 0){
+                    $amount_total += $row['amount_addon'];
+                  }
           ?>
           <tr class="align-middle" style="height: 300px;">
             <td>
-              <input type="checkbox" class="form-check-input" value="<?php echo $row['item_id'] ?>" name="item[]">
+              <input type="checkbox" class="form-check-input" value="<?php echo $row['item_id'] ?>" name="item[]" checked>
               <input type="hidden" class="d-none" value="<?php echo $row['item_id'] ?>" name="index[]" >
-              <input type="hidden" class="d-none" value="<?php if(!empty($row['predecessor_id'])) { echo $row['predecessor_id']; } else { echo "null"; } ?>" name="predecessor[]" >
             </td>
             <td>
               <div class="d-flex flex-row align-items-center">
@@ -154,7 +160,7 @@
             </td>
             <td>
               <input type="hidden" class="d-none" value="<?php echo $row['tattoo_quantity'] ?>" name="quantity[]" >
-              <input type="number" class="form-control" value="<?php echo $row['tattoo_quantity'] ?>" min="1" max="<?php echo $row['tattoo_quantity'] ?>" name="checkout_quantity[]" >
+              <input type="number" <?php if(strcasecmp($row['item_status'], "Reserved") == 0) { echo "readonly"; }?> class="<?php if(strcasecmp($row['item_status'], "Reserved") == 0) { echo "form-control-plaintext"; } else { echo "form-control"; }?>" value="<?php echo $row['tattoo_quantity'] ?>" min="1" max="<?php echo $row['tattoo_quantity'] ?>" name="checkout_quantity[]" >
             </td>
             <td>
               <?php if(empty($row['amount_addon'])) { echo "N/A"; } else { echo "Php " . number_format($row['amount_addon'], 2, '.', ''); } ?>
@@ -169,11 +175,11 @@
           <tfoot style="height: 4em;">
             <td colspan="5"></td>
             <td class="fw-bold">Amount Due Total</td>
-            <td id="total">Php 0.00</td>
+            <td id="total">Php <?php echo number_format($amount_total, 2, '.', '') ?></td>
           </tfoot>
           <?php } else { ?>
             <tfoot>
-              <td colspan="5" class="p-5"><h1 class="m-3 display-4 fst-italic text-muted">No tattoos ordered.</h1></td>
+              <td colspan="7" class="p-5"><h1 class="m-3 display-4 fst-italic text-muted">No tattoos ordered.</h1></td>
             </tfoot>
           <?php } ?>
         </tbody>
@@ -216,7 +222,7 @@
         <div class="row my-3">
           <div class="col">
             <h4 class="mb-3">Payment Amount</h4>
-            <input type="number" class="form-control my-2" name="payment_amount" required>
+            <input type="number" class="form-control my-2" name="amount_paid" required>
           </div>
           <div class="col">
             <h4 class="mb-3">Payment Method</h4>
@@ -257,8 +263,3 @@
 <script src="../api/bootstrap-bundle-min.js"></script>
 <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script> -->
 </html>
-<?php
-  if(isset($_SESSION['res'])){
-    unset($_SESSION['res']);
-  }
-?>

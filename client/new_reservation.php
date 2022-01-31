@@ -2,7 +2,7 @@
   session_name("sess_id");
   session_start();
   if(!isset($_SESSION['user_id'])){
-    Header("Location: ../client/reservations.php");
+    Header("Location: ./reservations.php");
     die();
   } elseif(empty($_POST)) {
     $warning = "Please select an item";
@@ -32,9 +32,9 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
   
   <!-- native style -->
-  <link href="./style/bootstrap.css" rel="stylesheet">
-  <link href="./style/style.css" rel="stylesheet">
-  <title>Explore | NJC Tattoo</title>
+  <link href="../style/bootstrap.css" rel="stylesheet">
+  <link href="../style/style.css" rel="stylesheet">
+  <title>New Booking | NJC Tattoo</title>
   <style>
   main{
       display:flex;
@@ -48,8 +48,8 @@
       background-size: cover;
       padding-top:70px;
   }
-  .tatname{
-      
+  
+  .tatname {
       border-radius: 3px;
       margin-left: 12px;
       width: 255px;
@@ -126,7 +126,7 @@
             <div class="row">
                 <h2><?php echo $row['tattoo_name'] ?></h2>
                 <div class="col-md-3 mt-4 btn-light tatname">
-                    <input type="hidden" readonly class="d-none" value="<?php echo $row['item_id'] ?>" name="item_id" />
+                  <input type="hidden" readonly class="d-none" value="<?php echo $row['item_id'] ?>" name="item_id" />
                 </div>
 
                 <!--- Item Quantity--->

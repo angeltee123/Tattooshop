@@ -39,6 +39,7 @@
 
 .cont {
     max-width: 58%;
+    width: 58%;
     max-height: 900px;
     height: 900px;
     box-shadow: 0 2rem 4rem rgba(0, 0, 0, 0.2);
@@ -78,9 +79,9 @@
     opacity: 1;
 }
 
-.tattoo_detail form input{
+/* .tattoo_detail form input{
     text-align: center;
-}
+} */
 
 .tattoo_detail form .input-quantity {
     width: 10%;

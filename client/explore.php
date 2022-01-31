@@ -2,62 +2,26 @@
   session_name("sess_id");
   session_start();
   if(!isset($_SESSION['user_id'])){
-    Header("Location: ../client/index.php");
+    Header("Location: ./index.php");
     die();
   } else {
     require_once '../api/api.php';
     $api = new api();
   }
-    
+
   if(!isset($_SESSION['order_id']) || empty($_SESSION['order_id'])){
     try {
       $client_id = $_SESSION['client_id'];
-      // get existing order
-      $get_order = $api->select();
-      $get_order = $api->params($get_order, "order_id");
-      $get_order = $api->from($get_order);
-      $get_order = $api->table($get_order, "workorder");
-      $get_order = $api->where($get_order, array("client_id", "status"), array("?", "?"));
-      $get_order = $api->limit($get_order, 1);
-  
-      $statement = $api->prepare($get_order);
-      if ($statement===false) {
-          throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
-      }
-  
-      $mysqli_checks = $api->bind_params($statement, "ss", array($client_id, "Ongoing"));
-      if ($mysqli_checks===false) {
-          throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
-      }
-  
-      $mysqli_checks = $api->execute($statement);
-      if($mysqli_checks===false) {
-          throw new Exception('Execute error: The prepared statement could not be executed.');
-      }
-  
-      $api->store_result($statement);
-      $_SESSION['order_id'] = "";
-  
-      if($api->num_rows($statement) > 0){
-          $res = $api->bind_result($statement, array($_SESSION['order_id']));
-          $api->get_bound_result($_SESSION['order_id'], $res[0]);
-      } else {
-          $_SESSION['order_id'] = "";
-      }
-  
-      $api->free_result($statement);
-      $mysqli_checks = $api->close($statement);
-      if ($mysqli_checks===false) {
-          throw new Exception('The prepared statement could not be closed.');
-      } else {
-          $statement = null;
+      $mysqli_checks = $api->get_workorder($client_id);
+      if ($mysqli_checks!==true) {
+        throw new Exception('Error: Retrieving client workorder failed.');
       }
     } catch (Exception $e) {
-        exit();
-        $_SESSION['res'] = $e->getMessage();
-        Header("Location: ../client/explore.php");
-      }
+      exit();
+      $_SESSION['res'] = $e->getMessage();
+      Header("Location: ./index.php");
     }
+  }
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -77,8 +41,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     
     <!-- native style -->
+    <link href="../style/bootstrap.css" rel="stylesheet">
+    <link href="../style/style.css" rel="stylesheet">
     <link href="./style/explore.css" rel="stylesheet" scoped>
-    <link href="./style/style.css" rel="stylesheet">
     <title>Explore | NJC Tattoo</title>
 </head>
 <body class="w-100">
@@ -156,7 +121,7 @@
             <div class="order-first col-5 h-100 tattoo-image" style="background-image: url(<?php echo $api->clean($image); ?>)"></div>
             <div class="order-last col p-5 h-100 d-flex flex-column position-relative">
               <div class="position-absolute end-0 me-5">
-                <a href="" class="float-end"><span class="material-icons md-48">close</span></a>
+                <a href="./explore.php" class="float-end"><span class="material-icons md-48">close</span></a>
               </div>
               <div class="my-4 tattoo-header">
                 <h2 class="display-4 fw-bold"><?php echo $name ?></h2>
@@ -211,7 +176,7 @@
               </form>
             </div>
           </div>
-      </div>
+        </div>
       <?php    
           }
         }
@@ -219,21 +184,10 @@
     </div>
   </div>
 </body>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+<script src="../api/bootstrap-bundle-min.js"></script>
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script> -->
 </html>
 <?php
-  try {
-    $api->free_result($statement);
-
-    $mysqli_checks = $api->close($statement);
-    if ($mysqli_checks===false) {
-        throw new Exception('The prepared statement could not be closed.');
-    }
-  } catch (Exception $e) {
-    echo $e->getMessage();
-    Header("Location: ./orders.php");
-  }
-
   if(isset($_SESSION['width_err'])){
     unset($_SESSION['width_err']);
   }
