@@ -43,14 +43,15 @@
     <!-- native style -->
     <link href="../style/bootstrap.css" rel="stylesheet">
     <link href="../style/style.css" rel="stylesheet">
+    <link href="../style/catalogue.css" rel="stylesheet" scoped>
     <link href="./style/explore.css" rel="stylesheet" scoped>
     <title>Explore | NJC Tattoo</title>
 </head>
 <body class="w-100">
-  <header class="header border-bottom border-2">
+  <header class="header">
     <nav class="nav-bar row mx-0">
       <ul class="col my-0" id="nav-links">
-        <li class="active"><a href="explore.php">Explore</a></li>
+        <li class="active"><a href="./explore.php">Explore</a></li>
         <li><a href="orders.php">Orders</a></li>
         <li><a href="reservations.php">Bookings</a></li>
       </ul>
@@ -69,15 +70,18 @@
       </div>
     </nav>
   </header>
-  <div class="content mx-auto my-5" style="width: 68% !important">
-    <h2 class="fw-bold display-6 mb-4">Explore Tattoos</h2>
+  <div class="content w-70">
+    <div class="text-center mb-8">
+      <h2 class="fw-bold display-3">Explore</h2>
+      <p class="fs-5 text-muted">Find your next tattoo here.</p>
+    </div>
     <div class="w-100 d-flex flex-row flex-wrap justify-content-between align-items-start">
       <?php
         $query = $api->select();
         $query = $api->params($query, "*");
         $query = $api->from($query);
         $query = $api->table($query, "tattoo");
-        $query = $api->order($query, "cataloged", "ASC");
+        $query = $api->order($query, "cataloged", "DESC");
 
         try {
           $statement = $api->prepare($query);
@@ -100,80 +104,81 @@
           echo $e->getMessage();
         }
 
-        $count = 0;
-
-        if($api->num_rows($res)){
+        if($api->num_rows($res) > 0){
           while($row = $api->fetch_assoc($res)){
             $id = $api->clean($row['tattoo_id']);
             $name = $api->clean($row['tattoo_name']);
             $price = $row['tattoo_price'];
             $height = $row['tattoo_height'];
             $width = $row['tattoo_width'];
-            $image = $row['tattoo_image'] ;
+            $image = $row['tattoo_image'];
             $description = $api->clean($row['tattoo_description']);
             $color_scheme = $api->clean($row['color_scheme']);
             $complexity = $api->clean($row['complexity_level']);  
       ?>
-        <a class="order-<?php echo $count++?> tattoo-card my-4 d-block border-secondary border-2 rounded" href="#<?php echo $name?>" style="background-image: url(<?php echo $api->clean($image); ?>)"></a>
-        <!-- tattoo-modal -->
-        <div id="<?php echo $name?>" class="tattoo_detail align-items-center justify-content-center">
-          <div class="cont row">
-            <div class="order-first col-5 h-100 tattoo-image" style="background-image: url(<?php echo $api->clean($image); ?>)"></div>
-            <div class="order-last col p-5 h-100 d-flex flex-column position-relative">
-              <div class="position-absolute end-0 me-5">
-                <a href="./explore.php" class="float-end"><span class="material-icons md-48">close</span></a>
+        <a class="tattoo-card my-3 d-block shadow-sm rounded" href="#<?php echo $name?>" style="background-image: url(<?php echo $api->clean($image); ?>)"></a>
+        <div id="<?php echo $name?>" class="tattoo_detail row justify-content-center align-items-start h-100 w-100">
+          <div class="order-first tattoo-image col-5 bg-light" style="background-image: url(<?php echo $api->clean($image); ?>)"></div>
+          <div class="order-last d-flex col vh-100 border-start border-1 justify-content-center align-items-center">
+            <div class="flex-grow-1">
+            <div class="position-absolute top-0 start-0 mt-5 ms-5 d-flex align-items-center justify-content-center bg-white border" style="width: 75px; height: 75px;">
+              <a href="./explore.php" class="stretched-link"><span class="material-icons md-48 display-5" style="width: 24px;">arrow_back_ios</span></a>
+            </div>
+              <div class="w-60 ms-9">
+                <form action="../api/queries.php" method="POST">
+                  <input type="hidden" class="d-none" name="tattoo_id" value="<?php echo $id ?>" required>
+                  <input type="hidden" class="d-none" name="tattoo_name" value="<?php echo $id ?>" required>
+                  <div>
+                    <h1 class="display-4 fw-bold my-0"><?php echo $name ?></h1>
+                    <h4 class="text-secondary"><?php echo "₱".$price ?></h4>
+                  </div>
+                  <div class="my-5 tattoo-description">
+                    <p class="text-wrap"><?php echo $description ?></p>
+                  </div>
+                  <div class="my-3 row">
+                    <div class="tattoo-color col">
+                      <h4>Color</h4>
+                      <div class="d-flex flex-row align-items-center">
+                        <?php if(strcasecmp($color_scheme, "Monochrome") == 0){ ?>
+                          <div class="color border border-4 rounded-pill" style="background-color: #000000"></div>
+                        <?php } else { ?>
+                          <div class="color border border-4 rounded-pill" style="background-image: linear-gradient(to bottom right, #FF00FF, blue)"></div>
+                        <?php } ?>
+                        <p class="color-tooltip d-inline p-2 my-0 ms-2 w-auto bg-dark rounded"><?php if(strcasecmp($color_scheme, "Monochrome") == 0){ echo "Monochrome"; } else { echo "Multicolor"; } ?></p>
+                      </div>
+                    </div>
+                    <div class="tattoo-complexity col-md-8">
+                      <h4>Complexity</h4>
+                      <p><?php echo $complexity ?></p>
+                    </div>
+                  </div>
+                  <div class="my-5 row">
+                    <div class="col">
+                      <div class="form-floating">
+                        <input type="number" class="form-control" min="1" value="1" placeholder="Quantity" name="quantity" required>
+                        <label for="tattoo_width">Order Quantity</label>
+                        <p class="my-2 <?php echo isset($_SESSION['quantity_err']) ? "d-block" : "d-none"; ?> text-danger quantity_err"><?php if(isset($_SESSION['quantity_err'])){ echo $_SESSION['quantity_err']; } ?></p>
+                      </div>
+                    </div>
+                    <div class="col">
+                      <div class="form-floating">
+                        <input type="number" class="form-control" placeholder="Width" min="1" max="24" value="<?php echo $width ?>" name="width" required>
+                        <label for="tattoo_width">Width (in inches)</label>
+                        <p class="my-2 <?php echo isset($_SESSION['width_err']) ? "d-block" : "d-none"; ?> text-danger width_err"><?php if(isset($_SESSION['width_err'])){ echo $_SESSION['width_err']; } ?></p>
+                      </div>
+                    </div>
+                    <div class="col">
+                      <div class="form-floating">
+                        <input type="number" class="form-control" placeholder="Height" min="1" max="36" value="<?php echo $height ?>" name="height" required>
+                        <label for="tattoo_height">Height (in inches)</label>
+                        <p class="my-2 <?php echo isset($_SESSION['height_err']) ? "d-block" : "d-none"; ?> text-danger height_err"><?php if(isset($_SESSION['height_err'])){ echo $_SESSION['height_err']; } ?></p>
+                      </div>
+                    </div>
+                  </div>
+                  <p class="my-3 <?php echo isset($_SESSION['res']) ? "d-block" : "d-none"; ?> text-danger"><?php if(isset($_SESSION['res'])){ echo $_SESSION['res']; } ?></p>
+                  <button type="submit" class="btn btn-dark btn-lg" name="order_item">Add to Order</button>
+                </form>
               </div>
-              <div class="my-4 tattoo-header">
-                <h2 class="display-4 fw-bold"><?php echo $name ?></h2>
-                <h2 class="text-secondary"><?php echo "₱".$price ?></h2>
-              </div>
-              <div class="my-3 tattoo-description">
-                <p class="text-wrap"><?php echo $description ?></p>
-              </div>
-              <div class="my-3 row">
-                <div class="tattoo-color col">
-                  <h3>Color</h3>
-                  <div class="d-flex flex-row align-items-center">
-                    <?php if(strcasecmp($color_scheme, "Monochrome") == 0){ ?>
-                      <div class="color border border-4 rounded-pill" style="background-color: #000000"></div>
-                    <?php } else { ?>
-                      <div class="color border border-4 rounded-pill" style="background-image: linear-gradient(to bottom right, #FF00FF, blue)"></div>
-                    <?php } ?>
-                    <p class="color-tooltip d-inline p-2 my-0 ms-2 w-auto bg-dark rounded"><?php if(strcasecmp($color_scheme, "Monochrome") == 0){ echo "Monochrome"; } else { echo "Multicolor"; } ?></p>
-                  </div>
-                </div>
-                <div class="tattoo-complexity col">
-                  <h3>Complexity</h3>
-                  <p><?php echo $complexity ?></p>
-                </div>
-                <div class="col"></div>
-              </div>
-              <form action="../api/queries.php" method="post" class="d-block my-3 h-100 w-100">
-                <input type="hidden" class="d-none" name="tattoo_name" value="<?php echo $id ?>">
-                <input type="hidden" class="d-none" name="tattoo_id" value="<?php echo $id ?>">
-                <div class="row">
-                  <h2>Dimensions</h2>
-                  <div class="col">
-                    <label for="<?php echo $name ?>_width"><p class="fs-5">Width (in inches)</p></label>
-                    <input type="number" class="form-control w-25" id="<?php echo $name ?>_width" value="<?php echo $width ?>" placeholder="Width" min="1" max="24" name="width" required>
-                  </div>
-                  <div class="col">
-                    <label for="<?php echo $name ?>_height"><p class="fs-5">Height (in inches)</p></label>
-                    <input type="number" class="form-control w-25" id="<?php echo $name ?>_height" value="<?php echo $height ?>" placeholder="Height" min="1" max="36" name="height" required>
-                  </div>
-                </div>
-                <div class="row my-3">
-                  <div class="col">
-                    <label><h3>Quantity</h3></label>
-                    <input type="number" class="form-control input-quantity" min="1" value="1" placeholder="Quantity" name="quantity" required>
-                  </div>
-                </div>
-                <div class="row mt-5">
-                  <div class="col">
-                    <button type="submit" class="btn btn-lg btn-dark w-100 d-inline" name="order_item">Add to Order</button> 
-                  </div>
-                </div> 
-              </form>
             </div>
           </div>
         </div>
@@ -188,16 +193,16 @@
 <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script> -->
 </html>
 <?php
+  if(isset($_SESSION['res'])){
+    unset($_SESSION['res']);
+  }
+  if(isset($_SESSION['quantity_err'])){
+    unset($_SESSION['quantity_err']);
+  }
   if(isset($_SESSION['width_err'])){
     unset($_SESSION['width_err']);
   }
   if(isset($_SESSION['height_err'])){
     unset($_SESSION['height_err']);
-  }
-  if(isset($_SESSION['quantity_err'])){
-    unset($_SESSION['quantity_err']);
-  }
-  if(isset($_SESSION['res'])){
-    unset($_SESSION['res']);
-  }
+  }  
 ?>
