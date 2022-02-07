@@ -358,7 +358,7 @@ class API {
             try {
                 $total = (double) 0.00;
 
-                // update order amount_due_total
+                // retrieving order items
                 $left = $this->join("INNER", "order_item", "workorder", "order_item.order_id", "workorder.order_id");
                 $right = $this->join("LEFT", $left, "reservation", "order_item.item_id", "reservation.item_id");
                 $join = $this->join("INNER", $right, "tattoo", "order_item.tattoo_id", "tattoo.tattoo_id");
@@ -391,6 +391,7 @@ class API {
                     throw new Exception('get_result() error: Getting result set from statement failed.');
                 }
 
+                // calculating total
                 if($this->num_rows($res) > 0){
                     while($row = $this->fetch_assoc($res)){
                         if(strcasecmp($row['item_status'], "Standing") == 0 && strcasecmp($row['paid'], "Unpaid") == 0) {
@@ -414,9 +415,46 @@ class API {
                 if ($mysqli_checks===false) {
                     throw new Exception('The prepared statement could not be closed.');
                 } else {
+                    $res = null;
                     $statement = null;
                 }
 
+                // checking for discount
+                $statement = $this->prepare("SELECT incentive FROM workorder WHERE order_id=? AND client_id=? AND status=? ORDER BY order_date ASC LIMIT 1");
+                if ($statement===false) {
+                    throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                }
+
+                $mysqli_checks = $this->bind_params($statement, "sss", array($order_id, $client_id, "Ongoing"));
+                if ($mysqli_checks===false) {
+                    throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
+                }
+
+                $mysqli_checks = $this->execute($statement);
+                if($mysqli_checks===false) {
+                    throw new Exception('Execute error: The prepared statement could not be executed.');
+                }
+
+                $this->store_result($statement);
+                if($this->num_rows($statement) > 0){
+                    $discount = "";
+                    $res = $this->bind_result($statement, array($discount));
+                    $this->get_bound_result($discount, $res[0]);
+                }
+
+                $this->free_result($statement);
+                $mysqli_checks = $this->close($statement);
+                if ($mysqli_checks===false) {
+                    throw new Exception('The prepared statement could not be closed.');
+                } else {
+                    $statement = null;
+                }
+
+                if(isset($discount) && !empty($discount) && strcasecmp($discount, "15% discount") == 0){
+                    $total -= ($total * .15);
+                }
+
+                // update order amount due total
                 $total = doubleval($total);
 
                 $update_total = $this->update();
