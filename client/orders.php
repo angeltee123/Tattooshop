@@ -11,6 +11,7 @@
 
   try {
     $confirmed_referrals = 0;
+    $editable_rows = 0;
     $client_id = $_SESSION['client_id'];
     $mysqli_checks = $api->get_workorder($client_id);
     if ($mysqli_checks!==true) {
@@ -82,6 +83,38 @@
         $statement = null;
       }
 
+      // retrieving editable order item count
+      $statement = $api->prepare("SELECT item_id FROM order_item WHERE order_id=? AND paid=? AND item_status=?");
+      if ($statement===false) {
+          throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+      }
+
+      $mysqli_checks = $api->bind_params($statement, "sss", array($order_id, "Unpaid", "Standing"));
+      if ($mysqli_checks===false) {
+          throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
+      }
+
+      $mysqli_checks = $api->execute($statement);
+      if($mysqli_checks===false) {
+          throw new Exception('Execute error: The prepared statement could not be executed.');
+      }
+
+      $res = $api->get_result($statement);
+      if($res===false){
+        throw new Exception('get_result() error: Getting result set from statement failed.');
+      }
+
+      $editable_rows = $api->num_rows($res);
+
+      $api->free_result($statement);
+      $mysqli_checks = $api->close($statement);
+      if ($mysqli_checks===false) {
+        throw new Exception('The prepared statement could not be closed.');
+      } else {
+        $res = null;
+        $statement = null;
+      }
+
       // retrieving referrals
       $statement = $api->prepare("SELECT referral_id, referral_fname, referral_mi, referral_lname, referral_contact_no, referral_email, referral_age, confirmation_status FROM referral WHERE client_id=? AND order_id=?");
       if ($statement===false) {
@@ -129,7 +162,7 @@
         }
 
         $res = $api->get_result($statement);
-        if($referrals===false){
+        if($res===false){
           throw new Exception('get_result() error: Getting result set from statement failed.');
         }
 
@@ -224,23 +257,41 @@
             <button type="button" class="tabs mx-2 pb-2 px-1 bg-none border-dark border-3 fs-5 border-x-0 border-top-0 text-black" id="orders-tab">Orders</button>
             <button type="button" class="tabs mx-2 pb-2 px-1 bg-none border-dark border-3 fs-5 border-0 text-muted" id="referrals-tab">Referrals</button>
           </div>
-          <div>
-            <button type="button" id="select-all" class="btn btn-link text-black text-decoration-none me-1">Select All</button>
+          <div class="d-flex align-items-center">
+            <?php if($editable_rows > 0){ ?>
+            <button type="button" id="select-all-items" class="btn btn-link text-black text-decoration-none me-1">Select All</button>
+            <?php } if($api->num_rows($referrals) > 0){ ?>
+            <button type="button" id="select-all-referrals" class="btn btn-link text-black text-decoration-none me-1">Select All</button>
+            <?php } ?>
             <?php if(isset($confirmed_referrals) && $confirmed_referrals >= 3 && strcasecmp($workorder['incentive'], "None") == 0){ ?>
               <button type="button" class="btn btn-primary rounded-pill px-3 py-2 me-1" data-bs-toggle="collapse" data-bs-target="#incentive_form" aria-expanded="true" aria-controls="incentive_form">Avail Incentive</button>
             <?php } ?>
             <?php if($api->num_rows($items) > 0){ ?>
-            <div class="d-inline-block" id="order-btn-group">
-              <a href="checkout.php" class="btn btn-outline-dark rounded-pill px-3 py-2 me-1">Checkout</a>
-              <button type="submit" class="btn btn-outline-primary rounded-pill px-3 py-2 me-1" name="update_items">Update Items</button>
-              <button type="submit" class="btn btn-outline-danger rounded-pill px-3 py-2" name="remove_items">Remove Items</button>
+            <div id="order-btn-group">
+              <div class="d-inline-block">
+                <a href="./checkout.php" class="btn btn-outline-dark rounded-pill d-flex align-items-center me-1"><span class="material-icons lh-base pe-2">shopping_cart_checkout</span>Checkout</a>
+              </div>
+              <?php if($editable_rows > 0){ ?>
+              <div class="d-inline-block">
+                <button type="submit" class="btn btn-outline-primary rounded-pill d-flex align-items-center me-1" name="update_items"><span class="material-icons lh-base pe-2">edit</span>Update Items</button>
+              </div>
+              <div class="d-inline-block">
+                <button type="submit" class="btn btn-outline-danger rounded-pill d-flex align-items-center" name="remove_items"><span class="material-icons lh-base pe-2">remove_circle</span>Remove Items</button>
+              </div>
+              <?php } ?>
             </div>
             <?php } ?>
             <div class="d-none" id="referral-btn-group">
-              <button type="button" class="btn btn-outline-primary rounded-pill px-3 py-2 me-1" data-bs-toggle="collapse" data-bs-target="#referral_form" aria-expanded="false" aria-controls="referral_form">Refer Person</button>
+              <div class="d-inline-block">
+                <button type="button" class="btn btn-outline-primary rounded-pill d-flex align-items-center me-1" data-bs-toggle="collapse" data-bs-target="#referral_form" aria-expanded="false" aria-controls="referral_form"><span class="material-icons lh-base pe-2">person_add</span>Refer Person</button>
+              </div>
               <?php if($api->num_rows($referrals) > 0){ ?>
-              <button type="submit" class="btn btn-outline-secondary rounded-pill px-3 py-2 me-1" name="update_referrals">Update Referrals</button>
-              <button type="submit" class="btn btn-outline-danger rounded-pill px-3 py-2" name="remove_referrals">Remove Referrals</button>
+              <div class="d-inline-block">
+                <button type="submit" class="btn btn-outline-secondary rounded-pill d-flex align-items-center me-1" name="update_referrals"><span class="material-icons lh-base pe-2">person</span>Update Referrals</button>
+              </div>
+              <div class="d-inline-block">
+                <button type="submit" class="btn btn-outline-danger rounded-pill d-flex align-items-center me-1" name="remove_referrals"><span class="material-icons lh-base pe-2">person_remove</span>Remove Referrals</button>
+              </div>
               <?php } ?>
             </div>
           </div>
@@ -293,9 +344,9 @@
 
                     if($api->num_rows($res) > 0){
                       while($row = $api->fetch_assoc($res)){
-                        $tattoo_id = $api->clean($row['tattoo_id']);
-                        $tattoo_name = $api->clean($row['tattoo_name']);
-                        $image = $row['tattoo_image'];
+                        $tattoo_id = $api->sanitize_data($row['tattoo_id'], 'string');
+                        $tattoo_name = $api->sanitize_data($row['tattoo_name'], 'string');
+                        $image = $api->sanitize_data($row['tattoo_image'], 'string');
                   ?>
                   <option value="<?php echo $tattoo_id ?>"><?php echo $tattoo_name ?></option>
                   <?php }} ?>
@@ -331,38 +382,38 @@
                 <!-- checkbox -->
                 <div class="me-4">
                   <input type="hidden" class="d-none" name="index[]" value="<?php echo $item['item_id']?>" />
-                  <input type="checkbox" class="form-check-input p-2 border-dark" name="item[]" value="<?php echo $item['item_id']?>"/>
+                  <input type="checkbox" class="order_item form-check-input p-2 border-dark" name="item[]" value="<?php echo $item['item_id']?>"/>
                 </div>
               <?php } ?>
               <!-- tattoo image -->
-              <div class="tattoo-image rounded-pill shadow-sm" style="background-image: url(<?php echo $api->clean($item['tattoo_image']); ?>)"></div>
+              <div class="tattoo-image rounded-pill shadow-sm" style="background-image: url(<?php echo $api->sanitize_data($item['tattoo_image'], 'string'); ?>)"></div>
             </div>
             <div class="w-100 ms-6">
               <div class="row my-5">
                 <!-- tattoo name -->
                 <div class="col">
                   <label class="form-label fw-semibold">Item</label>
-                  <p><?php echo $api->clean($item['tattoo_name']) ?></p>
+                  <p><?php echo $api->sanitize_data($item['tattoo_name'], 'string'); ?></p>
                 </div>
                 <!-- item status -->
                 <div class="col">
                   <label for="status" class="form-label fw-semibold">Item Status</label>
-                  <p><?php echo $api->clean($item['item_status']) ?></p>
+                  <p><?php echo $api->sanitize_data($item['item_status'], 'string'); ?></p>
                   <?php if((strcasecmp($item['item_status'], "Standing") == 0 && strcasecmp($item['paid'], "Unpaid") == 0)){ ?>
-                    <input type="hidden" class="d-none" name="status[]" value="<?php echo $item['item_status']?>" />
+                    <input type="hidden" class="d-none" name="status[]" value="<?php echo $api->sanitize_data($item['item_status'], 'string'); ?>" />
                   <?php } ?>
                 </div>
                 <!-- amount_addon -->
                 <div class="col">
                   <label for="status" class="form-label fw-semibold">Amount Addon</label>
-                  <p><?php echo ($item['amount_addon'] == 0) ? "N/A" : "₱" . $api->clean($item['amount_addon']); ?></p>
+                  <p><?php echo ($item['amount_addon'] == 0) ? "N/A" : "₱" . $api->sanitize_data($item['amount_addon'], 'float'); ?></p>
                 </div>
                 <!-- payment status -->
                 <div class="col">
                   <label class="form-label fw-semibold">Payment Status</label>
-                  <p><?php echo $api->clean($item['paid']); ?></p>
+                  <p><?php echo $api->sanitize_data($item['paid'], 'string'); ?></p>
                   <?php if((strcasecmp($item['item_status'], "Standing") == 0 && strcasecmp($item['paid'], "Unpaid") == 0)){ ?>
-                    <input type="hidden" class="d-none" name="paid[]" value="<?php echo $item['paid']?>" />
+                    <input type="hidden" class="d-none" name="paid[]" value="<?php echo $api->sanitize_data($item['paid'], 'string'); ?>" />
                   <?php } ?>
                 </div>
               </div>
@@ -370,33 +421,33 @@
                 <!-- price -->
                 <div class="col">
                   <label for="quantity" class="form-label fw-semibold">Price</label>
-                  <p>₱<?php echo $api->clean($item['tattoo_price']) ?></p>
+                  <p>₱<?php echo $api->sanitize_data($item['tattoo_price'], 'float'); ?></p>
                 </div>
                 <!-- quantity -->
                 <div class="col">
                   <label for="quantity" class="form-label fw-semibold">Quantity</label>
                   <?php if((strcasecmp($item['item_status'], "Standing") == 0 && strcasecmp($item['paid'], "Unpaid") == 0)){ ?>
-                    <input type="number" class="form-control" value="<?php echo $api->clean($item['tattoo_quantity']) ?>" min="1" name="quantity[]" />
+                    <input type="number" class="form-control" value="<?php echo $api->sanitize_data($item['tattoo_quantity'], 'int'); ?>" min="1" name="quantity[]" />
                   <?php } else { ?>
-                    <p><?php echo $api->clean($item['tattoo_quantity']) ?></p>
+                    <p><?php echo $api->sanitize_data($item['tattoo_quantity'], 'int'); ?></p>
                   <?php } ?>
                 </div>
                 <!-- width -->
                 <div class="col">
                   <label for="width" class="form-label fw-semibold">Width</label>
                   <?php if((strcasecmp($item['item_status'], "Standing") == 0 && strcasecmp($item['paid'], "Unpaid") == 0)){ ?>
-                    <input type="number" class="form-control" value="<?php echo $api->clean($item['tattoo_width']) ?>" min="1" name="width[]" />
+                    <input type="number" class="form-control" value="<?php echo $api->sanitize_data($item['tattoo_width'], 'int'); ?>" min="1" name="width[]" />
                   <?php } else { ?>
-                    <p><?php echo $api->clean($item['tattoo_width']) ?></p>
+                    <p><?php echo $api->sanitize_data($item['tattoo_width'], 'int') ?></p>
                   <?php } ?>
                 </div>
                 <!-- height --->
                 <div class="col">
                   <label for="height" class="form-label fw-semibold">Height</label>
                   <?php if((strcasecmp($item['item_status'], "Standing") == 0 && strcasecmp($item['paid'], "Unpaid") == 0)){ ?>
-                    <input type="number" class="form-control" value="<?php echo $api->clean($item['tattoo_height']) ?>" min="1" name="height[]" />
+                    <input type="number" class="form-control" value="<?php echo $api->sanitize_data($item['tattoo_height'], 'int') ?>" min="1" name="height[]" />
                   <?php } else { ?>
-                    <p><?php echo $api->clean($item['tattoo_height']) ?></p>
+                    <p><?php echo $api->sanitize_data($item['tattoo_height'], 'int') ?></p>
                   <?php } ?>
                 </div>
               </div>
@@ -456,7 +507,7 @@
             <div class="d-flex justify-content-between align-items-center py-4 border-bottom">
               <div class="ms-3">
                 <input type="hidden" class="d-none" name="referral_index[]" value="<?php echo $referral['referral_id']?>" />
-                <input type="checkbox" class="form-check-input p-2 border-dark" name="referral[]" value="<?php echo $referral['referral_id']?>"/>
+                <input type="checkbox" class="referral form-check-input p-2 border-dark" name="referral[]" value="<?php echo $referral['referral_id']?>"/>
               </div>
               <div>
                 <label for="tattoo_width">Status</label>
@@ -518,27 +569,27 @@
           <!-- order id -->
           <div class="col">
             <label class="form-label fw-semibold">Order ID</label>
-            <p><?php echo $api->clean($order_id) ?></p>
+            <p><?php echo $api->sanitize_data($order_id, 'string') ?></p>
           </div>
           <?php
-            $timestamp = explode(' ', $api->clean($workorder['order_date']));
+            $timestamp = explode(' ', $api->sanitize_data($workorder['order_date'], 'string'));
             $date = date("M:d:Y", strtotime($timestamp[0]));
             $time = date("g:i A", strtotime($timestamp[1]));
             $date = explode(':', $date);
           ?>
           <div class="col">
             <label class="form-label fw-semibold">Placed on</label>
-            <p><?php echo $api->clean($date[0]) . " " . $api->clean($date[1]) . ", " . $api->clean($date[2]) . ", " . $api->clean($time) ?></p>
+            <p><?php echo $api->sanitize_data($date[0], 'string') . " " . $api->sanitize_data($date[1], 'int') . ", " . $api->sanitize_data($date[2], 'int') . ", " . $api->sanitize_data($time, 'string') ?></p>
           </div>
           <!-- incentive -->
           <div class="col">
             <label class="form-label fw-semibold">Incentive</label>
-            <p><?php echo $api->clean($workorder['incentive']); ?></p>
+            <p><?php echo $api->sanitize_data($workorder['incentive'], 'string'); ?></p>
           </div>
           <!-- amount due total -->
           <div class="col">
             <label for="status" class="form-label fw-semibold">Amount Due Total</label>
-            <p>Php <?php echo $api->clean($workorder['amount_due_total']) ?></p>
+            <p>Php <?php echo $api->sanitize_data($workorder['amount_due_total'], 'float'); ?></p>
           </div>
         </div>
       <?php } else { ?>
@@ -551,27 +602,6 @@
 </body>
 <?php if(isset($workorder)){ ?>
 <script>
-  var all_selected = false;
-  var select_all = document.getElementById('select-all');
-  var checkboxes = document.getElementsByClassName('form-check-input');
-
-  select_all.addEventListener('mouseover', function() {
-    this.classList.remove('text-decoration-none');
-  });
-
-  select_all.addEventListener('mouseout', function() {
-    this.classList.add('text-decoration-none');
-  });
-
-  select_all.addEventListener('click', function() {
-    all_selected = !all_selected;
-    all_selected ? this.innerText = "Deselect" : this.innerText = "Select All";
-
-    for(var i=0, count=checkboxes.length; i < count; i++){
-      checkboxes[i].checked = all_selected;
-    }
-  });
-
   // page tabs
   var orders_tab = document.getElementById('orders-tab');
   var orders = document.getElementById('orders');
@@ -603,6 +633,78 @@
     referral_btn_group.className = "d-none";
   });
 </script>
+  <?php if($editable_rows > 0){ ?>
+  <script>
+    // orders tab
+    var all_orders_selected = false;
+    var select_all_items = document.getElementById('select-all-items');
+    var item_checkboxes = document.getElementsByClassName('order_item');
+    
+    select_all_items.classList.add('d-inline-block');
+
+    select_all_items.addEventListener('mouseover', function() {
+      this.classList.remove('text-decoration-none');
+    });
+
+    select_all_items.addEventListener('mouseout', function() {
+      this.classList.add('text-decoration-none');
+    });
+
+    select_all_items.addEventListener('click', function() {
+      all_orders_selected = !all_orders_selected;
+      all_orders_selected ? this.innerText = "Deselect" : this.innerText = "Select All";
+
+      for(var i=0, count=item_checkboxes.length; i < count; i++){
+        item_checkboxes[i].checked = all_orders_selected;
+      }
+    });
+
+    orders_tab.addEventListener('click', function(){
+      select_all_items.classList.remove('d-none');
+      select_all_items.classList.add('d-inline-block');
+    });
+
+    referrals_tab.addEventListener('click', function(){
+      select_all_items.classList.remove('d-inline-block');
+      select_all_items.classList.add('d-none');
+    });
+  </script>
+  <?php } if($api->num_rows($referrals) > 0){ ?>
+  <script>
+    var all_referrals_selected = false;
+    var select_all_referrals = document.getElementById('select-all-referrals');
+    var referral_checkboxes = document.getElementsByClassName('referral');
+
+    select_all_referrals.classList.add('d-none');
+
+    select_all_referrals.addEventListener('mouseover', function() {
+      this.classList.remove('text-decoration-none');
+    });
+
+    select_all_referrals.addEventListener('mouseout', function() {
+      this.classList.add('text-decoration-none');
+    });
+
+    select_all_referrals.addEventListener('click', function() {
+      all_referrals_selected = !all_referrals_selected;
+      all_referrals_selected ? this.innerText = "Deselect" : this.innerText = "Select All";
+
+      for(var i=0, count=referral_checkboxes.length; i < count; i++){
+        referral_checkboxes[i].checked = all_referrals_selected;
+      }
+    });
+
+    orders_tab.addEventListener('click', function(){
+      select_all_referrals.classList.remove('d-inline-block');
+      select_all_referrals.classList.add('d-none');
+    });
+
+    referrals_tab.addEventListener('click', function(){
+      select_all_referrals.classList.remove('d-none');
+      select_all_referrals.classList.add('d-inline-block');
+    });
+  </script>
+  <?php } ?>
 <?php } ?>
 <script src="../api/bootstrap-bundle-min.js"></script>
 <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script> -->

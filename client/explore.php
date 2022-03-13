@@ -106,19 +106,19 @@
 
         if($api->num_rows($res) > 0){
           while($row = $api->fetch_assoc($res)){
-            $id = $api->clean($row['tattoo_id']);
-            $name = $api->clean($row['tattoo_name']);
-            $price = $row['tattoo_price'];
-            $height = $row['tattoo_height'];
-            $width = $row['tattoo_width'];
-            $image = $row['tattoo_image'];
-            $description = $api->clean($row['tattoo_description']);
-            $color_scheme = $api->clean($row['color_scheme']);
-            $complexity = $api->clean($row['complexity_level']);  
+            $id = $api->sanitize_data($row['tattoo_id'], 'string');
+            $name = $api->sanitize_data($row['tattoo_name'], 'string');
+            $price = $api->sanitize_data($row['tattoo_price'], 'float');
+            $height = $api->sanitize_data($row['tattoo_height'], 'int');
+            $width = $api->sanitize_data($row['tattoo_width'], 'int');
+            $image = $api->sanitize_data($row['tattoo_image'], 'string');
+            $description = $api->sanitize_data($row['tattoo_description'], 'string');
+            $color_scheme = $api->sanitize_data($row['color_scheme'], 'string');
+            $complexity = $api->sanitize_data($row['complexity_level'], 'string');  
       ?>
-        <a class="tattoo-card my-3 d-block shadow-sm rounded" href="#<?php echo $name?>" style="background-image: url(<?php echo $api->clean($image); ?>)"></a>
+        <a class="tattoo-card my-3 d-block shadow-sm rounded" href="#<?php echo $name?>" style="background-image: url(<?php echo $image; ?>)"></a>
         <div id="<?php echo $name?>" class="tattoo_detail row justify-content-center align-items-start h-100 w-100">
-          <div class="order-first tattoo-image col-5 bg-light" style="background-image: url(<?php echo $api->clean($image); ?>)"></div>
+          <div class="order-first tattoo-image col-5 bg-light" style="background-image: url(<?php echo $image; ?>)"></div>
           <div class="order-last d-flex col vh-100 border-start border-1 justify-content-center align-items-center">
             <div class="flex-grow-1">
             <div class="position-absolute top-0 start-0 mt-5 ms-5 d-flex align-items-center justify-content-center bg-white border" style="width: 75px; height: 75px;">
@@ -130,7 +130,7 @@
                   <input type="hidden" class="d-none" name="tattoo_name" value="<?php echo $id ?>" required>
                   <div>
                     <h1 class="display-4 fw-bold my-0"><?php echo $name ?></h1>
-                    <h4 class="text-secondary"><?php echo "₱".$price ?></h4>
+                    <h4 class="text-secondary">₱<?php echo $price ?></h4>
                   </div>
                   <div class="my-5 tattoo-description">
                     <p class="text-wrap"><?php echo $description ?></p>
@@ -176,7 +176,7 @@
                     </div>
                   </div>
                   <p class="my-3 <?php echo isset($_SESSION['res']) ? "d-block" : "d-none"; ?> text-danger"><?php if(isset($_SESSION['res'])){ echo $_SESSION['res']; } ?></p>
-                  <button type="submit" class="btn btn-dark btn-lg" name="order_item">Add to Order</button>
+                  <button type="submit" class="btn btn-dark btn-lg d-flex align-items-center" name="order_item"><span class="material-icons md-48 lh-base pe-2">add_shopping_cart</span>Add to Order</button>
                 </form>
               </div>
             </div>

@@ -7,8 +7,8 @@
   } else {
     require_once '../api/api.php';
     $api = new api();
-    $client_id = $api->clean($_SESSION['client_id']);
-    $order_id = $api->clean($_SESSION['order_id']);
+    $client_id = $api->sanitize_data($_SESSION['client_id'], 'string');
+    $order_id = $api->sanitize_data($_SESSION['order_id'], 'string');
   }
 
   // navigation guard
@@ -79,7 +79,7 @@
         $statement = null;
       }
 
-      echo (strcasecmp($workorder['incentive'], "15% Discount") == 0) ? "<script>var discounted = true;</script>" : "<script>var discounted = false;</script>";
+      echo (strcasecmp($workorder['incentive'], "15% Discount") == 0) ? "<script>const discounted = true;</script>" : "<script>const discounted = false;</script>";
     } catch (Exception $e) {
         exit();
         $_SESSION['res'] = $e->getMessage();
@@ -161,46 +161,46 @@
       <div class="border-bottom d-flex align-items-center justify-content-between p-5">
         <div class="d-flex align-items-center">
           <div class="me-4">
-            <input type="hidden" class="d-none" name="index[]" value="<?php echo $item['item_id']?>" />
-            <input type="checkbox" class="form-check-input p-2" name="item[]" value="<?php echo $item['item_id']?>" checked/>
+            <input type="hidden" class="d-none" name="index[]" value="<?php echo $api->sanitize_data($item['item_id'], 'string'); ?>" />
+            <input type="checkbox" class="form-check-input p-2" name="item[]" value="<?php echo $api->sanitize_data($item['item_id'], 'string'); ?>" checked/>
           </div>
           <!-- tattoo image -->
-          <div class="tattoo-image rounded-pill shadow-sm" style="background-image: url(<?php echo $api->clean($item['tattoo_image']); ?>)"></div>
+          <div class="tattoo-image rounded-pill shadow-sm" style="background-image: url(<?php echo $api->sanitize_data($item['tattoo_image'], 'string'); ?>)"></div>
         </div>
         <div class="w-100 ms-6">
           <div class="row my-5">
             <!-- tattoo name -->
             <div class="col">
               <label class="form-label fw-semibold">Item</label>
-              <p><?php echo $api->clean($item['tattoo_width']) . "x" . $api->clean($item['tattoo_height']) . " " . $api->clean($item['tattoo_name']) ?></p>
+              <p><?php echo $api->sanitize_data($item['tattoo_width'], 'int') . "x" . $api->sanitize_data($item['tattoo_height'], 'int') . " " . $api->sanitize_data($item['tattoo_name'], 'string') ?></p>
             </div>
             <!-- item status -->
             <div class="col">
               <label for="status" class="form-label fw-semibold">Item Status</label>
-              <p><?php echo $api->clean($item['item_status']) ?></p>
+              <p><?php echo $api->sanitize_data($item['item_status'], 'string') ?></p>
             </div>
             <!-- payment status -->
             <div class="col">
               <label class="form-label fw-semibold">Payment Status</label>
-              <p><?php echo $api->clean($item['paid']); ?></p>
+              <p><?php echo $api->sanitize_data($item['paid'], 'string'); ?></p>
             </div>
           </div>
           <div class="row my-5">
             <!-- quantity -->
             <div class="col">
               <label for="quantity" class="form-label fw-semibold">Quantity</label>
-              <input type="hidden" class="d-none" value="<?php echo $api->clean($item['tattoo_quantity']) ?>" min="<?php echo $api->clean($item['tattoo_quantity']) ?>" max="<?php echo $api->clean($item['tattoo_quantity']) ?>" name="quantity[]" />
-              <input type="number" class="quantity form-control" value="<?php echo $api->clean($item['tattoo_quantity']) ?>" min="1" max="<?php echo $api->clean($item['tattoo_quantity']) ?>" name="checkout_quantity[]" />
+              <input type="hidden" class="d-none" value="<?php echo $api->sanitize_data($item['tattoo_quantity'], 'int') ?>" min="<?php echo $api->sanitize_data($item['tattoo_quantity'], 'int') ?>" max="<?php echo $api->sanitize_data($item['tattoo_quantity'], 'int'); ?>" name="quantity[]" />
+              <input type="number" class="quantity form-control" value="<?php echo $api->sanitize_data($item['tattoo_quantity'], 'int') ?>" min="1" max="<?php echo $api->sanitize_data($item['tattoo_quantity'], 'int') ?>" name="checkout_quantity[]" />
             </div>
             <!-- price -->
             <div class="col">
               <label for="quantity" class="form-label fw-semibold">Price</label>
-              <p class="prices">₱<?php echo $api->clean($item['tattoo_price']) ?></p>
+              <p class="prices">₱<?php echo $api->sanitize_data($item['tattoo_price'], 'float') ?></p>
             </div>
             <!-- amount_addon -->
             <div class="col">
               <label for="status" class="form-label fw-semibold">Reservation Addon</label>
-              <p class="addons"><?php echo ($item['amount_addon'] == 0) ? "N/A" : "₱".$api->clean($item['amount_addon']); ?></p>
+              <p class="addons"><?php echo ($item['amount_addon'] == 0) ? "N/A" : "₱".$api->sanitize_data($item['amount_addon'], 'string'); ?></p>
             </div>
           </div>
         </div>
@@ -215,17 +215,17 @@
         <!-- order id -->
         <div class="col">
           <label class="form-label fw-semibold">Order ID</label>
-          <p><?php echo $api->clean($order_id) ?></p>
+          <p><?php echo $api->sanitize_data($order_id, 'string') ?></p>
         </div>
         <?php
-          $timestamp = explode(' ', $api->clean($workorder['order_date']));
+          $timestamp = explode(' ', $api->sanitize_data($workorder['order_date'], 'string'));
           $date = date("M:d:Y", strtotime($timestamp[0]));
           $time = date("g:i A", strtotime($timestamp[1]));
           $date = explode(':', $date);
         ?>
         <div class="col">
           <label class="form-label fw-semibold">Placed on</label>
-          <p><?php echo $api->clean($date[0]) . " " . $api->clean($date[1]) . ", " . $api->clean($date[2]) . ", " . $api->clean($time) ?></p>
+          <p><?php echo $api->sanitize_data($date[0], 'string') . " " . $api->sanitize_data($date[1], 'int') . ", " . $api->sanitize_data($date[2], 'int') . ", " . $api->sanitize_data($time, 'string') ?></p>
         </div>
         <!-- 15% discount -->
         <div class="col">
@@ -235,7 +235,7 @@
         <!-- amount due total -->
         <div class="col">
           <label class="form-label fw-semibold">Amount Due Total</label>
-          <p id="total">₱<?php echo $workorder['amount_due_total'] ?></p>
+          <p id="total">₱<?php echo $api->sanitize_data($workorder['amount_due_total'], 'float'); ?></p>
         </div>
       </div>
       <hr class="mb-5" />
@@ -244,12 +244,12 @@
           <h4 class="mb-3">Client Name</h4>
           <div class="col">
             <label class="form-label text-muted" for="first_name">First Name</label>
-            <input type="text" class="form-control" value="<?php echo $workorder['client_fname']?>" <?php if($item_count == 0){ echo "disabled"; }?> name="first_name" minlength="2" maxlength="50" required>
+            <input type="text" class="form-control" value="<?php echo $api->sanitize_data($workorder['client_fname'], 'string'); ?>" <?php if($item_count == 0){ echo "disabled"; }?> name="first_name" minlength="2" maxlength="50" required>
             <p class="my-2 <?php echo isset($_SESSION['first_name_err']) ? "d-block" : "d-none"; ?> text-danger height_err"><?php if(isset($_SESSION['first_name_err'])){ echo $_SESSION['first_name_err']; } ?></p>
           </div>
           <div class="col">
             <label class="form-label text-muted" for="last_name">Last Name</label>
-            <input type="text" class="form-control" value="<?php echo $workorder['client_lname']?>" <?php if($item_count == 0){ echo "disabled"; }?> name="last_name" minlength="2" maxlength="50" required>
+            <input type="text" class="form-control" value="<?php echo $api->sanitize_data($workorder['client_lname'], 'string'); ?>" <?php if($item_count == 0){ echo "disabled"; }?> name="last_name" minlength="2" maxlength="50" required>
             <p class="my-2 <?php echo isset($_SESSION['last_name_err']) ? "d-block" : "d-none"; ?> text-danger height_err"><?php if(isset($_SESSION['last_name_err'])){ echo $_SESSION['last_name_err']; } ?></p>
           </div>
         </div>

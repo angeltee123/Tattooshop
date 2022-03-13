@@ -126,13 +126,13 @@
             <div class="row">
                 <h2><?php echo $row['tattoo_name'] ?></h2>
                 <div class="col-md-3 mt-4 btn-light tatname">
-                  <input type="hidden" readonly class="d-none" value="<?php echo $row['item_id'] ?>" name="item_id" />
+                  <input type="hidden" readonly class="d-none" value="<?php echo $api->sanitize_data($row['item_id'], 'string'); ?>" name="item_id" />
                 </div>
 
                 <!--- Item Quantity--->
                 <div class="col-md-3 mt-4">
-                  <input type="hidden" class="d-none" name="original_quantity" value="<?php echo $row['tattoo_quantity'] ?>" required />
-                  <input type="text" class="form-control" name="quantity" id="quantity" value="<?php echo $row['tattoo_quantity'] ?>" min="1" max="<?php echo $row['tattoo_quantity'] ?>" placeholder="Item Quantity" required />
+                  <input type="hidden" class="d-none" name="original_quantity" value="<?php echo $api->sanitize_data($row['tattoo_quantity'], 'int'); ?>" required />
+                  <input type="text" class="form-control" name="quantity" id="quantity" value="<?php echo $api->sanitize_data($row['tattoo_quantity'], 'int'); ?>" min="1" max="<?php echo $api->sanitize_data($row['tattoo_quantity'], 'int') ?>" placeholder="Item Quantity" required />
                 </div>
             </div>
 

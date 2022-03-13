@@ -8,12 +8,21 @@
 body {
   width: 100%;
   height: auto;
-  font-family: 'Open Sans', 'Libre Caslon Text', 'Arial', sans-serif;
+  color: #000000;
+  font-family: 'Open Sans', 'Raleway', 'Helvetica Neue', 'Libre Caslon Text', 'Arial', sans-serif;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
 }
 
 html a, a:link, a:visited {
   text-decoration: none;
   color: #000000;
+}
+
+textarea {
+  resize: none;
 }
 
 .header {
@@ -23,213 +32,55 @@ html a, a:link, a:visited {
   position: sticky;
 }
 
-/* CUSTOM BOOTSTRAP-STYLE CLASSES */
+.content {
+  margin: 100px auto;
+}
+
+.tabs {
+  transition: color .4s;
+}
+
+
+.form-select-plaintext {
+  background-color: #e9ecef;
+}
+
+/* CUSTOM BOOTSTRAP CLASSES */
+
+.no-select {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Old versions of Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
+  pointer-events: none;
+}
 
 /* custom backgrounds */
-
-.bg-none {
-  background-color: rgba(255, 255, 255, 0);
-}
-
-.bg-extralight {
-  background-color: #fefefe;
-}
+.bg-none { background-color: rgba(255, 255, 255, 0); } .bg-extralight { background-color: #fefefe; }
 
 /* custom borders */
-
-.border-x {
-  border-left:1px solid #dee2e6 !important;
-  border-left:1px solid #dee2e6 !important;
-}
-
-.border-y {
-  border-top:1px solid #dee2e6 !important;
-  border-bottom:1px solid #dee2e6 !important;
-}
+.border-x { border-left: 1px solid #dee2e6 !important; border-right: 1px solid #dee2e6 !important; } .border-y { border-top: 1px solid #dee2e6 !important; border-bottom: 1px solid #dee2e6 !important; }
+.border-x-0 { border-left: none !important; border-right: none !important; } .border-y-0 { border-top: none !important; border-bottom: none !important; }
 
 /* custom fonts */
-
-.fs-display-1 {
-  font-size: 5rem;
-}
-
-.fs-display-2 {
-  font-size: 4.5rem;
-}
-
-.fs-display-3 {
-  font-size: 4rem;
-}
-
-.fs-display-4 {
-  font-size: 3.5rem;
-}
-
-.fs-display-5 {
-  font-size: 3rem;
-}
-
-.fs-display-6 {
-  font-size: 2.5rem;
-}
+.fs-display-1 { font-size: 5rem; } .fs-display-2 { font-size: 4.5rem; } .fs-display-3 {font-size: 4rem; } .fs-display-4 { font-size: 3.5rem; } .fs-display-5 { font-size: 3rem; } .fs-display-6 { font-size: 2.5rem; }
 
 /* custom widths */
-
-.w-60 {
-  width: 60%;
-}
-
-.w-65 {
-  width: 65%;
-}
-
-.w-70 {
-  width: 70%;
-}
-
-.w-80 {
-  width: 80%;
-}
-
-.w-85 {
-  width: 85%;
-}
-
-.w-90 {
-  width: 90%;
-}
+.w-60 { width: 60%; } .w-65 { width: 65%; } .w-70 { width: 70%; } .w-80 { width: 80%; } .w-85 { width: 85%; } .w-90 { width: 90%; }
 
 /* custom font-weights */
 
-.fw-semibold {
-  font-weight: 600;
-}
+.fw-semibold { font-weight: 600; }
+.fw-extrabold { font-weight: 800; }
 
-.fw-extrabold {
-  font-weight: 800;
-}
-
-/* custom spacing */
-
-/*
-  margin: 0 auto;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 0;
-    margin-bottom: 0;
-*/
-
-.m-6 {
-  margin: 3.5rem;
-}
-
-.mx-6 {
-  margin: 0 3.5rem;
-}
-
-.ms-6 {
-  margin-left: 3.5rem;
-}
-
-.me-6 {
-  margin-right: 3.5rem;
-}
-
-.my-6 {
-  margin: 3.5rem 0;
-}
-
-.mt-6 {
-  margin-top: 3.5rem;
-}
-
-.mb-6 {
-  margin-top: 3.5rem;
-}
-
-.m-7 {
-  margin: 3.5rem;
-}
-
-.mx-7 {
-  margin: 0 4rem;
-}
-
-.ms-7 {
-  margin-left: 4rem;
-}
-
-.me-7 {
-  margin-right: 4rem;
-}
-
-.my-7 {
-  margin: 4rem 0;
-}
-
-.mt-7 {
-  margin-top: 4rem;
-}
-
-.mb-7 {
-  margin-top: 4rem;
-}
-
-.m-8 {
-  margin: 4.5rem;
-}
-
-.mx-8 {
-  margin: 0 4.5rem;
-}
-
-.ms-8 {
-  margin-left: 4.5rem;
-}
-
-.me-8 {
-  margin-right: 4.5rem;
-}
-
-.my-8 {
-  margin: 4.5rem 0;
-}
-
-.mt-8 {
-  margin-top: 4.5rem;
-}
-
-.mb-8 {
-  margin-top: 4.5rem;
-}
-
-.m-9 {
-  margin: 5rem;
-}
-
-.mx-9 {
-  margin: 0 5rem;
-}
-
-.ms-9 {
-  margin-left: 5rem;
-}
-
-.me-9 {
-  margin-right: 5rem;
-}
-
-.my-9 {
-  margin: 5rem 0;
-}
-
-.mt-9 {
-  margin-top: 5rem;
-}
-
-.mb-9 {
-  margin-top: 5rem;
-}
+/* CUSTOM SPACING */
+/* custom margins */
+.m-6 { margin: 3.5rem; } .mx-6 { margin-left: 3.5rem; margin-right: 3.5rem; } .ms-6 { margin-left: 3.5rem; } .me-6 { margin-right: 3.5rem; } .my-6 { margin-top: 3.5rem; margin-bottom: 3.5rem; } .mt-6 { margin-top: 3.5rem; } .mb-6 { margin-bottom: 3.5rem; }
+.m-7 { margin: 4rem; } .mx-7 { margin-left: 4rem; margin-right: 4rem; } .ms-7 { margin-left: 4rem; } .me-7 { margin-right: 4rem; } .my-7 { margin-top: 4rem; margin-bottom: 4rem; } .mt-7 { margin-top: 4rem; } .mb-7 { margin-bottom: 4rem; }
+.m-8 { margin: 4.5rem; } .mx-8 { margin-left: 4.5rem; margin-right: 4.5rem; } .ms-8 { margin-left: 4.5rem; } .me-8 { margin-right: 4.5rem; } .my-8 { margin-top: 4.5rem; margin-bottom: 4.5rem; } .mt-8 { margin-top: 4.5rem; } .mb-8 { margin-bottom: 4.5rem; }
+.m-9 { margin: 5rem; } .mx-9 { margin-left: 5rem; margin-right: 5rem; } .ms-9 { margin-left: 5rem; } .me-9 { margin-right: 5rem; } .my-9 { margin-top: 5rem; margin-bottom: 5rem; } .mt-9 { margin-top: 5rem; } .mb-9 { margin-bottom: 5rem; }
 
 /*
   padding: 0 auto;
@@ -237,119 +88,12 @@ html a, a:link, a:visited {
     padding-right: auto;
     padding-top: 0;
     padding-bottom: 0;
-*/ 
+*/
 
-.p-6 {
-  padding: 3.5rem;
-}
-
-.px-6 {
-  padding: 0 3.5rem;
-}
-
-.ps-6 {
-  padding-left: 3.5rem;
-}
-
-.pe-6 {
-  padding-right: 3.5rem;
-}
-
-.py-6 {
-  padding: 3.5rem 0;
-}
-
-.pt-6 {
-  padding-top: 3.5rem;
-}
-
-.pb-6 {
-  padding-top: 3.5rem;
-}
-
-.p-7 {
-  padding: 4rem;
-}
-
-.px-7 {
-  padding: 0 4rem;
-}
-
-.ps-7 {
-  padding-left: 4rem;
-}
-
-.pe-7 {
-  padding-right: 4rem;
-}
-
-.py-7 {
-  padding: 4rem 0;
-}
-
-.pt-7 {
-  padding-top: 4rem;
-}
-
-.pb-7 {
-  padding-top: 4rem;
-}
-
-.p-8 {
-  padding: 4.5rem;
-}
-
-.px-8 {
-  padding: 0 4.5rem;
-}
-
-.ps-8 {
-  padding-left: 4.5rem;
-}
-
-.pe-8 {
-  padding-right: 4.5rem;
-}
-
-.py-8 {
-  padding: 4.5rem 0;
-}
-
-.pt-8 {
-  padding-top: 4.5rem;
-}
-
-.p-9 {
-  padding: 5rem;
-}
-
-.px-9 {
-  padding: 0 5rem;
-}
-
-.ps-9 {
-  padding-left: 5rem;
-}
-
-.pe-9 {
-  padding-right: 5rem;
-}
-
-.py-9 {
-  padding: 5rem 0;
-}
-
-.pt-9 {
-  padding-top: 5rem;
-}
-
-.pb-9 {
-  padding-top: 5rem;
-}
-
-.pb-8 {
-  padding-top: 5rem;
-}
+.p-6 { padding: 3.5rem; } .px-6 { padding-left: 3.5rem; padding-right: 3.5rem; } .ps-6 { padding-left: 3.5rem; } .pe-6 { padding-right: 3.5rem; } .py-6 { padding-top: 3.5rem; padding-bottom: 3.5rem; } .pt-6 { padding-top: 3.5rem; } .pb-6 { padding-bottom: 3.5rem; }
+.p-7 { padding: 4rem; } .px-7 { padding-left: 4rem; padding-right: 4rem; } .ps-7 { padding-left: 4rem; } .pe-7 { padding-right: 4rem; } .py-7 { padding-top: 4rem; padding-bottom: 4rem; } .pt-7 { padding-top: 4rem; } .pb-7 { padding-bottom: 4rem; }
+.p-8 { padding: 4.5rem; } .px-8 { padding-left: 4.5rem; padding-right: 4.5rem; } .ps-8 { padding-left: 4.5rem; } .pe-8 { padding-right: 4.5rem; } .py-8 { padding-top: 4.5rem; padding-bottom: 4.5rem; } .pt-8 { padding-top: 4.5rem; } .pb-8 { padding-bottom: 4.5rem; }
+.p-9 { padding: 5rem; } .px-9 { padding-left: 5rem; padding-right: 5rem; } .ps-9 { padding-left: 5rem; } .pe-9 { padding-right: 5rem; } .py-9 { padding-top: 5rem; padding-bottom: 5rem; } .pt-9 { padding-top: 5rem; } .pb-9 { padding-bottom: 5rem; }
 
 /* COLLAPSIBLE STYLE */
 
@@ -357,11 +101,6 @@ html a, a:link, a:visited {
   background: #fefefe;
   text-align: left;
   width: 100%;
-  border: 1px solid rgba(0,0,0,.125);
-}
-
-.collapse {
-  border: 1px solid rgba(0,0,0,.125);
 }
 
 /* NAVBAR STYLE */
