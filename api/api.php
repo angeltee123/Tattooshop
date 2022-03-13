@@ -12,67 +12,124 @@ class API {
 
     /***** CREATE CONNECTION *****/
 
+    // api class constructor
     public function __construct(){
         $this->conn = new mysqli($this->server, $this->user, $this->password, $this->db, $this->port);
-        $this->conn->connect_error ? die("Failed to establish connection. Error code " . $this->conn->connect_errno . " - " . $this->conn->connect_error ) : $this->conn->set_charset('utf8mb4');
+        if($this->conn->connect_error){
+            die("Failed to establish connection. Error code " . $this->conn->connect_errno . " - " . $this->conn->connect_error );
+        } else {
+            $this->conn->set_charset('utf8mb4');
+            $this->change_user("user");
+        }
     }
 
     /***** HELPER FUNCTIONS *****/
 
-    public function clean($data){
-        $data = trim($data);
-        $data = stripslashes($data);
-        $data = htmlspecialchars($data);
+    // input sanitization
+    public function sanitize_data($data, $type){
+        switch($type){
+            // int sanitization
+            case 'int':
+                $data = filter_var($data, FILTER_SANITIZE_NUMBER_INT);
+                $data = intval($data);
+            break;
+
+            // float sanitization
+            case 'float':
+                $data = filter_var($data, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
+                $data = doubleval($data);
+            break;
+
+            // email sanitization
+            case 'email':
+                $data = trim($data);
+                $data = filter_var($data, FILTER_SANITIZE_EMAIL);
+            break;
+
+            // default case
+            case 'string':
+            default:
+                $data = trim($data);
+                $data = stripslashes($data);
+                $data = filter_var($data, FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
+                $data = htmlspecialchars($data);
+            break;
+        }
+
         return $data;
     }
 
-    public function is_valid_date($date){
+    // input validation
+    public function validate_data($data, $type){
         $checks = false;
 
-        $checks = (bool) strtotime($date);
-        if($checks){
-            $ymd = explode('-', $date);
-            $checks = checkdate($ymd[1], $ymd[2], $ymd[0]);
-            if($checks){
-                $d = DateTime::createFromFormat("Y-m-d", $date);
+        switch($type){
+            // int validation
+            case 'int':
+                $checks = filter_var($data, FILTER_VALIDATE_INT);
+                $checks = is_int($data);
+            break;
 
-                $checks = ($d && $d->format("Y-m-d") === $date) ? true : false;
+            // float validation
+            case 'float':
+                $checks = filter_var($data, FILTER_VALIDATE_FLOAT);
+                $checks = is_double($data);
+            break;
+
+            // email validation
+            case 'email':
+                $checks = filter_var($data, FILTER_VALIDATE_EMAIL);
+            break;
+
+            // date validation
+            case 'date':
+                $checks = (bool) strtotime($data);
                 if($checks){
-                    $date = new DateTime($date);
-                    
-                    $today = new DateTime();
+                    $ymd = explode('-', $data);
+                    $checks = checkdate($ymd[1], $ymd[2], $ymd[0]);
+                    if($checks){
+                        $d = DateTime::createFromFormat("Y-m-d", $data);
 
-                    $checks = ($date >= $today) ? true : false;
+                        $checks = ($d && $d->format("Y-m-d") === $data) ? true : false;
+                        if($checks){
+                            $date = new DateTime($data);
+                            
+                            $today = new DateTime();
+
+                            $checks = ($date >= $today) ? true : false;
+                        }
+                    }
                 }
-            }
+            break;
+
+            // time validation
+            case 'time':
+                $time = strtotime($data);
+                $checks = (bool) $time;
+                if($checks){
+                    $time = date("G:i:s", $time);
+
+                    $hms = explode(':', $time);
+                    $checks = ($hms[0] >= 0 && $hms[0] <= 24) ? true : false;
+                    if($checks){
+                        $checks = ($hms[1] >= 0 && $hms[1] <= 60) ? true : false;
+                        if($checks){
+                            $checks = ($hms[2] >= 0 && $hms[2] <= 60) ? true : false;
+                        }
+                    }
+                }
+            break;
+
+            // default case
+            default:
+                $checks = filter_var($data, FILTER_SANITIZE_STRING);
+            break;
         }
 
         return $checks;
     }
 
-    public function is_valid_time($time){
-        $checks = false;
-
-        $time = strtotime($time);
-        $checks = (bool) $time;
-        if($checks){
-            $time = date("G:i:s", $time);
-
-            $hms = explode(':', $time);
-            $checks = ($hms[0] >= 0 && $hms[0] <= 24) ? true : false;
-            if($checks){
-                $checks = ($hms[1] >= 0 && $hms[1] <= 60) ? true : false;
-                if($checks){
-                    $checks = ($hms[2] >= 0 && $hms[2] <= 60) ? true : false;
-                }
-            }
-        }
-
-        return $checks;
-    }
-
-    /*  check if scheduled time is within service hours,
-        adjust if business changes their service hours
+    /*  checks if scheduled time is within service hours
     public function within_service_hours($time){
         $checks = false;
         if($this->is_valid_time($time)){
@@ -86,6 +143,7 @@ class API {
 
     /***** MYSQL HELPERS *****/
 
+    // mysql table
     public function table($string, $params){
         if(!empty($string) && !empty($params)){
             if(!is_array($params)){
@@ -93,7 +151,7 @@ class API {
             } else {
                 if(!empty($params)){
                     for ($k = 0; $k < count($params); $k++) {
-                        $string = $string . $this->clean($params[$k]) . ", ";
+                        $string = $string . $this->sanitize_data($params[$k], "string") . ", ";
                     }
         
                     $string = substr($string, 0, -2);
@@ -105,18 +163,20 @@ class API {
         }
     }
 
+    // mysql join clause
     public function join($type, $left, $right, $left_kv, $right_kv){
-        $join = (is_string($type)) ? "(" . $this->clean($left) . " " . strtoupper($type) . " JOIN " : "(" . $this->clean($left) . " JOIN ";
-        $join = $join . $this->clean($right) . " ON " . $this->clean($left_kv) . "=" . $this->clean($right_kv) . ")";
+        $join = (is_string($type)) ? "(" . $this->sanitize_data($left, "string") . " " . strtoupper($type) . " JOIN " : "(" . $this->sanitize_data($left, "string") . " JOIN ";
+        $join = $join . $this->sanitize_data($right, "string") . " ON " . $this->sanitize_data($left_kv, "string") . "=" . $this->sanitize_data($right_kv, "string") . ")";
         return $join;
     }
 
+    // mysql where clause
     public function where($string, $cols, $params){
         if(!empty($params) && !empty($params)){
             $string = $string . "WHERE ";
             if(!is_array($cols) && !is_array($params)){
-                $cols = is_string($cols) ? $this->clean($cols) : $cols;
-                $params = is_string($params) ? $this->clean($params) : $params;
+                $cols = is_string($cols) ? $this->sanitize_data($cols, "string") : $cols;
+                $params = is_string($params) ? $this->sanitize_data($params, "string") : $params;
                 $string = $string . $cols . "=" . $params . " ";
             } else {
                 $col_count = count($cols);
@@ -124,8 +184,8 @@ class API {
 
                 if($col_count == $param_count){
                     for ($k = 0; $k < $col_count; $k++) {
-                        $cols[$k] = is_string($cols[$k]) ? $this->clean($cols[$k]) : $cols[$k];
-                        $params[$k] = is_string($params[$k]) ? $this->clean($params[$k]) : $params[$k];
+                        $cols[$k] = is_string($cols[$k]) ? $this->sanitize_data($cols[$k], "string") : $cols[$k];
+                        $params[$k] = is_string($params[$k]) ? $this->sanitize_data($params[$k], "string") : $params[$k];
                         $string = $string . $cols[$k] . "=" . $params[$k] . " AND ";
                     }
         
@@ -138,16 +198,18 @@ class API {
         }
     }
 
+    // mysql limit clause
     public function limit($string, $limit){
         if(is_int($limit)){
             return $string . "LIMIT " . $limit;
         }
     }
 
+    // mysql order by clause
     public function order($string, $params, $order){
         if(!empty($params) && !empty($order)){
             if(!is_array($params)){
-                $string = $string . "ORDER BY " . $this->clean($params) . " " . $this->clean($order) . " ";
+                $string = $string . "ORDER BY " . $this->sanitize_data($params, "string") . " " . $this->sanitize_data($order, "string") . " ";
             } else {
                 $param_count = count($params);
                 $order_count = count($order);
@@ -156,7 +218,7 @@ class API {
                     $string = $string . "ORDER BY ";
                     
                     for ($k = 0; $k < count($params); $k++) {
-                        $string = $string . $this->clean($params[$k]) . " " . $this->clean($order[$k]) . ", ";
+                        $string = $string . $this->sanitize_data($params[$k], "string") . " " . $this->sanitize_data($order[$k], "string") . ", ";
                     }
 
                     $string = substr($string, 0, -2);
@@ -168,8 +230,9 @@ class API {
         }
     }
 
+    // php mysqli change_user()
     public function change_user($user){
-        $user = $this->clean($user);
+        $user = $this->sanitize_data($user, "string");
         $password = "";
 
         if (strcasecmp($user, "user") == 0){
@@ -183,6 +246,7 @@ class API {
         $this->conn->change_user($user, $password, $this->db);
     }
 
+    // get workorder details
     public function get_workorder($client_id){
         if(!empty($client_id)){
             $_SESSION['order_id'] = "";
@@ -353,6 +417,7 @@ class API {
         }
     }
 
+    // update workorder amount due total
     public function update_total($order_id, $client_id){
         if(!empty($order_id) && !empty($client_id)){
             try {
@@ -492,17 +557,19 @@ class API {
 
     /***** SELECT *****/
 
+    // mysql select
     public function select(){
         return "SELECT ";
     }
 
+    // mysql select statement parameters
     public function params($string, $params){
         if(!is_array($params)){
             return $string . $params . " ";
         } else {
             if(!empty($params)){
                 for ($k = 0; $k < count($params); $k++) {
-                    $string = $string . $this->clean($params[$k]) . ", ";
+                    $string = $string . $this->sanitize_data($params[$k], "string") . ", ";
                 }
     
                 $string = substr($string, 0, -2);
@@ -512,21 +579,24 @@ class API {
         }
     }
 
+    // mysql from
     public function from($string){
         return $string . "FROM ";
     }
 
     /***** INSERT *****/
 
+    // mysql insert
     public function insert(){
         return "INSERT INTO ";
     }
 
+    // mysql insert statement parameters
     public function columns($string, $params = array()){
         if(!empty($params)){
             $string = $string . "(";
             for ($k = 0; $k < count($params); $k++) {
-                $string = $string . $this->clean($params[$k]) . ", ";
+                $string = $string . $this->sanitize_data($params[$k], "string") . ", ";
             }
 
             $string = substr($string, 0, -2);
@@ -535,21 +605,24 @@ class API {
         }  
     }
 
+    // mysql values
     public function values($string){
         return $string . "VALUES ";
     }
 
     /***** UPDATE *****/
 
+    // mysql update
     public function update(){
         return "UPDATE ";
     }
 
+    // mysql update set parameters
     public function set($string, $cols, $params){
         if(!empty($cols) && !empty($params)){
             if(!is_array($cols) && !is_array($params)){
                 $string = $string . "SET ";
-                $string = $string . $this->clean($cols) . "=" . $this->clean($params) . " ";
+                $string = $string . $this->sanitize_data($cols, "string") . "=" . $this->sanitize_data($params, "string") . " ";
             } else {
                 $col_count = count($cols);
                 $param_count = count($params);
@@ -558,7 +631,7 @@ class API {
                     $string = $string . "SET ";
 
                     for ($k = 0; $k < $col_count; $k++) {
-                        $string = $string . $this->clean($cols[$k]) . "=" . $this->clean($params[$k]) . ", ";
+                        $string = $string . $this->sanitize_data($cols[$k], "string") . "=" . $this->sanitize_data($params[$k], "string") . ", ";
                     }
         
                     $string = substr($string, 0, -2);
@@ -572,34 +645,40 @@ class API {
 
     /***** DELETING *****/
 
+    // mysql delete
     public function delete(){
         return "DELETE ";
     }
 
     /***** QUERYING *****/
 
+    // php mysqli prepare()
     public function prepare($query){
         return $this->conn->prepare($query);
     }
     
+    // php mysqli execute()
     public function execute(&$statement){
         return $statement->execute();
     }
 
+    // php mysqli store_result()
     public function store_result(&$statement){
         return $statement->store_result();
     }
 
+    // php mysqli num_rows()
     public function num_rows($res){
         return $res->num_rows;
     }
 
+    // php mysqli bind_params()
     public function bind_params(&$statement, $types, $params){
         if(!is_array($params)){
             try {
                 $param_ref[] = &$types;
                 if (is_string($params)){
-                    $params = $this->clean($params);
+                    $params = $this->sanitize_data($params, "string");
                 }
                 $param_ref[] = &$params;
                 return call_user_func_array(array($statement, 'bind_param'), $param_ref);
@@ -611,7 +690,7 @@ class API {
                 $param_ref[] = &$types;
                 for ($i = 0; $i < count($params); $i++) {
                     if (is_string($params[$i])){
-                        $params[$i] = $this->clean($params[$i]);
+                        $params[$i] = $this->sanitize_data($params[$i], "string");
                     }
                     $param_ref[] = &$params[$i];
                 }
@@ -622,6 +701,7 @@ class API {
         }
     }
 
+    // php mysqli bind_result()
     public function bind_result(&$statement, $params = array()){
         if(!empty($params)){
             try {
@@ -638,22 +718,27 @@ class API {
         }
     }
 
+    // getting column value from returned result set
     public function get_bound_result(&$param, $bound_result){
         $param = $bound_result;
     }
 
+    // php mysqli get_result()
     public function get_result(&$statement){
         return $statement->get_result();
     }
 
+    // php mysqli fetch_assoc()
     public function fetch_assoc(&$result){
         return $result->fetch_assoc();
     }
 
+    // php mysqli free_result()
     public function free_result(&$statement){
         $statement->free_result();
     }
 
+    // php mysqli close()
     public function close(&$statement){
         return $statement->close();
     }

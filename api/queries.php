@@ -9,9 +9,9 @@ $api = new api();
 if(isset($_POST['signup'])){
     $errors = array();
 
-    $first_name = $api->clean(ucfirst($_POST['first_name']));
-    $last_name = $api->clean(ucfirst($_POST['last_name']));
-    $email = $api->clean($_POST['email']);
+    $first_name = $api->sanitize_data(ucfirst($_POST['first_name']), 'string');
+    $last_name = $api->sanitize_data(ucfirst($_POST['last_name']), 'string');
+    $email = $api->sanitize_data($_POST['email'], 'email');
     $password = trim($_POST['password']);
     $confirm_password = trim($_POST['confirm_password']);
 
@@ -53,7 +53,7 @@ if(isset($_POST['signup'])){
         array_push($errors, $_SESSION['email_err']);
     }
 
-    elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    elseif (!$api->validate_data($email, 'email')) {
         $_SESSION['email_err'] = "Invalid email. ";
         array_push($errors, $_SESSION['email_err']);
     }
@@ -211,10 +211,11 @@ if(isset($_POST['signup'])){
 
 /******** USER AUTH ********/
 
+// user login
 if(isset($_POST['login'])){
     $errors = array();
 
-    $email = $api->clean($_POST['email']);
+    $email = $api->sanitize_data($_POST['email'], 'email');
     $password = trim($_POST['password']);
     $hash = "";
 
@@ -223,7 +224,7 @@ if(isset($_POST['login'])){
         array_push($errors, $_SESSION['email_err']);
     }
 
-    elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    elseif (!$api->validate_data($email, 'email')) {
         $_SESSION['email_err'] = "Invalid email. ";
         array_push($errors, $_SESSION['email_err']);
     }
@@ -265,8 +266,9 @@ if(isset($_POST['login'])){
                     if(password_verify($password, $hash)) {
                         $api->get_bound_result($_SESSION['user_id'], $res[0]);
                         $api->get_bound_result($_SESSION['user_type'], $res[2]);
+                        
                         if(strcasecmp($_SESSION['user_type'], 'User') == 0){
-                            $api->change_user("user");
+                            $_SESSION['order_id'] = "";
 
                             $query = $api->select();
                             $query = $api->params($query,"client_id");
@@ -304,7 +306,6 @@ if(isset($_POST['login'])){
                                 throw new Exception('The prepared statement could not be closed.');
                             }
                         } else {
-                            $api->change_user("admin");
                             Header("Location: ../admin/index.php");
                         }
                     } else {
@@ -336,6 +337,7 @@ if(isset($_POST['login'])){
 
 /******** USER LOGOUT ********/
 
+// user logout
 if(isset($_POST['logout'])){
     setcookie(session_id(), "", time() - 3600);
     session_destroy();
@@ -345,15 +347,16 @@ if(isset($_POST['logout'])){
 
 /******** ORDERING TATTOOS ********/
 
+// ordering tattoos
 if(isset($_POST['order_item'])){
     $cstrong = true;
     $errors = array();
 
-    $id = $api->clean($_POST['tattoo_id']);
-    $name = $api->clean($_POST['tattoo_name']);
-    $width = intval($_POST['width']);
-    $height = intval($_POST['height']);
-    $quantity = intval($_POST['quantity']);
+    $id = $api->sanitize_data($_POST['tattoo_id'], 'string');
+    $name = $api->sanitize_data($_POST['tattoo_name'], 'string');
+    $width = $api->sanitize_data($_POST['width'], 'int');
+    $height = $api->sanitize_data($_POST['height'], 'int');
+    $quantity = $api->sanitize_data($_POST['quantity'], 'int');
     $client_id = $_SESSION['client_id'];
     $order_id = "";
 
@@ -363,7 +366,7 @@ if(isset($_POST['order_item'])){
         array_push($errors, $_SESSION['width_err']);
     }
     
-    elseif (!is_int($width)) {
+    elseif (!$api->validate_data($width, 'int')) {
         $_SESSION['width_err'] = "Item width must be an integer.";
         array_push($errors, $_SESSION['width_err']);
     }
@@ -383,7 +386,7 @@ if(isset($_POST['order_item'])){
         array_push($errors, $_SESSION['height_err']);
     }
     
-    elseif (!is_int($height)) {
+    elseif (!$api->validate_data($height, 'int')) {
         $_SESSION['width_err'] = "Item height must be an integer.";
         array_push($errors, $_SESSION['height_err']);
     }
@@ -403,7 +406,7 @@ if(isset($_POST['order_item'])){
         array_push($errors, $_SESSION['quantity_err']);
     }
     
-    elseif (!is_int($quantity)) {
+    elseif (!$api->validate_data($quantity, 'int')) {
         $_SESSION['quantity_err'] = "Item quantity must be an integer.";
         array_push($errors, $_SESSION['quantity_err']);
     }
@@ -620,20 +623,21 @@ if(isset($_POST['order_item'])){
 
 /******** REFERRAL MANAGEMENT ********/
 
+// make referral
 if(isset($_POST['refer']) && isset($_SESSION['order_id']) && !empty($_SESSION['order_id'])){
     $errors = array();
     $cstrong = true;
 
     try {
-        $client_id = $api->clean($_SESSION['client_id']);
-        $order_id = $api->clean($_SESSION['order_id']);
+        $client_id = $api->sanitize_data($_SESSION['client_id'], 'string');
+        $order_id = $api->sanitize_data($_SESSION['order_id'], 'string');
 
-        $first_name = $api->clean($_POST['first_name']);
-        $mi = $api->clean($_POST['mi']);
-        $last_name = $api->clean($_POST['last_name']);
-        $age = intval($_POST['age']);
-        $email = $api->clean($_POST['email']);
-        $contact_number = intval($_POST['contact_number']);
+        $first_name = $api->sanitize_data($_POST['first_name'], 'string');
+        $mi = $api->sanitize_data($_POST['mi'], 'string');
+        $last_name = $api->sanitize_data($_POST['last_name'], 'string');
+        $age = $api->sanitize_data($_POST['age'], 'int');
+        $email = $api->sanitize_data($_POST['email'], 'email');
+        $contact_number = $api->sanitize_data($_POST['contact_number'], 'int');
 
         // first name validation
         if(empty($first_name)) {
@@ -703,7 +707,7 @@ if(isset($_POST['refer']) && isset($_SESSION['order_id']) && !empty($_SESSION['o
             array_push($errors, $_SESSION['email_err']);
         }
 
-        elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        elseif (!$api->validate_data($email, 'email')) {
             $_SESSION['email_err'] = "Invalid email. ";
             array_push($errors, $_SESSION['email_err']);
         }
@@ -714,7 +718,7 @@ if(isset($_POST['refer']) && isset($_SESSION['order_id']) && !empty($_SESSION['o
             array_push($errors, $_SESSION['age_err']);
         }
         
-        elseif (!is_int($age)) {
+        elseif (!$api->validate_data($age, 'int')) {
             $_SESSION['age_err'] = "Referral age must be an integer.";
             array_push($errors, $_SESSION['age_err']);
         }
@@ -735,7 +739,7 @@ if(isset($_POST['refer']) && isset($_SESSION['order_id']) && !empty($_SESSION['o
             array_push($errors, $_SESSION['contact_number_err']);
         }
 
-        elseif (!is_int($contact_number)) {
+        elseif (!$api->validate_data($contact_number, 'int')) {
             $_SESSION['contact_number_err'] = "Referral contact number must be an integer.";
             array_push($errors, $_SESSION['contact_number_err']);
         }
@@ -750,7 +754,6 @@ if(isset($_POST['refer']) && isset($_SESSION['order_id']) && !empty($_SESSION['o
             array_push($errors, $_SESSION['contact_number_err']);
         }
 
-        print_r($errors);
         if(empty($errors)){
             $referral_id = bin2hex(openssl_random_pseudo_bytes(11, $cstrong));
 
@@ -789,12 +792,13 @@ if(isset($_POST['refer']) && isset($_SESSION['order_id']) && !empty($_SESSION['o
     Header("Location: ../client/orders.php");
 }
 
+// avail referral incentives
 if(isset($_POST['avail_incentive']) && isset($_SESSION['order_id']) && !empty($_SESSION['order_id'])){
     $errors = array();
-    $client_id = $api->clean($_SESSION['client_id']);
-    $order_id = $api->clean($_SESSION['order_id']);
-    $incentive = $api->clean($_POST['incentive']);
-    $tattoo_id = $api->clean($_POST['tattoo_id']);
+    $client_id = $api->sanitize_data($_SESSION['client_id'], 'string');
+    $order_id = $api->sanitize_data($_SESSION['order_id'], 'string');
+    $incentive = $api->sanitize_data($_POST['incentive'], 'string');
+    $tattoo_id = $api->sanitize_data($_POST['tattoo_id'], 'string');
 
     // incentive type validations
     if(empty($incentive)) {
@@ -877,22 +881,23 @@ if(isset($_POST['avail_incentive']) && isset($_SESSION['order_id']) && !empty($_
     Header("Location: ../client/orders.php");
 }
 
+// update referral details
 if(isset($_POST['update_referrals']) && isset($_SESSION['order_id']) && !empty($_SESSION['order_id'])){
     if(isset($_POST['referral']) && !empty($_POST['referral'])){
-        $client_id = $api->clean($_SESSION['client_id']);
-        $order_id = $api->clean($_SESSION['order_id']);
+        $client_id = $api->sanitize_data($_SESSION['client_id'], 'string');
+        $order_id = $api->sanitize_data($_SESSION['order_id'], 'string');
 
         try {
             foreach($_POST['referral'] as $item){
-                $item = $api->clean($item);
+                $item = $api->sanitize_data($item, 'string');
                 $index = array_search($item, $_POST['referral_index']);
 
-                $first_name = $api->clean($_POST['referral_fname'][$index]);
-                $mi = $api->clean($_POST['referral_mi'][$index]);
-                $last_name = $api->clean($_POST['referral_lname'][$index]);
-                $age = intval($_POST['referral_age'][$index]);
-                $email = $api->clean($_POST['referral_email'][$index]);
-                $contact_number = intval($_POST['referral_contact_no'][$index]);
+                $first_name = $api->sanitize_data($_POST['referral_fname'][$index], 'string');
+                $mi = $api->sanitize_data($_POST['referral_mi'][$index], 'string');
+                $last_name = $api->sanitize_data($_POST['referral_lname'][$index], 'string');
+                $age = $api->sanitize_data($_POST['referral_age'][$index], 'int');
+                $email = $api->sanitize_data($_POST['referral_email'][$index], 'email');
+                $contact_number = $api->sanitize_data($_POST['referral_contact_no'][$index], 'int');
 
                 // first name validation
                 if(empty($first_name)) {
@@ -932,7 +937,7 @@ if(isset($_POST['update_referrals']) && isset($_SESSION['order_id']) && !empty($
                     array_push($errors, $_SESSION['email_err']);
                 }
 
-                elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                elseif (!$api->validate_data($email, 'email')) {
                     $_SESSION['email_err'] = "Invalid email. ";
                     array_push($errors, $_SESSION['email_err']);
                 }
@@ -943,7 +948,7 @@ if(isset($_POST['update_referrals']) && isset($_SESSION['order_id']) && !empty($
                     array_push($errors, $_SESSION['age_err']);
                 }
                 
-                elseif (!is_int($age)) {
+                elseif (!$api->validate_data($age, 'int')) {
                     $_SESSION['age_err'] = "Referral age must be an integer.";
                     array_push($errors, $_SESSION['age_err']);
                 }
@@ -964,7 +969,7 @@ if(isset($_POST['update_referrals']) && isset($_SESSION['order_id']) && !empty($
                     array_push($errors, $_SESSION['contact_number_err']);
                 }
 
-                elseif (!is_int($contact_number)) {
+                elseif (!$api->validate_data($contact_number, 'int')) {
                     $_SESSION['contact_number_err'] = "Referral contact number must be an integer.";
                     array_push($errors, $_SESSION['contact_number_err']);
                 }
@@ -1011,14 +1016,15 @@ if(isset($_POST['update_referrals']) && isset($_SESSION['order_id']) && !empty($
     Header("Location: ../client/orders.php");
 }
 
+// remove referral
 if(isset($_POST['remove_referrals']) && isset($_SESSION['order_id']) && !empty($_SESSION['order_id'])){
     if(isset($_POST['referral']) && !empty($_POST['referral'])){
-        $client_id = $api->clean($_SESSION['client_id']);
-        $order_id = $api->clean($_SESSION['order_id']);
+        $client_id = $api->sanitize_data($_SESSION['client_id'], 'string');
+        $order_id = $api->sanitize_data($_SESSION['order_id'], 'string');
 
         try {
             foreach($_POST['referral'] as $item){
-                $item = $api->clean($item);
+                $item = $api->sanitize_data($item, 'string');
 
                 $statement = $api->prepare("DELETE FROM referral WHERE referral_id=? AND order_id=? AND client_id=?");
                 if ($statement===false) {
@@ -1052,6 +1058,7 @@ if(isset($_POST['remove_referrals']) && isset($_SESSION['order_id']) && !empty($
 
 /******** ORDER MANAGEMENT ********/
 
+// update tattoo orders
 if(isset($_POST['update_items']) && isset($_SESSION['order_id']) && !empty($_SESSION['order_id'])){
     if(isset($_POST['item'])){
         try {
@@ -1060,14 +1067,14 @@ if(isset($_POST['update_items']) && isset($_SESSION['order_id']) && !empty($_SES
             foreach($_POST['item'] as $item){
                 $errors = array();
 
-                $item = $api->clean($item);
+                $item = $api->sanitize_data($item, 'string');
                 $index = array_search($item, $_POST['index']);
 
-                $width = intval($_POST['width'][$index]);
-                $height = intval($_POST['height'][$index]);
-                $quantity = intval($_POST['quantity'][$index]);
-                $paid = $api->clean($_POST['paid'][$index]);
-                $status = $api->clean($_POST['status'][$index]);
+                $width = $api->sanitize_data($_POST['width'][$index], 'int');
+                $height = $api->sanitize_data($_POST['height'][$index], 'int');
+                $quantity = $api->sanitize_data($_POST['quantity'][$index], 'int');
+                $paid = $api->sanitize_data($_POST['paid'][$index], 'string');
+                $status = $api->sanitize_data($_POST['status'][$index], 'string');
 
                 // validations
                 if(empty($width)) {
@@ -1075,7 +1082,7 @@ if(isset($_POST['update_items']) && isset($_SESSION['order_id']) && !empty($_SES
                     array_push($errors, $_SESSION['width_err']);
                 }
                 
-                elseif (!is_int($width)) {
+                elseif (!$api->validate_data($width, 'int')) {
                     $_SESSION['width_err'] = "Item width must be an integer.";
                     array_push($errors, $_SESSION['width_err']);
                 }
@@ -1095,7 +1102,7 @@ if(isset($_POST['update_items']) && isset($_SESSION['order_id']) && !empty($_SES
                     array_push($errors, $_SESSION['height_err']);
                 }
                 
-                elseif (!is_int($height)) {
+                elseif (!$api->validate_data($height, 'int')) {
                     $_SESSION['width_err'] = "Item height must be an integer.";
                     array_push($errors, $_SESSION['height_err']);
                 }
@@ -1115,7 +1122,7 @@ if(isset($_POST['update_items']) && isset($_SESSION['order_id']) && !empty($_SES
                     array_push($errors, $_SESSION['quantity_err']);
                 }
                 
-                elseif (!is_int($quantity)) {
+                elseif (!$api->validate_data($quantity, 'int')) {
                     $_SESSION['quantity_err'] = "Item quantity must be an integer.";
                     array_push($errors, $_SESSION['quantity_err']);
                 }
@@ -1291,13 +1298,14 @@ if(isset($_POST['update_items']) && isset($_SESSION['order_id']) && !empty($_SES
     Header("Location: ../client/orders.php");
 }
 
+// remove tattoo orders
 if(isset($_POST['remove_items']) && isset($_SESSION['order_id']) && !empty($_SESSION['order_id'])){
     if(isset($_POST['item'])){
         $order_id = $_SESSION['order_id'];
 
         try {
             foreach($_POST['item'] as $item){
-                $item = $api->clean($item);
+                $item = $api->sanitize_data($item, 'string');
 
                 $statement = $api->prepare("DELETE FROM order_item WHERE order_id=? AND item_id=?");
                 if ($statement===false) {
@@ -1341,20 +1349,21 @@ if(isset($_POST['remove_items']) && isset($_SESSION['order_id']) && !empty($_SES
 
 /******** RESERVATION MANAGEMENT ********/
 
+// booking reservation
 if(isset($_POST['book']) && isset($_SESSION['order_id']) && !empty($_SESSION['order_id'])){
     $errors = array();
     $cstrong = true;
 
-    $order_id = $api->clean($_SESSION['order_id']);
-    $predecessor_id = $api->clean($_POST['item_id']);
+    $order_id = $api->sanitize_data($_SESSION['order_id'], 'string');
+    $predecessor_id = $api->sanitize_data($_POST['item_id'], 'string');
 
-    $quantity = intval($_POST['quantity']);
-    $original_quantity = intval($_POST['original_quantity']);
-    $service_type = $api->clean($_POST['service_type']);
+    $quantity = $api->sanitize_data($_POST['quantity'], 'int');
+    $original_quantity = $api->sanitize_data($_POST['original_quantity'], 'int');
+    $service_type = $api->sanitize_data($_POST['service_type'], 'string');
     $scheduled_time = $_POST['scheduled_time'];
     $scheduled_date = $_POST['scheduled_date'];
-    $address = $api->clean($_POST['address']);
-    $reservation_description = $api->clean($_POST['description']);
+    $address = $api->sanitize_data($_POST['address'], 'string');
+    $reservation_description = $api->sanitize_data($_POST['description'], 'string');
 
     // validations
     if(empty($quantity)) {
@@ -1362,7 +1371,7 @@ if(isset($_POST['book']) && isset($_SESSION['order_id']) && !empty($_SESSION['or
         array_push($errors, $_SESSION['quantity_err']);
     }
     
-    elseif (!is_int($quantity)) {
+    elseif (!$api->validate_data($quantity, 'int')) {
         $_SESSION['quantity_err'] = "Reserved item quantity must be an integer.";
         array_push($errors, $_SESSION['quantity_err']);
     }
@@ -1392,12 +1401,12 @@ if(isset($_POST['book']) && isset($_SESSION['order_id']) && !empty($_SESSION['or
         array_push($errors, $_SESSION['address_err']);
     }
 
-    if(!$api->is_valid_date($scheduled_date)) {
+    if(!$api->validate_data($scheduled_date, 'date')) {
         $_SESSION['scheduled_date_err'] = "Invalid date. ";
         array_push($errors, $_SESSION['scheduled_date_err']);
     }
 
-    if(!$api->is_valid_time($scheduled_time)) {
+    if(!$api->validate_data($scheduled_time, 'time')) {
         $_SESSION['scheduled_time_err'] = "Invalid time.";
         array_push($errors, $_SESSION['scheduled_time_err']);
     }
@@ -1592,16 +1601,17 @@ if(isset($_POST['book']) && isset($_SESSION['order_id']) && !empty($_SESSION['or
     Header("Location: ../client/reservations.php");
 }
 
+// revise reservation details
 if(isset($_POST['update_reservation'])){
     $errors = array();
 
-    $reservation_id = $api->clean($_POST['reservation_id']);
-    $item_id = $api->clean($_POST['item_id']);
-    $service_type = $api->clean($_POST['service_type']);
+    $reservation_id = $api->sanitize_data($_POST['reservation_id'], 'string');
+    $item_id = $api->sanitize_data($_POST['item_id'], 'string');
+    $service_type = $api->sanitize_data($_POST['service_type'], 'string');
     $time = $_POST['scheduled_time'];
     $date = $_POST['scheduled_date'];   
-    $address = $api->clean($_POST['reservation_address']);
-    $demands = $api->clean($_POST['reservation_demands']);
+    $address = $api->sanitize_data($_POST['reservation_address'], 'string');
+    $demands = $api->sanitize_data($_POST['reservation_demands'], 'string');
 
     if(empty($address)) {
         $_SESSION['address_err'] = "Reservation address is required.";
@@ -1613,12 +1623,12 @@ if(isset($_POST['update_reservation'])){
         array_push($errors, $_SESSION['service_type_err']);
     }
 
-    if(!$api->is_valid_date($date)) {
+    if(!$api->validate_data($date, 'date')) {
         $_SESSION['scheduled_date_err'] = "Invalid date. ";
         array_push($errors, $_SESSION['scheduled_date_err']);
     }
 
-    if(!$api->is_valid_time($time)) {
+    if(!$api->validate_data($time, 'time')) {
         $_SESSION['scheduled_time_err'] = "Invalid time.";
         array_push($errors, $_SESSION['scheduled_time_err']);
     }
@@ -1670,15 +1680,17 @@ if(isset($_POST['update_reservation'])){
     Header("Location: ../client/reservations.php");
 }
 
+// confirm reservation
 if(isset($_POST['confirm_reservation'])){
     $errors = array();
+    print_r($_POST);
 
-    $reservation_id = $api->clean($_POST['reservation_id']);
-    $item_id = $api->clean($_POST['item_id']);
-    $service_type = $api->clean($_POST['service_type']);
+    $reservation_id = $api->sanitize_data($_POST['reservation_id'], 'string');
+    $item_id = $api->sanitize_data($_POST['item_id'], 'string');
+    $service_type = $api->sanitize_data($_POST['service_type'], 'string');
     $scheduled_time = $_POST['scheduled_time'];
     $scheduled_date = $_POST['scheduled_date'];
-    $address = $api->clean($_POST['reservation_address']);
+    $address = $api->sanitize_data($_POST['reservation_address'], 'string');
 
     if(empty($address)) {
         $_SESSION['address_err'] = "Reservation address is required.";
@@ -1690,12 +1702,12 @@ if(isset($_POST['confirm_reservation'])){
         array_push($errors, $_SESSION['service_type_err']);
     }
 
-    if(!$api->is_valid_date($scheduled_date)) {
+    if(!$api->validate_data($scheduled_date, 'date')) {
         $_SESSION['scheduled_date_err'] = "Invalid date. ";
         array_push($errors, $_SESSION['scheduled_date_err']);
     }
 
-    if(!$api->is_valid_time($scheduled_time)) {
+    if(!$api->validate_data($scheduled_time, 'time')) {
         $_SESSION['scheduled_time_err'] = "Invalid time.";
         array_push($errors, $_SESSION['scheduled_time_err']);
     }
@@ -1734,15 +1746,16 @@ if(isset($_POST['confirm_reservation'])){
     } else {
         $_SESSION['res'] = $errors;
     }
-
+    
     Header("Location: ../client/reservations.php");
 }
 
+// cancel reservation
 if(isset($_POST['cancel_reservation'])){
-    $order_id = $api->clean($_SESSION['order_id']);
-    $reservation_id = $api->clean($_POST['reservation_id']);
-    $item_id = $api->clean($_POST['item_id']);
-    $quantity = intval($_POST['quantity']);
+    $order_id = $api->sanitize_data($_SESSION['order_id'], 'string');
+    $reservation_id = $api->sanitize_data($_POST['reservation_id'], 'string');
+    $item_id = $api->sanitize_data($_POST['item_id'], 'string');
+    $quantity = $api->sanitize_data($_POST['quantity'], 'int');
 
     try {
         // get order item
@@ -1931,26 +1944,27 @@ if(isset($_POST['cancel_reservation'])){
 
 /******** ORDER CHECKOUT ********/
 
+// order checkout
 if(isset($_POST['checkout']) && isset($_SESSION['order_id']) && !empty($_SESSION['order_id'])){
     if(isset($_POST['item']) && !empty($_POST['item'])){
         try {
             $errors = array();
             $cstrong = true;
 
-            $order_id = $api->clean($_SESSION['order_id']);
-            $client_id = $api->clean($_SESSION['client_id']);
+            $order_id = $api->sanitize_data($_SESSION['order_id'], 'string');
+            $client_id = $api->sanitize_data($_SESSION['client_id'], 'string');
 
-            $first_name = $api->clean(ucfirst($_POST['first_name']));
-            $last_name = $api->clean(ucfirst($_POST['last_name']));
-            $street_address = $api->clean($_POST['street_address']);
-            $city = $api->clean($_POST['city']);
-            $province = $api->clean($_POST['province']);
-            $zip = $api->clean($_POST['zip']);
-            $amount_paid = doubleval($_POST['amount_paid']);
-            $payment_method = $api->clean($_POST['payment_method']);
-            $card_number = $api->clean($_POST['card_number']);
-            $pin = $api->clean($_POST['pin']);
-            $bank_name = $api->clean($_POST['bank_name']);
+            $first_name = $api->sanitize_data(ucfirst($_POST['first_name']), 'string');
+            $last_name = $api->sanitize_data(ucfirst($_POST['last_name']), 'string');
+            $street_address = $api->sanitize_data($_POST['street_address'], 'string');
+            $city = $api->sanitize_data($_POST['city'], 'string');
+            $province = $api->sanitize_data($_POST['province'], 'string');
+            $zip = $api->sanitize_data($_POST['zip'], 'int');
+            $amount_paid = $api->sanitize_double($_POST['amount_paid'], 'float');
+            $payment_method = $api->sanitize_data($_POST['payment_method'], 'string');
+            $card_number = $api->sanitize_data($_POST['card_number'], 'string');
+            $pin = $api->sanitize_data($_POST['pin'], 'string');
+            $bank_name = $api->sanitize_data($_POST['bank_name'], 'string');
 
             // validations
             // first name validation
@@ -2026,7 +2040,7 @@ if(isset($_POST['checkout']) && isset($_SESSION['order_id']) && !empty($_SESSION
                 array_push($errors, $_SESSION['zip_err']);
             }
 
-            elseif (!is_int(intval($zip))) {
+            elseif (!$api->validate_data($zip, 'int')) {
                 $_SESSION['zip_err'] = "ZIP code must be an integer. ";
                 array_push($errors, $_SESSION['zip_err']);
             }
@@ -2063,7 +2077,7 @@ if(isset($_POST['checkout']) && isset($_SESSION['order_id']) && !empty($_SESSION
                 array_push($errors, $_SESSION['card_number_err']);
             }
 
-            if(!is_numeric(intval($card_number))) {
+            if(!is_numeric($api->sanitize_data($card_number, 'int'))) {
                 $_SESSION['card_number_err'] = "Card number must be numeric. ";
                 array_push($errors, $_SESSION['card_number_err']);
             }
@@ -2073,7 +2087,7 @@ if(isset($_POST['checkout']) && isset($_SESSION['order_id']) && !empty($_SESSION
                 array_push($errors, $_SESSION['pin_err']);
             }
 
-            if(!is_numeric(intval($card_number))) {
+            if(!is_numeric($api->sanitize_data($pin, 'string'))) {
                 $_SESSION['pin_err'] = "Card PIN must be numeric. ";
                 array_push($errors, $_SESSION['pin_err']);
             }
@@ -2127,15 +2141,15 @@ if(isset($_POST['checkout']) && isset($_SESSION['order_id']) && !empty($_SESSION
                 foreach($_POST['item'] as $item){
                     $index = array_search($item, $_POST['index']);
                     
-                    $checkout_quantity = intval($_POST['checkout_quantity'][$index]);
-                    $quantity = intval($_POST['quantity'][$index]);
+                    $checkout_quantity = $api->sanitize_data($_POST['checkout_quantity'][$index], 'int');
+                    $quantity = $api->sanitize_data($_POST['quantity'][$index], 'int');
 
                     if(empty($checkout_quantity)) {
                         $_SESSION['quantity_err'] = "Checkout quantity is required. ";
                         array_push($errors, $_SESSION['quantity_err']);
                     }
             
-                    elseif(!is_int($checkout_quantity)) {
+                    elseif(!$api->validate_data($checkout_quantity, 'int')) {
                         $_SESSION['quantity_err'] = "Checkout quantity must be an integer. ";
                         array_push($errors, $_SESSION['quantity_err']);
                     }
@@ -2182,11 +2196,11 @@ if(isset($_POST['checkout']) && isset($_SESSION['order_id']) && !empty($_SESSION
                                 $statement = null;
                             }
 
-                            $tattoo_id = $api->clean($row['tattoo_id']);
-                            $width = intval($row['tattoo_width']);
-                            $height = intval($row['tattoo_height']);
-                            $paid = $api->clean($row['paid']);
-                            $item_status = $api->clean($row['item_status']);
+                            $tattoo_id = $api->sanitize_data($row['tattoo_id'], 'string');
+                            $width = $api->sanitize_data($row['tattoo_width'], 'int');
+                            $height = $api->sanitize_data($row['tattoo_height'], 'int');
+                            $paid = $api->sanitize_data($row['paid'], 'string');
+                            $item_status = $api->sanitize_data($row['item_status'], 'string');
                             $addon = (!empty($row['amount_addon']) && $row['amount_addon'] != 0) ? doubleval($row['amount_addon']) : 0.00;
                             $item_amount_due_total = doubleval($row['tattoo_price']) * $checkout_quantity;
 
@@ -2367,7 +2381,7 @@ if(isset($_POST['checkout']) && isset($_SESSION['order_id']) && !empty($_SESSION
                                                 $statement = null;
                                             }
     
-                                            $statement = $api->prepare("UPDATE order_item SET tattoo_quantity=? WHERE order_item=? AND item_id=?");
+                                            $statement = $api->prepare("UPDATE order_item SET tattoo_quantity=? WHERE order_id=? AND item_id=?");
                                             if ($statement===false) {
                                                 throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
                                             }
@@ -2705,11 +2719,12 @@ if(isset($_POST['checkout']) && isset($_SESSION['order_id']) && !empty($_SESSION
         $_SESSION['res'] = "No items selected.";
     }
 
-    // Header("Location: ../client/checkout.php");
+    Header("Location: ../client/checkout.php");
 }
 
 /******** ILLEGAL ACCESS CATCHING ********/
 
+// navigation guard
 if(empty($_POST)){
     Header("Location: ../client/index.php");
     die();

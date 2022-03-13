@@ -268,7 +268,7 @@
                         <!-- status -->
                         <div class="col">
                           <label for="status" class="form-label fw-semibold">Status</label>
-                          <div class="fw-semibold"><p class="d-inline <?php if(strcasecmp($row['reservation_status'], "Confirmed") == 0){ echo "text-success"; } else { echo "text-secondary"; } ?>"><?php echo $api->sanitize_string($row['reservation_status']); ?></p>, <p class="d-inline <?php if(strcasecmp($row['paid'], "Fully Paid") == 0){ echo "text-success"; } else { echo "text-secondary"; } ?>"><?php echo $api->sanitize_string($row['paid']); ?></p></div>
+                          <div class="fw-semibold"><p class="d-inline <?php if(strcasecmp($row['reservation_status'], "Confirmed") == 0){ echo "text-success"; } else { echo "text-secondary"; } ?>"><?php echo $api->sanitize_data($row['reservation_status'], "string"); ?></p>, <p class="d-inline <?php if(strcasecmp($row['paid'], "Fully Paid") == 0){ echo "text-success"; } else { echo "text-secondary"; } ?>"><?php echo $api->sanitize_data($row['paid'], "string"); ?></p></div>
                           <input type="hidden" readonly class="d-none" value="<?php echo $api->sanitize_data($row['reservation_id'], 'string'); ?>" name="reservation_id" />
                         </div>
                         <!-- addon amount -->
