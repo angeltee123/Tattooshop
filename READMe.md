@@ -1,13 +1,109 @@
 # NJC Tattoo
+NJC Tattoo is a small-scale growing tattoo business based in Mandaue City, Cebu, Philippines. It is run and owned by Mr. Noel John Cabahug, a freelance tattoo artist with a passion for art.
+
 ## API Documentation
 
-## $api->clean()
-Santizes the given string for output. Returns the sanitized data.
+<details><summary>GENERAL USE HELPER FUNCTIONS</summary>
+<p>
+
+## $api->sanitize_data($data, $type)
+Santizes the given data. Returns the sanitized data.
+Example of integer sanitization, do
 ```php
-$data = " <script>console.log('This is an attack.')</script> ";
-$data = $api->clean($data);
-// $data = '&lt;script&gt;console.log(&#039;This is an attack&#039;)&lt;/script&gt;';
+$data = $api->sanitize_data("1Lorem2ipsum3dolor4sit5amet", "int");
+// $data = 12345;
 ```
+
+Example of float sanitization, do
+```php
+$data = $api->sanitize_data("1Lorem2ipsum3dolor4sit5amet.67", "float");
+// $data = 12345.67;
+```
+
+Example of email sanitization, do
+```php
+$data = $api->sanitize_data("john.doe@test.com", "email");
+// $data = 'john.doe@test.com';
+```
+
+Example of string (default case) sanitization, do
+```php
+$data = $api->sanitize_data(" <script>console.log('This is an attack.')</script> ", "string");
+// $data = 'console.log('This is an attack');';
+```
+
+
+## $validate->validate_data($data, $type)
+Validate the given data. Returns true if the data is valid, else, false.
+Integer validation valid case
+```php
+$data = $api->validate_data("12345", "int");
+// $data = true;
+```
+
+Integer validation invalid case
+```php
+$data = $api->validate_data("1Lorem2ipsum3dolor4sit5amet", "int");
+// $data = false;
+```
+
+Float validation valid case
+```php
+$data = $api->validate_data("12345.67", "float");
+// $data = true;
+```
+
+Float validation invalid case
+```php
+$data = $api->validate_data("1Lorem2ipsum3dolor4sit5amet.67", "float");
+// $data = false;
+```
+
+Email validation valid case
+```php
+$data = $api->sanitize_data("john.doe@test.com", "email");
+// $data = true;
+```
+
+Email validation invalid case
+```php
+$data = $api->sanitize_data("invalid-email#test+com", "email");
+// $data = 'false';
+```
+
+Date validation valid case
+```php
+$data = $api->validate_data("010-17-2000", "date");
+// $data = true;
+```
+
+Date validation invalid case - invalid date
+```php
+$data = $api->validate_data("02-31-2000", "date");
+// $data = false;
+```
+
+Date validation invalid case - past date
+```php
+// today = '05-05-2001'
+$data = $api->validate_data("05-03-2000", "date");
+// $data = false;
+```
+
+Time validation valid case
+```php
+$data = $api->validate_data("05:30:00", "date");
+// $data = true;
+```
+
+Time validation invalid case
+```php
+$data = $api->validate_data("13:72:00", "time");
+// $data = false;
+```
+
+</p>
+</details>
 
 <details><summary>MYSQLI FUNCTIONS</summary>
 <p>
@@ -471,3 +567,13 @@ $boolean = $api->close($statement);
 
 </p>
 </details>
+
+## Contributors
+**IM-2 Group 9**
+  - Lenel John Baring
+  - Jan Ann Ebon
+  - Jan Michael Garot
+  - Dustin Adrianne Zanoria
+
+## Project Status
+Ongoing
