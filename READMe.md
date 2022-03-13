@@ -1,6 +1,9 @@
 # NJC Tattoo
 NJC Tattoo is a small-scale growing tattoo business based in Mandaue City, Cebu, Philippines. It is run and owned by Mr. Noel John Cabahug, a freelance tattoo artist with a passion for art.
 
+## Project Description
+The primary objective of this project is to develop an online Information System for NJC Tattoo using the database approach. The system will largely automate the process of managing and organizing the client's business and provide them greater freedom and control over their operations, as well as enable tattoo inclined individuals to easily avail themselves of the services offered by NJC Tattoo with convenience.
+
 ## API Documentation
 
 <details><summary>GENERAL USE HELPER FUNCTIONS</summary>
@@ -43,7 +46,7 @@ $data = $api->validate_data(12345, "int");
 
 Integer validation invalid case
 ```php
-$data = $api->validate_data(1Lorem2ipsum3dolor4sit5amet, "int");
+$data = $api->validate_data("1Lorem2ipsum3dolor4sit5amet", "int");
 // $data = false;
 ```
 
@@ -55,7 +58,7 @@ $data = $api->validate_data(12345.67, "float");
 
 Float validation invalid case
 ```php
-$data = $api->validate_data(1Lorem2ipsum3dolor4sit5amet.67, "float");
+$data = $api->validate_data("1Lorem2ipsum3dolor4sit5amet.67", "float");
 // $data = false;
 ```
 
