@@ -33,29 +33,29 @@ $data = $api->sanitize_data(" <script>console.log('This is an attack.')</script>
 ```
 
 
-## $validate->validate_data($data, $type)
+## $api->validate_data($data, $type)
 Validate the given data. Returns true if the data is valid, else, false.
 Integer validation valid case
 ```php
-$data = $api->validate_data("12345", "int");
+$data = $api->validate_data(12345, "int");
 // $data = true;
 ```
 
 Integer validation invalid case
 ```php
-$data = $api->validate_data("1Lorem2ipsum3dolor4sit5amet", "int");
+$data = $api->validate_data(1Lorem2ipsum3dolor4sit5amet, "int");
 // $data = false;
 ```
 
 Float validation valid case
 ```php
-$data = $api->validate_data("12345.67", "float");
+$data = $api->validate_data(12345.67, "float");
 // $data = true;
 ```
 
 Float validation invalid case
 ```php
-$data = $api->validate_data("1Lorem2ipsum3dolor4sit5amet.67", "float");
+$data = $api->validate_data(1Lorem2ipsum3dolor4sit5amet.67, "float");
 // $data = false;
 ```
 
@@ -77,13 +77,13 @@ $data = $api->validate_data("010-17-2000", "date");
 // $data = true;
 ```
 
-Date validation invalid case - invalid date
+Date validation invalid case - Invalid date
 ```php
 $data = $api->validate_data("02-31-2000", "date");
 // $data = false;
 ```
 
-Date validation invalid case - past date
+Date validation invalid case - Past date
 ```php
 // today = '05-05-2001'
 $data = $api->validate_data("05-03-2000", "date");
@@ -92,7 +92,7 @@ $data = $api->validate_data("05-03-2000", "date");
 
 Time validation valid case
 ```php
-$data = $api->validate_data("05:30:00", "date");
+$data = $api->validate_data("05:30:00", "time");
 // $data = true;
 ```
 
@@ -100,6 +100,12 @@ Time validation invalid case
 ```php
 $data = $api->validate_data("13:72:00", "time");
 // $data = false;
+```
+
+String (default case) valid case
+```php
+$data = $api->sanitize_data("Hello world!", "string");
+// $data = 'true';
 ```
 
 </p>
@@ -569,7 +575,7 @@ $boolean = $api->close($statement);
 </details>
 
 ## Contributors
-**IM-2 Group 9**
+**IM-2 Group 8**
   - Lenel John Baring
   - Jan Ann Ebon
   - Jan Michael Garot
