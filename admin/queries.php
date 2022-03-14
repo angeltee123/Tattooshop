@@ -437,7 +437,7 @@ if(isset($_POST['update_tattoo'])){
     Header("Location: ./catalogue.php");
 }
 
-// update tattoo catalog entry
+// delete tattoo catalog entry
 if(isset($_POST['delete_tattoo'])){
     $id = $api->sanitize_data($_POST['tattoo_id'], "string");
 
@@ -472,7 +472,7 @@ if(isset($_POST['delete_tattoo'])){
 
 /******** ORDER MANAGEMENT ********/
 
-// update client orders
+// update client order
 if(isset($_POST['update_item'])){
     $errors = array();
 
@@ -713,7 +713,7 @@ if(isset($_POST['update_item'])){
     Header("Location: ./orders.php");
 }
 
-// remove client orders
+// remove client order
 if(isset($_POST['delete_item'])){
     $item_id = $api->sanitize_data($_POST['item_id'], "string");
 

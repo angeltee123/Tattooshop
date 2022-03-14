@@ -209,9 +209,13 @@
             <select class="form-select form-select-lg" name="item">
               <?php
                 if($api->num_rows($res) > 0){
-                  while($row = $api->fetch_assoc($res)){
+                  while($item = $api->fetch_assoc($res)){
+                    $item_id = $api->sanitize_data($item['item_id'], "string"); 
+                    $paid = $api->sanitize_data($item['paid'], "string"); 
+                    $name = $api->sanitize_data($item['tattoo_name'], "string"); 
+                    $quantity = $api->sanitize_data($item['tattoo_quantity'], "int"); 
               ?>
-              <option value="<?php echo $row['item_id'] ?>"><?php echo $row['tattoo_quantity'] . " pc. ". $row['tattoo_name']; if(strcasecmp($row['paid'], "Unpaid") == 0) { echo " (Unpaid)"; } else { echo " (Paid)"; }?></option>
+              <option value="<?php echo $item_id; ?>"><?php echo $quantity . " pc. ". $name; if(strcasecmp($paid, "Unpaid") == 0) { echo " (Unpaid)"; } else { echo " (Paid)"; } ?></option>
               <?php
                   }
                 } else {
@@ -237,93 +241,108 @@
       <div class="reservations vstack">
         <?php
           if($api->num_rows($reservations) > 0){
-            while($row = $api->fetch_assoc($reservations)){
+            while($reservation = $api->fetch_assoc($reservations)){
+              $reservation_id = $api->sanitize_data($reservation['reservation_id'], "string");
+              $status = $api->sanitize_data($reservation['reservation_status'], "string");
+              $item_id = $api->sanitize_data($reservation['item_id'], "string");
+              $tattoo_name = $api->sanitize_data($reservation['tattoo_name'], "string");
+              $tattoo_image = $api->sanitize_data($reservation['tattoo_image'], "string");
+              $quantity = $api->sanitize_data($reservation['tattoo_quantity'], "int");
+              $paid = $api->sanitize_data($reservation['paid'], "string");
+              $width = $api->sanitize_data($reservation['tattoo_width'], "int");
+              $height = $api->sanitize_data($reservation['tattoo_height'], "int");
+              $service_type = $api->sanitize_data($reservation['service_type'], "string");
+              $scheduled_date = $api->sanitize_data($reservation['scheduled_date'], "string");
+              $scheduled_time = $api->sanitize_data($reservation['scheduled_time'], "string");
+              $address = $api->sanitize_data($reservation['reservation_address'], "string");
+              $description = $api->sanitize_data($reservation['reservation_description'], "string");
+              $addon = number_format($api->sanitize_data($reservation['amount_addon'], "float"), 2, '.', '');
         ?>
           <div class="reservation_row border shadow-sm">
-            <button type="button" class="collapsible border-0" style="padding: 2rem;" data-bs-toggle="collapse" data-bs-target="#item_<?php echo $api->sanitize_data($row['item_id'], 'string'); ?>" aria-expanded="true" aria-controls="item_<?php echo $api->sanitize_data($row['item_id'], 'string') ?>">
+            <button type="button" class="collapsible border-0" style="padding: 2rem;" data-bs-toggle="collapse" data-bs-target="#item_<?php echo $item_id; ?>" aria-expanded="true" aria-controls="item_<?php echo $item_id; ?>">
               <h5 class="d-inline">
                 <?php
-                  $date = date("M:d:Y", strtotime($api->sanitize_data($row['scheduled_date'], 'string')));
+                  $date = date("M:d:Y", strtotime($scheduled_date));
                   $date = explode(':', $date);
-                  echo $api->sanitize_data($row['tattoo_quantity'], 'int') . " pc. " . $api->sanitize_data($row['tattoo_name'], 'string');
+                  echo $quantity . " pc. " . $tattoo_name;
                 ?>
               </h5><p class="d-inline text-muted"><?php echo " on " . $api->sanitize_data($date[0], 'string') . " " . $api->sanitize_data($date[1], 'int') . ", " . $api->sanitize_data($date[2], 'int'); ?></p>
             </button>
-            <div class="collapse border-top p-7 reservation" id="item_<?php echo $api->sanitize_data($row['item_id'], 'string'); ?>">
+            <div class="collapse border-top p-7 reservation" id="item_<?php echo $item_id; ?>">
               <form action="../api/queries.php" method="POST">
                 <div class="mt-3">
                   <div class="d-flex align-items-center justify-content-between">
                     <!-- tattoo image -->
                     <div>
-                      <div class="tattoo-image shadow-sm border-2 rounded-pill" style="background-image: url(<?php echo $api->sanitize_data($row['tattoo_image'], 'string'); ?>)"></div>
+                      <div class="tattoo-image shadow-sm border-2 rounded-pill" style="background-image: url(<?php echo $tattoo_image; ?>)"></div>
                     </div>
                     <div class="w-100 ms-6">
                       <div class="row my-5">
                         <!-- tattoo name -->
                         <div class="col">
                           <label class="form-label fw-semibold">Reserved Item</label>
-                          <p><?php echo $api->sanitize_data($row['tattoo_name'], 'string'); ?></p>
-                          <input type="hidden" readonly class="d-none" value="<?php echo $api->sanitize_data($row['item_id'], 'string'); ?>" name="item_id" />
+                          <p><?php echo $tattoo_name; ?></p>
+                          <input type="hidden" readonly class="d-none" value="<?php echo $item_id; ?>" name="item_id" />
                         </div>
                         <!-- status -->
                         <div class="col">
                           <label for="status" class="form-label fw-semibold">Status</label>
-                          <div class="fw-semibold"><p class="d-inline <?php if(strcasecmp($row['reservation_status'], "Confirmed") == 0){ echo "text-success"; } else { echo "text-secondary"; } ?>"><?php echo $api->sanitize_data($row['reservation_status'], "string"); ?></p>, <p class="d-inline <?php if(strcasecmp($row['paid'], "Fully Paid") == 0){ echo "text-success"; } else { echo "text-secondary"; } ?>"><?php echo $api->sanitize_data($row['paid'], "string"); ?></p></div>
-                          <input type="hidden" readonly class="d-none" value="<?php echo $api->sanitize_data($row['reservation_id'], 'string'); ?>" name="reservation_id" />
+                          <div class="fw-semibold"><p class="d-inline <?php if(strcasecmp($status, "Confirmed") == 0){ echo "text-success"; } else { echo "text-secondary"; } ?>"><?php echo $status; ?></p>, <p class="d-inline <?php if(strcasecmp($paid, "Fully Paid") == 0){ echo "text-success"; } else { echo "text-secondary"; } ?>"><?php echo $paid; ?></p></div>
+                          <input type="hidden" readonly class="d-none" value="<?php echo $reservation_id; ?>" name="reservation_id" />
                         </div>
                         <!-- addon amount -->
                         <div class="col">
                           <label class="form-label fw-semibold">Add-on Amount</label>
-                          <p>Php <?php echo $api->sanitize_data($row['amount_addon'], 'float'); ?></p>
+                          <p>₱<?php echo $addon; ?></p>
                         </div>
                       </div>
                       <div class="row my-5">
                         <!-- quantity -->
                         <div class="col">
                           <label for="quantity" class="form-label fw-semibold">Quantity</label>
-                          <p><?php echo $api->sanitize_data($row['tattoo_quantity'], 'int') . " pc. "?></p>
-                          <input type="hidden" readonly class="d-none" value="<?php echo $api->sanitize_data($row['tattoo_quantity'], 'int') ?>" name="quantity" />
+                          <p><?php echo $quantity . " pc. "; ?></p>
+                          <input type="hidden" readonly class="d-none" value="<?php echo $quantity; ?>" name="quantity" />
                         </div>
                         <!-- width -->
                         <div class="col">
                           <label for="width" class="form-label fw-semibold">Width</label>
-                          <p><?php echo $api->sanitize_data($row['tattoo_width'], 'int') . " in." ?></p>
+                          <p><?php echo $width . " in."; ?></p>
                         </div>
                         <!-- height --->
                         <div class="col">
                           <label for="height" class="form-label fw-semibold">Height</label>
-                          <p><?php echo $api->sanitize_data($row['tattoo_height'], 'int') . " in." ?></p>
+                          <p><?php echo $height . " in."; ?></p>
                         </div>
                       </div>
                       <div class="row my-5">
                         <!-- service type -->
                         <div class="col">
                           <label for="service_type" class="form-label fw-semibold">Service Type</label>
-                          <?php if(strcasecmp($row['reservation_status'], "Confirmed") == 0){ ?>
-                            <p><?php echo $api->sanitize_data($row['service_type'], 'string'); ?></p>
-                            <input type="hidden" readonly class="d-none" value="<?php echo $api->sanitize_data($row['service_type'], 'string'); ?>" name="service_type" />
+                          <?php if(strcasecmp($status, "Confirmed") == 0){ ?>
+                            <p><?php echo $service_type; ?></p>
+                            <input type="hidden" readonly class="d-none" value="<?php echo $service_type; ?>" name="service_type" />
                           <?php } else { ?>
                             <select name="service_type" class="reservations form-select form-select-plaintext no-select mb-3">
-                              <option value="Walk-in" <?php echo strcasecmp($row['service_type'], 'Walk-in') == 0 ? "selected" : "disabled"; ?>>Walk-in</option>
-                              <option value="Home Service" <?php echo strcasecmp($row['service_type'], 'Home service') == 0 ? "selected" : "disabled"; ?>>Home Service</option>
+                              <option value="Walk-in" <?php echo strcasecmp($service_type, 'Walk-in') == 0 ? "selected" : "disabled"; ?>>Walk-in</option>
+                              <option value="Home Service" <?php echo strcasecmp($service_type, 'Home service') == 0 ? "selected" : "disabled"; ?>>Home Service</option>
                             </select>
                           <?php } ?>
                         </div>
                         <!-- time -->
                         <div class="col">
                           <label for="scheduled_time" class="form-label fw-semibold">Scheduled Time</label>
-                          <?php if(strcasecmp($row['reservation_status'], "Confirmed") == 0){ ?>
-                            <p><?php echo $api->sanitize_data(date("g:i A", strtotime($row['scheduled_time'])), 'string'); ?></p>
+                          <?php if(strcasecmp($status, "Confirmed") == 0){ ?>
+                            <p><?php echo $api->sanitize_data(date("g:i A", strtotime($scheduled_time)), 'string'); ?></p>
                           <?php } ?>
-                          <input type="<?php echo strcasecmp($row['reservation_status'], "Confirmed") == 0 ? "hidden" : "time"; ?>" readonly class="<?php if(strcasecmp($row['reservation_status'], "Pending") == 0) { echo "reservations "; } ?>form-control" value="<?php echo $api->sanitize_data($row['scheduled_time'], 'string'); ?>" name="scheduled_time" />
+                          <input type="<?php echo strcasecmp($status, "Confirmed") == 0 ? "hidden" : "time"; ?>" readonly class="<?php if(strcasecmp($status, "Pending") == 0) { echo "reservations "; } ?>form-control" value="<?php echo $scheduled_time; ?>" name="scheduled_time" />
                         </div>
                         <!-- date -->
                         <div class="col">
                           <label for="scheduled_date" class="form-label fw-semibold">Scheduled Date</label>
-                          <?php if(strcasecmp($row['reservation_status'], "Confirmed") == 0){ ?>
+                          <?php if(strcasecmp($status, "Confirmed") == 0){ ?>
                             <p><?php echo $api->sanitize_data($date[0], 'string') . " " . $api->sanitize_data($date[1], 'int') . ", " . $api->sanitize_data($date[2], 'int'); ?></p>
                           <?php } ?>
-                          <input type="<?php echo strcasecmp($row['reservation_status'], "Confirmed") == 0 ? "hidden" : "date"; ?>" readonly class="<?php if(strcasecmp($row['reservation_status'], "Pending") == 0) { echo "reservations "; } ?>form-control" value="<?php echo $row['scheduled_date'] ?>" name="scheduled_date" />
+                          <input type="<?php echo strcasecmp($status, "Confirmed") == 0 ? "hidden" : "date"; ?>" readonly class="<?php if(strcasecmp($status, "Pending") == 0) { echo "reservations "; } ?>form-control" value="<?php echo $scheduled_date; ?>" name="scheduled_date" />
                         </div>
                       </div>
                     </div>
@@ -332,30 +351,30 @@
                     <!-- address -->
                     <div class="col">
                       <label for="reservation_address" class="form-label fw-semibold">Address</label>
-                      <?php if(strcasecmp($row['reservation_status'], "Confirmed") == 0){ ?>
-                        <p><?php echo $api->sanitize_data($row['reservation_address'], 'string'); ?></p>
+                      <?php if(strcasecmp($status, "Confirmed") == 0){ ?>
+                        <p><?php echo $address; ?></p>
                       <?php } ?>
-                      <input type="<?php echo strcasecmp($row['reservation_status'], "Confirmed") == 0 ? "hidden" : "text"; ?>" readonly class="<?php echo strcasecmp($row['reservation_status'], "Pending") == 0 ? "reservations form-control" : "d-none"; ?>" value="<?php echo $api->sanitize_data($row['reservation_address'], 'string'); ?>" name="reservation_address" />
+                      <input type="<?php echo strcasecmp($status, "Confirmed") == 0 ? "hidden" : "text"; ?>" readonly class="<?php echo strcasecmp($status, "Pending") == 0 ? "reservations form-control" : "d-none"; ?>" value="<?php echo $address; ?>" name="reservation_address" />
                     </div>
                   </div>
-                  <div class="row <?php echo strcasecmp($row['reservation_status'], 'Confirmed') == 0 ? "mt-5" : "my-5"; ?>">
+                  <div class="row <?php echo strcasecmp($status, 'Confirmed') == 0 ? "mt-5" : "my-5"; ?>">
                     <!-- demands -->
                     <div class="col">
                       <label for="reservation_description" class="form-label fw-semibold">Demands</label>
-                      <?php if(strcasecmp($row['reservation_status'], "Confirmed") == 0){ ?>
-                        <p><?php echo $api->sanitize_data($row['reservation_description'], 'string'); ?></p>
+                      <?php if(strcasecmp($status, "Confirmed") == 0){ ?>
+                        <p><?php echo $description; ?></p>
                       <?php } else { ?>
-                        <textarea readonly class="<?php if(strcasecmp($row['reservation_status'], "Pending") == 0) { echo "reservations "; } ?>form-control p-3 text-wrap" name="reservation_demands" rows="5" placeholder="Reservation Demands" required><?php echo $api->sanitize_data($row['reservation_description'], 'string'); ?></textarea>
+                        <textarea readonly class="<?php if(strcasecmp($status, "Pending") == 0) { echo "reservations "; } ?>form-control p-3 text-wrap" name="reservation_demands" rows="5" placeholder="Reservation Demands" required><?php echo $description; ?></textarea>
                         <p class="my-2 d-none text-danger"></p>
                       <?php } ?>
                     </div>
                   </div>
-                  <?php if(strcasecmp($row['reservation_status'], 'Pending') == 0){ ?>
+                  <?php if(strcasecmp($status, 'Pending') == 0){ ?>
                     <div class="row mt-1 mb-2">
                       <div class="col d-flex justify-content-end">
                         <button type="submit" class="order-0 btn btn-secondary d-none" name="update_reservation">Update</button>
                         <button type="submit" class="order-1 ms-1 btn btn-primary" name="confirm_reservation">Confirm Reservation</button>
-                        <?php if(strcasecmp($row['paid'], 'Fully Paid') != 0){ ?>
+                        <?php if(strcasecmp($paid, 'Fully Paid') != 0){ ?>
                           <button type="submit" class="order-2 ms-1 btn btn-outline-danger" name="cancel_reservation">Cancel</button>
                         <?php } ?>
                       </div>
