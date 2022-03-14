@@ -75,7 +75,11 @@
       <h2 class="fw-bold display-3">Explore</h2>
       <p class="fs-5 text-muted">Find your next tattoo here.</p>
     </div>
-    <div class="w-100 d-flex flex-row flex-wrap justify-content-between align-items-start">
+    <div class="mb-4 position-relative d-flex flex-row justify-content-start align-items-center">
+      <div class="material-icons position-absolute fs-2 ms-4 no-select">search</div>
+      <input type="text" class="form-control form-control-lg rounded-pill" style="padding-top: 1.25rem; padding-left: 4.5rem; padding-bottom: 1.25rem; padding-right: 1.25rem;" id="search" placeholder="Search">
+    </div>
+    <div class="w-100 d-flex flex-row flex-wrap justify-content-between align-items-start" id="catalogue">
       <?php
         $query = $api->select();
         $query = $api->params($query, "*");
@@ -108,7 +112,7 @@
           while($row = $api->fetch_assoc($res)){
             $id = $api->sanitize_data($row['tattoo_id'], 'string');
             $name = $api->sanitize_data($row['tattoo_name'], 'string');
-            $price = $api->sanitize_data($row['tattoo_price'], 'float');
+            $price = number_format($api->sanitize_data($row['tattoo_price'], "float"), 2, '.', '');
             $height = $api->sanitize_data($row['tattoo_height'], 'int');
             $width = $api->sanitize_data($row['tattoo_width'], 'int');
             $image = $api->sanitize_data($row['tattoo_image'], 'string');
@@ -190,6 +194,41 @@
   </div>
 </body>
 <script src="../api/bootstrap-bundle-min.js"></script>
+<script>
+  // search bar
+  var search = document.getElementById('search');
+
+  // catalogue
+  var catalogue = document.getElementById('catalogue');
+  var cards = document.getElementsByClassName('tattoo-card');
+
+  // searching for tattoo
+  search.addEventListener('input', function () {
+    if(search.value.length == 0){
+      catalogue.classList.remove('justify-content-evenly');
+      catalogue.classList.add('justify-content-between');
+
+      for(var i = 0, count = cards.length; i < count; i++){
+        cards[i].classList.remove('d-none');
+        cards[i].classList.add('d-block');
+      }
+    } else {
+      catalogue.classList.remove('justify-content-between');
+      catalogue.classList.add('justify-content-evenly');
+
+      for(var i = 0, count = cards.length; i < count; i++){
+        item_name = cards[i].href.toLowerCase();
+        if(item_name.indexOf(search.value.toLowerCase()) > -1){
+          cards[i].classList.remove('d-none');
+          cards[i].classList.add('d-block');
+        } else {
+          cards[i].classList.remove('d-block');
+          cards[i].classList.add('d-none');
+        }
+      }
+    }
+  });
+</script>
 <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script> -->
 </html>
 <?php
