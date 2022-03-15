@@ -10,7 +10,7 @@ The primary objective of this project is to develop an online Information System
 
 ## API Documentation
 
-<details><summary>General Use Helper Functions</summary>
+<details><summary>General Use Functions</summary>
 <p>
 
 ## $api->sanitize_data($data, $type)
@@ -263,7 +263,7 @@ $query = $api->order($query, array('column1', 'column2'), array('ASC', 'DESC'));
 </p>
 </details>
 
-<details><summary>SELECT FUNCTIONS</summary>
+<details><summary>Select Functions</summary>
 <p>
 
 ## $api->select()
