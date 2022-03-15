@@ -8,24 +8,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <!-- fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
-  
-  <!-- bootstrap -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-  
+  <?php require_once '../common/meta.php'; ?>
   <!-- native style -->
-  <link href="../style/bootstrap.css" rel="stylesheet">
-  <link href="../style/style.css" rel="stylesheet">
   <style>
-  .content h1{
+  .content h1 {
     font-family: 'Libre Caslon Text', 'Arial', sans-serif;
     font-weight: bold;
   }
@@ -44,7 +30,7 @@
   </style>
   <title>Log In | NJC Tattoo</title>
 </head>
-<body class="content">
+<body>
 <div class="row justify-content-center align-items-start w-100 vh-100">
   <div class="col-5 order-first bg-img"></div>  
   <div class="col order-last d-flex justify-content-center align-items-center">

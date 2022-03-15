@@ -20,17 +20,17 @@
     $query = $api->order($query, "order_date", "ASC");
 
     $statement = $api->prepare($query);
-    if ($statement===false) {
+    if($statement===false){
         throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
     }
 
     $mysqli_checks = $api->bind_params($statement, "s", "Ongoing");
-    if ($mysqli_checks===false) {
+    if($mysqli_checks===false){
         throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
     }
 
     $mysqli_checks = $api->execute($statement);
-    if($mysqli_checks===false) {
+    if($mysqli_checks===false){
         throw new Exception('Execute error: The prepared statement could not be executed.');
     }
 
@@ -41,12 +41,12 @@
 
     $api->free_result($statement);
     $mysqli_checks = $api->close($statement);
-    if ($mysqli_checks===false) {
+    if($mysqli_checks===false){
       throw new Exception('The prepared statement could not be closed.');
     } else {
       $statement = null;
     }
-  } catch (Exception $e) {
+  } catch (Exception $e){
     exit();
     $_SESSION['res'] = $e->getMessage();
     Header("Location: ./index.php");
@@ -55,23 +55,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <!-- fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
-  <!-- bootstrap -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-
+  <?php require_once '../common/meta.php'; ?>
   <!-- native style -->
-  <link href="../style/bootstrap.css" rel="stylesheet">
-  <link href="../style/style.css" rel="stylesheet">
   <style>
     .tabs {
       transition: color .4s;
@@ -190,17 +175,17 @@
             <?php
               try {    
                 $retrieve_items = $api->prepare("SELECT order_item.item_id, tattoo_name, tattoo_image, tattoo_price, tattoo_quantity, order_item.tattoo_width, order_item.tattoo_height, paid, item_status, amount_addon FROM ((order_item INNER JOIN tattoo ON order_item.tattoo_id=tattoo.tattoo_id) LEFT JOIN reservation ON order_item.item_id=reservation.item_id) WHERE order_id=? ORDER BY paid ASC, item_status DESC");
-                if ($retrieve_items===false) {
+                if($retrieve_items===false){
                   throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
                 }
       
                 $mysqli_checks = $api->bind_params($retrieve_items, "s", $order_id);
-                if ($mysqli_checks===false) {
+                if($mysqli_checks===false){
                   throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
                 }
       
                 $mysqli_checks = $api->execute($retrieve_items);
-                if($mysqli_checks===false) {
+                if($mysqli_checks===false){
                   throw new Exception('Execute error: The prepared statement could not be executed.');
                 }
       
@@ -211,10 +196,10 @@
 
                 $api->free_result($retrieve_items);
                 $mysqli_checks = $api->close($retrieve_items);
-                if ($mysqli_checks===false) {
+                if($mysqli_checks===false){
                   throw new Exception('The prepared statement could not be closed.');
                 }
-              } catch (Exception $e) {
+              } catch (Exception $e){
                   exit();
                   $_SESSION['res'] = $e->getMessage();
                   Header("Location: ./index.php");
@@ -233,7 +218,7 @@
                   $item_status = $api->sanitize_data($item['item_status'], "string");
                   $addon = number_format($api->sanitize_data($item['amount_addon'], "float"), 2, '.', '');
             ?>
-            <<?php if((strcasecmp($item_status, "Standing") == 0 && strcasecmp($paid, "Unpaid") == 0)) { ?>form action="./queries.php" method="POST"<?php } else { ?>div<?php } ?> class="border-top d-flex align-items-center justify-content-between p-5">
+            <<?php if((strcasecmp($item_status, "Standing") == 0 && strcasecmp($paid, "Unpaid") == 0)){ ?>form action="./queries.php" method="POST"<?php } else { ?>div<?php } ?> class="border-top d-flex align-items-center justify-content-between p-5">
               <div>
                 <div class="tattoo-image rounded-pill shadow-sm" style="background-image: url(<?php echo $tattoo_image; ?>)"></div>
               </div>
@@ -348,17 +333,17 @@
           <?php
             try {    
               $retrieve_referrals = $api->prepare("SELECT referral_id, referral_fname, referral_mi, referral_lname, referral_contact_no, referral_email, referral_age, confirmation_status FROM (workorder INNER JOIN referral ON workorder.order_id=referral.order_id) WHERE referral.order_id=? AND referral.client_id=?");
-              if ($retrieve_referrals===false) {
+              if($retrieve_referrals===false){
                   throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
               }
     
               $mysqli_checks = $api->bind_params($retrieve_referrals, "ss", array($order_id, $client_id));
-              if($mysqli_checks===false) {
+              if($mysqli_checks===false){
                   throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
               }
     
               $mysqli_checks = $api->execute($retrieve_referrals);
-              if($mysqli_checks===false) {
+              if($mysqli_checks===false){
                   throw new Exception('Execute error: The prepared statement could not be executed.');
               }
     
@@ -369,10 +354,10 @@
 
               $api->free_result($retrieve_referrals);
               $mysqli_checks = $api->close($retrieve_referrals);
-              if ($mysqli_checks===false) {
+              if($mysqli_checks===false){
                 throw new Exception('The prepared statement could not be closed.');
               }
-            } catch (Exception $e) {
+            } catch (Exception $e){
                 exit();
                 $_SESSION['res'] = $e->getMessage();
                 Header("Location: ./index.php");
@@ -512,12 +497,11 @@
     </div>
   </div>  
 </body>
-<script src="../api/bootstrap-bundle-min.js"></script>
-<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script> -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 <script>
   // tooltips
   var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-  var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+  var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl){
     return new bootstrap.Tooltip(tooltipTriggerEl)
   });
 
@@ -540,19 +524,19 @@
   for(var i=0, count=orders.length; i < count; i++){
     let order = orders[i];
 
-    order_collapsibles[i].addEventListener('shown.bs.collapse', function () {
+    order_collapsibles[i].addEventListener('shown.bs.collapse', function (){
       order.classList.remove('my-2');
       order.classList.add('my-4');
     });
 
-    order_collapsibles[i].addEventListener('hidden.bs.collapse', function () {
+    order_collapsibles[i].addEventListener('hidden.bs.collapse', function (){
       order.classList.remove('my-4');
       order.classList.add('my-2');
     });
   }
 
   // toggling all collapsibles
-  toggle_orders.addEventListener('click', function() {
+  toggle_orders.addEventListener('click', function(){
     show_orders = !show_orders;
     show_orders === true ? toggle_orders.innerText = "Hide All Orders" : toggle_orders.innerText = "Show All Orders";
     

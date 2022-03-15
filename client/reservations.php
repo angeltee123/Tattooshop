@@ -15,10 +15,10 @@
     try {
       $client_id = $_SESSION['client_id'];
       $mysqli_checks = $api->get_workorder($client_id);
-      if ($mysqli_checks!==true) {
+      if($mysqli_checks!==true){
         throw new Exception('Error: Retrieving client workorder failed.');
       }
-    } catch (Exception $e) {
+    } catch (Exception $e){
       exit();
       $_SESSION['res'] = $e->getMessage();
       Header("Location: ./index.php");
@@ -41,17 +41,17 @@
     $query = $api->order($query, array("scheduled_date", "scheduled_time", "reservation_status"), array("ASC", "ASC", "ASC"));
     
     $statement = $api->prepare($query);
-    if ($statement===false) {
+    if($statement===false){
         throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
     }
 
     $mysqli_checks = $api->bind_params($statement, "ssss", array($order_id, "Reserved", "Pending", "Confirmed"));
-    if ($mysqli_checks===false) {
+    if($mysqli_checks===false){
         throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
     }
 
     $mysqli_checks = $api->execute($statement);
-    if($mysqli_checks===false) {
+    if($mysqli_checks===false){
         throw new Exception('Execute error: The prepared statement could not be executed.');
     }
 
@@ -62,7 +62,7 @@
 
     $api->free_result($statement);
     $mysqli_checks = $api->close($statement);
-    if ($mysqli_checks===false) {
+    if($mysqli_checks===false){
         throw new Exception('The prepared statement could not be closed.');
     } else {
       $left = null;
@@ -85,17 +85,17 @@
     $query = $query . $condition;
 
     $statement = $api->prepare($query);
-    if ($statement===false) {
+    if($statement===false){
         throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
     }
 
     $mysqli_checks = $api->bind_params($statement, "ssi", array($client_id, "Standing", 0));
-    if ($mysqli_checks===false) {
+    if($mysqli_checks===false){
         throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
     }
 
     $mysqli_checks = $api->execute($statement);
-    if($mysqli_checks===false) {
+    if($mysqli_checks===false){
         throw new Exception('Execute error: The prepared statement could not be executed.');
     }
 
@@ -106,10 +106,10 @@
 
     $api->free_result($statement);
     $mysqli_checks = $api->close($statement);
-    if ($mysqli_checks===false) {
+    if($mysqli_checks===false){
         throw new Exception('The prepared statement could not be closed.');
     }
-  } catch (Exception $e) {
+  } catch (Exception $e){
       exit();
       $_SESSION['res'] = $e->getMessage();
       Header("Location: ../client/index.php");
@@ -118,23 +118,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <!-- fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
-  <!-- bootstrap -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-  
+  <?php require_once '../common/meta.php'; ?>
   <!-- native style -->
-  <link href="../style/bootstrap.css" rel="stylesheet">
-  <link href="../style/style.css" rel="stylesheet">
   <style>
     .reservation_row {
       transition: margin .35s;
@@ -215,7 +200,7 @@
                     $name = $api->sanitize_data($item['tattoo_name'], "string"); 
                     $quantity = $api->sanitize_data($item['tattoo_quantity'], "int"); 
               ?>
-              <option value="<?php echo $item_id; ?>"><?php echo $quantity . " pc. ". $name; if(strcasecmp($paid, "Unpaid") == 0) { echo " (Unpaid)"; } else { echo " (Paid)"; } ?></option>
+              <option value="<?php echo $item_id; ?>"><?php echo $quantity . " pc. ". $name; if(strcasecmp($paid, "Unpaid") == 0){ echo " (Unpaid)"; } else { echo " (Paid)"; } ?></option>
               <?php
                   }
                 } else {
@@ -334,7 +319,7 @@
                           <?php if(strcasecmp($status, "Confirmed") == 0){ ?>
                             <p><?php echo $api->sanitize_data(date("g:i A", strtotime($scheduled_time)), 'string'); ?></p>
                           <?php } ?>
-                          <input type="<?php echo strcasecmp($status, "Confirmed") == 0 ? "hidden" : "time"; ?>" readonly class="<?php if(strcasecmp($status, "Pending") == 0) { echo "reservations "; } ?>form-control" value="<?php echo $scheduled_time; ?>" name="scheduled_time" />
+                          <input type="<?php echo strcasecmp($status, "Confirmed") == 0 ? "hidden" : "time"; ?>" readonly class="<?php if(strcasecmp($status, "Pending") == 0){ echo "reservations "; } ?>form-control" value="<?php echo $scheduled_time; ?>" name="scheduled_time" />
                         </div>
                         <!-- date -->
                         <div class="col">
@@ -342,7 +327,7 @@
                           <?php if(strcasecmp($status, "Confirmed") == 0){ ?>
                             <p><?php echo $api->sanitize_data($date[0], 'string') . " " . $api->sanitize_data($date[1], 'int') . ", " . $api->sanitize_data($date[2], 'int'); ?></p>
                           <?php } ?>
-                          <input type="<?php echo strcasecmp($status, "Confirmed") == 0 ? "hidden" : "date"; ?>" readonly class="<?php if(strcasecmp($status, "Pending") == 0) { echo "reservations "; } ?>form-control" value="<?php echo $scheduled_date; ?>" name="scheduled_date" />
+                          <input type="<?php echo strcasecmp($status, "Confirmed") == 0 ? "hidden" : "date"; ?>" readonly class="<?php if(strcasecmp($status, "Pending") == 0){ echo "reservations "; } ?>form-control" value="<?php echo $scheduled_date; ?>" name="scheduled_date" />
                         </div>
                       </div>
                     </div>
@@ -364,7 +349,7 @@
                       <?php if(strcasecmp($status, "Confirmed") == 0){ ?>
                         <p><?php echo $description; ?></p>
                       <?php } else { ?>
-                        <textarea readonly class="<?php if(strcasecmp($status, "Pending") == 0) { echo "reservations "; } ?>form-control p-3 text-wrap" name="reservation_demands" rows="5" placeholder="Reservation Demands" required><?php echo $description; ?></textarea>
+                        <textarea readonly class="<?php if(strcasecmp($status, "Pending") == 0){ echo "reservations "; } ?>form-control p-3 text-wrap" name="reservation_demands" rows="5" placeholder="Reservation Demands" required><?php echo $description; ?></textarea>
                         <p class="my-2 d-none text-danger"></p>
                       <?php } ?>
                     </div>
@@ -402,8 +387,7 @@
     <?php } ?>
   </div>
 </body>
-<script src="../api/bootstrap-bundle-min.js"></script>
-<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script> -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 <?php
   if($api->num_rows($reservations) > 0){
 ?>
@@ -417,16 +401,16 @@
   var reservation_rows = document.getElementsByClassName('reservation_row');
   
   for(var i=0, count=reservation_rows.length; i < count; i++){
-    reservation_rows[i].addEventListener('shown.bs.collapse', function () {
+    reservation_rows[i].addEventListener('shown.bs.collapse', function (){
       this.classList.add('my-4');
     });
 
-    reservation_rows[i].addEventListener('hidden.bs.collapse', function () {
+    reservation_rows[i].addEventListener('hidden.bs.collapse', function (){
       this.classList.remove('my-4');
     });
   }
 
-  toggle_reservations.addEventListener('click', function() {
+  toggle_reservations.addEventListener('click', function(){
     show_reservations = !show_reservations;
     show_reservations === true ? toggle_reservations.innerText = "Hide All Reservations" : toggle_reservations.innerText = "Show All Reservations";
     
@@ -447,7 +431,7 @@
   var reservation_row_fields = document.querySelectorAll(".reservations.form-control");
   var reservation_selects = document.querySelectorAll(".reservations.form-select");
 
-  edit_reservations.addEventListener('click', function() {
+  edit_reservations.addEventListener('click', function(){
       this.checked ? edit_reservations_label.innerText = "Stop Editing" : edit_reservations_label.innerText = "Edit";
       
       for(var i=0, count=reservation_row_fields.length; i < count; i++){
@@ -459,14 +443,14 @@
           reservation_selects[i].classList.remove('no-select');
           reservation_selects[i].classList.remove('form-select-plaintext');
 
-          for(var j = 0; j < reservation_selects[i].options.length; j++) {
+          for(var j = 0; j < reservation_selects[i].options.length; j++){
             reservation_selects[i].options[j].disabled = false;
           }
         } else {
           reservation_selects[i].classList.add('no-select');
           reservation_selects[i].classList.add('form-select-plaintext');
 
-          for(var j = 0; j < reservation_selects[i].options.length; j++) {
+          for(var j = 0; j < reservation_selects[i].options.length; j++){
             if(!reservation_selects[i].options[j].selected){
               reservation_selects[i].options[j].disabled = true;
             }
@@ -475,7 +459,7 @@
       }
 
       for(var j=0, count=update_buttons.length; j < count; j++){
-        if(this.checked) {
+        if(this.checked){
           update_buttons[j].classList.remove('d-none');
           update_buttons[j].classList.add('d-inline');
         } else {

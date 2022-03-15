@@ -150,7 +150,7 @@ class API {
                 $string = $string . $params . " ";
             } else {
                 if(!empty($params)){
-                    for ($k = 0; $k < count($params); $k++) {
+                    for($k = 0; $k < count($params); $k++){
                         $string = $string . $this->sanitize_data($params[$k], "string") . ", ";
                     }
         
@@ -183,7 +183,7 @@ class API {
                 $param_count = count($params);
 
                 if($col_count == $param_count){
-                    for ($k = 0; $k < $col_count; $k++) {
+                    for($k = 0; $k < $col_count; $k++){
                         $cols[$k] = is_string($cols[$k]) ? $this->sanitize_data($cols[$k], "string") : $cols[$k];
                         $params[$k] = is_string($params[$k]) ? $this->sanitize_data($params[$k], "string") : $params[$k];
                         $string = $string . $cols[$k] . "=" . $params[$k] . " AND ";
@@ -217,7 +217,7 @@ class API {
                 if($param_count == $order_count){
                     $string = $string . "ORDER BY ";
                     
-                    for ($k = 0; $k < count($params); $k++) {
+                    for($k = 0; $k < count($params); $k++){
                         $string = $string . $this->sanitize_data($params[$k], "string") . " " . $this->sanitize_data($order[$k], "string") . ", ";
                     }
 
@@ -235,11 +235,11 @@ class API {
         $user = $this->sanitize_data($user, "string");
         $password = "";
 
-        if (strcasecmp($user, "user") == 0){
+        if(strcasecmp($user, "user") == 0){
             $password = "User@CIS2104.njctattoodb";
         }
         
-        elseif (strcasecmp($user, "admin") == 0){
+        elseif(strcasecmp($user, "admin") == 0){
             $password = "Admin@CIS2104.njctattoodb";
         }
 
@@ -262,17 +262,17 @@ class API {
                 $get_order = $this->limit($get_order, 1);
             
                 $statement = $this->prepare($get_order);
-                if ($statement===false) {
+                if($statement===false){
                     throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
                 }
             
                 $mysqli_checks = $this->bind_params($statement, "ss", array($client_id, "Ongoing"));
-                if ($mysqli_checks===false) {
+                if($mysqli_checks===false){
                     throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
                 }
             
                 $mysqli_checks = $this->execute($statement);
-                if($mysqli_checks===false) {
+                if($mysqli_checks===false){
                     throw new Exception('Execute error: The prepared statement could not be executed.');
                 }
             
@@ -288,7 +288,7 @@ class API {
 
                     $this->free_result($statement);
                     $mysqli_checks = $this->close($statement);
-                    if ($mysqli_checks===false) {
+                    if($mysqli_checks===false){
                         throw new Exception('The prepared statement could not be closed.');
                     } else {
                         $statement = null;
@@ -303,17 +303,17 @@ class API {
                     $get_all_items = $this->where($get_all_items, "order_id", "?");
                 
                     $statement = $this->prepare($get_all_items);
-                    if ($statement===false) {
+                    if($statement===false){
                         throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
                     }
 
                     $mysqli_checks = $this->bind_params($statement, "s", $_SESSION['order_id']);
-                    if ($mysqli_checks===false) {
+                    if($mysqli_checks===false){
                         throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
                     }
                 
                     $mysqli_checks = $this->execute($statement);
-                    if ($statement===false) {
+                    if($statement===false){
                         throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
                     }
 
@@ -326,7 +326,7 @@ class API {
             
                     $this->free_result($statement);
                     $mysqli_checks = $this->close($statement);
-                    if ($mysqli_checks===false) {
+                    if($mysqli_checks===false){
                         throw new Exception('The prepared statement could not be closed.');
                     } else {
                         $statement = null;
@@ -341,17 +341,17 @@ class API {
                     $get_completed_items = $this->where($get_completed_items, array("order_id", "paid", "item_status"), array("?", "?", "?"));
                 
                     $statement = $this->prepare($get_completed_items);
-                    if ($statement===false) {
+                    if($statement===false){
                         throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
                     }
 
                     $mysqli_checks = $this->bind_params($statement, "sss", array($_SESSION['order_id'], "Fully Paid", "Applied"));
-                    if ($mysqli_checks===false) {
+                    if($mysqli_checks===false){
                         throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
                     }
                 
                     $mysqli_checks = $this->execute($statement);
-                    if ($statement===false) {
+                    if($statement===false){
                         throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
                     }
 
@@ -364,7 +364,7 @@ class API {
             
                     $this->free_result($statement);
                     $mysqli_checks = $this->close($statement);
-                    if ($mysqli_checks===false) {
+                    if($mysqli_checks===false){
                         throw new Exception('The prepared statement could not be closed.');
                     } else {
                         $statement = null;
@@ -373,22 +373,22 @@ class API {
                     // updating status of existing order - finishing order
                     if($unfiltered_row_count == $filtered_row_count && $amount_due_total == 0){
                         $statement = $this->prepare("UPDATE workorder SET status=? WHERE order_id=? AND client_id=?");
-                        if ($statement===false) {
+                        if($statement===false){
                             throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
                         }
 
                         $mysqli_checks = $this->bind_params($statement, "sss", array("Finished", $_SESSION['order_id'], $client_id));
-                        if ($mysqli_checks===false) {
+                        if($mysqli_checks===false){
                             throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
                         }
 
                         $mysqli_checks = $this->execute($statement);
-                        if($mysqli_checks===false) {
+                        if($mysqli_checks===false){
                             throw new Exception('Execute error: The prepared statement could not be executed.');
                         }
 
                         $mysqli_checks = $this->close($statement);
-                        if ($mysqli_checks===false) {
+                        if($mysqli_checks===false){
                             throw new Exception('The prepared statement could not be closed.');
                         } else {
                             $statement = null;
@@ -400,7 +400,7 @@ class API {
                     // no exsiting order found
                     $this->free_result($statement);
                     $mysqli_checks = $this->close($statement);
-                    if ($mysqli_checks===false) {
+                    if($mysqli_checks===false){
                         throw new Exception('The prepared statement could not be closed.');
                     } else {
                         $statement = null;
@@ -410,7 +410,7 @@ class API {
                 }
 
                 return true;
-            } catch (Exception $e) {
+            } catch (Exception $e){
                 exit();
                 return $e;
             }
@@ -437,17 +437,17 @@ class API {
                 $get_total = $get_total . $not;
 
                 $statement = $this->prepare($get_total);
-                if ($statement===false) {
+                if($statement===false){
                     throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
                 }
 
                 $mysqli_checks = $this->bind_params($statement, "ssss", array($client_id, $order_id, "Finished", "Fully Paid"));
-                if ($mysqli_checks===false) {
+                if($mysqli_checks===false){
                     throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
                 }
 
                 $mysqli_checks = $this->execute($statement);
-                if($mysqli_checks===false) {
+                if($mysqli_checks===false){
                     throw new Exception('Execute error: The prepared statement could not be executed.');
                 }
 
@@ -459,7 +459,7 @@ class API {
                 // calculating total
                 if($this->num_rows($res) > 0){
                     while($row = $this->fetch_assoc($res)){
-                        if(strcasecmp($row['item_status'], "Standing") == 0 && strcasecmp($row['paid'], "Unpaid") == 0) {
+                        if(strcasecmp($row['item_status'], "Standing") == 0 && strcasecmp($row['paid'], "Unpaid") == 0){
                             $total += $row['tattoo_price'] * $row['tattoo_quantity'];
                         }
 
@@ -477,7 +477,7 @@ class API {
 
                 $this->free_result($statement);
                 $mysqli_checks = $this->close($statement);
-                if ($mysqli_checks===false) {
+                if($mysqli_checks===false){
                     throw new Exception('The prepared statement could not be closed.');
                 } else {
                     $res = null;
@@ -486,17 +486,17 @@ class API {
 
                 // checking for discount
                 $statement = $this->prepare("SELECT incentive FROM workorder WHERE order_id=? AND client_id=? AND status=? ORDER BY order_date ASC LIMIT 1");
-                if ($statement===false) {
+                if($statement===false){
                     throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
                 }
 
                 $mysqli_checks = $this->bind_params($statement, "sss", array($order_id, $client_id, "Ongoing"));
-                if ($mysqli_checks===false) {
+                if($mysqli_checks===false){
                     throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
                 }
 
                 $mysqli_checks = $this->execute($statement);
-                if($mysqli_checks===false) {
+                if($mysqli_checks===false){
                     throw new Exception('Execute error: The prepared statement could not be executed.');
                 }
 
@@ -509,7 +509,7 @@ class API {
 
                 $this->free_result($statement);
                 $mysqli_checks = $this->close($statement);
-                if ($mysqli_checks===false) {
+                if($mysqli_checks===false){
                     throw new Exception('The prepared statement could not be closed.');
                 } else {
                     $statement = null;
@@ -528,27 +528,27 @@ class API {
                 $update_total = $this->where($update_total, "order_id", "?");
 
                 $statement = $this->prepare($update_total);
-                if ($statement===false) {
+                if($statement===false){
                     throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
                 }
 
                 $mysqli_checks = $this->bind_params($statement, "ds", array($total, $order_id));
-                if ($mysqli_checks===false) {
+                if($mysqli_checks===false){
                     throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
                 }
 
                 $mysqli_checks = $this->execute($statement);
-                if($mysqli_checks===false) {
+                if($mysqli_checks===false){
                     throw new Exception('Execute error: The prepared statement could not be executed.');
                 }
 
                 $mysqli_checks = $this->close($statement);
-                if ($mysqli_checks===false) {
+                if($mysqli_checks===false){
                     throw new Exception('The prepared statement could not be closed.');
                 }
 
                 return true;
-            } catch (Exception $e) {
+            } catch (Exception $e){
                 exit();
                 return false;
             }
@@ -568,7 +568,7 @@ class API {
             return $string . $params . " ";
         } else {
             if(!empty($params)){
-                for ($k = 0; $k < count($params); $k++) {
+                for($k = 0; $k < count($params); $k++){
                     $string = $string . $this->sanitize_data($params[$k], "string") . ", ";
                 }
     
@@ -595,7 +595,7 @@ class API {
     public function columns($string, $params = array()){
         if(!empty($params)){
             $string = $string . "(";
-            for ($k = 0; $k < count($params); $k++) {
+            for($k = 0; $k < count($params); $k++){
                 $string = $string . $this->sanitize_data($params[$k], "string") . ", ";
             }
 
@@ -630,7 +630,7 @@ class API {
                 if($col_count == $param_count){
                     $string = $string . "SET ";
 
-                    for ($k = 0; $k < $col_count; $k++) {
+                    for($k = 0; $k < $col_count; $k++){
                         $string = $string . $this->sanitize_data($cols[$k], "string") . "=" . $this->sanitize_data($params[$k], "string") . ", ";
                     }
         
@@ -677,25 +677,25 @@ class API {
         if(!is_array($params)){
             try {
                 $param_ref[] = &$types;
-                if (is_string($params)){
+                if(is_string($params)){
                     $params = $this->sanitize_data($params, "string");
                 }
                 $param_ref[] = &$params;
                 return call_user_func_array(array($statement, 'bind_param'), $param_ref);
-            } catch (Exception $e) {
+            } catch (Exception $e){
                 echo $e->getMessage();
             }
         } else {
             try {
                 $param_ref[] = &$types;
-                for ($i = 0; $i < count($params); $i++) {
-                    if (is_string($params[$i])){
+                for($i = 0; $i < count($params); $i++){
+                    if(is_string($params[$i])){
                         $params[$i] = $this->sanitize_data($params[$i], "string");
                     }
                     $param_ref[] = &$params[$i];
                 }
                 return call_user_func_array(array($statement, 'bind_param'), $param_ref);
-            } catch (Exception $e) {
+            } catch (Exception $e){
                 echo $e->getMessage();
             }
         }
@@ -705,14 +705,14 @@ class API {
     public function bind_result(&$statement, $params = array()){
         if(!empty($params)){
             try {
-                for ($i = 0; $i < count($params); $i++) {
+                for($i = 0; $i < count($params); $i++){
                     $param_ref[] = &$params[$i];
                 }
                 call_user_func_array(array($statement, 'bind_result'), $param_ref);
                 $statement->fetch();
                 return $param_ref;
             }
-            catch (Exception $e) {
+            catch (Exception $e){
                 echo $e->getMessage();
             }
         }

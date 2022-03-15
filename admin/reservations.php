@@ -14,17 +14,17 @@
 
     // retrieving ongoing worksessions
     $statement = $api->prepare("SELECT client_fname, client_mi, client_lname, worksession.reservation_id, session_id, session_status, reservation.item_id, tattoo_name, tattoo_image, tattoo_quantity, order_item.tattoo_width, order_item.tattoo_height, service_type, amount_addon, session_date, session_start_time, session_address, reservation_description FROM (((((workorder INNER JOIN order_item ON workorder.order_id=order_item.order_id) INNER JOIN client ON workorder.client_id=client.client_id) INNER JOIN reservation ON reservation.item_id=order_item.item_id) INNER JOIN worksession ON reservation.reservation_id=worksession.reservation_id) INNER JOIN tattoo ON tattoo.tattoo_id=order_item.tattoo_id) WHERE session_status!= ? ORDER BY session_date ASC");
-    if ($statement===false) {
+    if($statement===false){
         throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
     }
 
     $mysqli_checks = $api->bind_params($statement, "s", "Finished");
-    if ($mysqli_checks===false) {
+    if($mysqli_checks===false){
         throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
     }
 
     $mysqli_checks = $api->execute($statement);
-    if($mysqli_checks===false) {
+    if($mysqli_checks===false){
         throw new Exception('Execute error: The prepared statement could not be executed.');
     }
 
@@ -37,7 +37,7 @@
 
     $api->free_result($statement);
     $mysqli_checks = $api->close($statement);
-    if ($mysqli_checks===false) {
+    if($mysqli_checks===false){
         throw new Exception('The prepared statement could not be closed.');
     } else {
       $statement = null;
@@ -45,17 +45,17 @@
 
     // retrieving ongoing reservations
     $statement = $api->prepare("SELECT workorder.client_id, client_fname, client_mi, client_lname, reservation_id, reservation_status, reservation.item_id, tattoo_name, tattoo_image, tattoo_quantity, paid, order_item.tattoo_width, order_item.tattoo_height, service_type, amount_addon, scheduled_date, scheduled_time, reservation_address, reservation_description FROM ((((workorder INNER JOIN order_item ON workorder.order_id=order_item.order_id) INNER JOIN client ON workorder.client_id=client.client_id) INNER JOIN reservation ON reservation.item_id=order_item.item_id) INNER JOIN tattoo ON tattoo.tattoo_id=order_item.tattoo_id) WHERE reservation_id NOT IN (SELECT reservation_id FROM worksession) AND item_status=? AND reservation_status IN (?, ?) ORDER BY scheduled_date ASC");
-    if ($statement===false) {
+    if($statement===false){
         throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
     }
 
     $mysqli_checks = $api->bind_params($statement, "sss", array("Reserved", "Pending", "Confirmed"));
-    if ($mysqli_checks===false) {
+    if($mysqli_checks===false){
         throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
     }
 
     $mysqli_checks = $api->execute($statement);
-    if($mysqli_checks===false) {
+    if($mysqli_checks===false){
         throw new Exception('Execute error: The prepared statement could not be executed.');
     }
 
@@ -68,10 +68,10 @@
 
     $api->free_result($statement);
     $mysqli_checks = $api->close($statement);
-    if ($mysqli_checks===false) {
+    if($mysqli_checks===false){
         throw new Exception('The prepared statement could not be closed.');
     }
-  } catch (Exception $e) {
+  } catch (Exception $e){
       exit();
       $_SESSION['res'] = $e->getMessage();
       Header("Location: ./index.php");
@@ -80,23 +80,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <!-- fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
-  <!-- bootstrap -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-  
+  <?php require_once '../common/meta.php'; ?>
   <!-- native style -->
-  <link href="../style/bootstrap.css" rel="stylesheet">
-  <link href="../style/style.css" rel="stylesheet">
   <style>
     .item {
       transition: margin .35s;
@@ -267,7 +252,7 @@
                 <!-- demands -->
                 <div class="col">
                   <label for="reservation_description" class="form-label fw-semibold">Demands</label>
-                  <p><?php if(empty($description)) { echo "None"; } else { echo $description; } ?></p>
+                  <p><?php if(empty($description)){ echo "None"; } else { echo $description; } ?></p>
                 </div>
               </div>
             </div>
@@ -320,7 +305,7 @@
             </h5><p class="d-inline text-muted"><?php echo " on " . $api->sanitize_data($date[0], "string") . " " . $api->sanitize_data($date[1], "int") . ", " . $api->sanitize_data($date[2], "int"); ?></p></button>
             <div class="w-auto mx-3">
               <button type="submit" class="order-0 btn btn-outline-primary" name="update_reservation">Update</button>
-              <?php if(strcasecmp($status, "Confirmed") == 0) {?>
+              <?php if(strcasecmp($status, "Confirmed") == 0){?>
                 <button type="submit" class="order-1 btn btn-primary" name="start_worksession">Start Worksession</button>
               <?php } ?>
               <input type="hidden" readonly class="d-none" value="<?php echo $client_id; ?>" name="client_id" />
@@ -411,7 +396,7 @@
                 <!-- demands -->
                 <div class="col">
                   <label for="reservation_description" class="form-label fw-semibold">Demands</label>
-                  <p><?php if(empty($description)) { echo "None"; } else { echo $description; } ?></p>
+                  <p><?php if(empty($description)){ echo "None"; } else { echo $description; } ?></p>
                 </div>
               </div>
             </div>
@@ -429,7 +414,7 @@
     </div>
   </div>  
 </body>
-<script src="../api/bootstrap-bundle-min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 <script>
   // tabs
   var sessions_tab = document.getElementById('sessions-tab');
@@ -475,17 +460,17 @@
   for(var i=0, count=items.length; i < count; i++){
     let item = items[i];
 
-    item_collapsibles[i].addEventListener('shown.bs.collapse', function () {
+    item_collapsibles[i].addEventListener('shown.bs.collapse', function (){
       item.classList.add('my-4');
     });
 
-    item_collapsibles[i].addEventListener('hidden.bs.collapse', function () {
+    item_collapsibles[i].addEventListener('hidden.bs.collapse', function (){
       item.classList.remove('my-4');
     });
   }
 
   // toggling all collapsibles
-  toggle_items.addEventListener('click', function() {
+  toggle_items.addEventListener('click', function(){
     show_all_items = !show_all_items;
     show_all_items === true ? toggle_items.innerText = "Hide All" : toggle_items.innerText = "Show All";
     
@@ -503,5 +488,4 @@
   });
   </script>
 <?php } ?>
-<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script> -->
 </html>

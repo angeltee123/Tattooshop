@@ -14,7 +14,7 @@
     $editable_rows = 0;
     $client_id = $_SESSION['client_id'];
     $mysqli_checks = $api->get_workorder($client_id);
-    if ($mysqli_checks!==true) {
+    if($mysqli_checks!==true){
       throw new Exception('Error: Retrieving client workorder failed.');
     } else {
       $order_id = $_SESSION['order_id'];
@@ -22,17 +22,17 @@
 
     // retrieving workorder details
     $statement = $api->prepare("SELECT order_date, amount_due_total, incentive FROM workorder WHERE order_id=? AND client_id=?");
-    if ($statement===false) {
+    if($statement===false){
         throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
     }
 
     $mysqli_checks = $api->bind_params($statement, "ss", array($order_id, $client_id));
-    if ($mysqli_checks===false) {
+    if($mysqli_checks===false){
         throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
     }
 
     $mysqli_checks = $api->execute($statement);
-    if($mysqli_checks===false) {
+    if($mysqli_checks===false){
         throw new Exception('Execute error: The prepared statement could not be executed.');
     }
 
@@ -49,7 +49,7 @@
 
     $api->free_result($statement);
     $mysqli_checks = $api->close($statement);
-    if ($mysqli_checks===false) {
+    if($mysqli_checks===false){
       throw new Exception('The prepared statement could not be closed.');
     } else {
       $statement = null;
@@ -58,17 +58,17 @@
     if(isset($workorder)){
       // retrieving order items
       $statement = $api->prepare("SELECT order_item.item_id, tattoo_name, tattoo_image, tattoo_price, tattoo_quantity, order_item.tattoo_width, order_item.tattoo_height, paid, item_status, amount_addon FROM ((order_item INNER JOIN tattoo ON order_item.tattoo_id=tattoo.tattoo_id) LEFT JOIN reservation ON order_item.item_id=reservation.item_id) WHERE order_id=? ORDER BY item_status ASC, paid ASC");
-      if ($statement===false) {
+      if($statement===false){
           throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
       }
 
       $mysqli_checks = $api->bind_params($statement, "s", $order_id);
-      if ($mysqli_checks===false) {
+      if($mysqli_checks===false){
           throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
       }
 
       $mysqli_checks = $api->execute($statement);
-      if($mysqli_checks===false) {
+      if($mysqli_checks===false){
           throw new Exception('Execute error: The prepared statement could not be executed.');
       }
 
@@ -79,7 +79,7 @@
 
       $api->free_result($statement);
       $mysqli_checks = $api->close($statement);
-      if ($mysqli_checks===false) {
+      if($mysqli_checks===false){
         throw new Exception('The prepared statement could not be closed.');
       } else {
         $statement = null;
@@ -87,17 +87,17 @@
 
       // retrieving editable order item count
       $statement = $api->prepare("SELECT item_id FROM order_item WHERE order_id=? AND paid=? AND item_status=?");
-      if ($statement===false) {
+      if($statement===false){
           throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
       }
 
       $mysqli_checks = $api->bind_params($statement, "sss", array($order_id, "Unpaid", "Standing"));
-      if ($mysqli_checks===false) {
+      if($mysqli_checks===false){
           throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
       }
 
       $mysqli_checks = $api->execute($statement);
-      if($mysqli_checks===false) {
+      if($mysqli_checks===false){
           throw new Exception('Execute error: The prepared statement could not be executed.');
       }
 
@@ -110,7 +110,7 @@
 
       $api->free_result($statement);
       $mysqli_checks = $api->close($statement);
-      if ($mysqli_checks===false) {
+      if($mysqli_checks===false){
         throw new Exception('The prepared statement could not be closed.');
       } else {
         $res = null;
@@ -119,17 +119,17 @@
 
       // retrieving referrals
       $statement = $api->prepare("SELECT referral_id, referral_fname, referral_mi, referral_lname, referral_contact_no, referral_email, referral_age, confirmation_status FROM referral WHERE client_id=? AND order_id=?");
-      if ($statement===false) {
+      if($statement===false){
           throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
       }
 
       $mysqli_checks = $api->bind_params($statement, "ss", array($client_id, $order_id));
-      if ($mysqli_checks===false) {
+      if($mysqli_checks===false){
           throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
       }
 
       $mysqli_checks = $api->execute($statement);
-      if($mysqli_checks===false) {
+      if($mysqli_checks===false){
           throw new Exception('Execute error: The prepared statement could not be executed.');
       }
 
@@ -140,7 +140,7 @@
 
       $api->free_result($statement);
       $mysqli_checks = $api->close($statement);
-      if ($mysqli_checks===false) {
+      if($mysqli_checks===false){
         throw new Exception('The prepared statement could not be closed.');
       } else {
         $statement = null;
@@ -149,17 +149,17 @@
       if(strcasecmp($workorder['incentive'], "None") == 0){
         // retrieving confirmed referral count
         $statement = $api->prepare("SELECT referral_id FROM referral WHERE client_id=? AND order_id=? AND confirmation_status=?");
-        if ($statement===false) {
+        if($statement===false){
             throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
         }
 
         $mysqli_checks = $api->bind_params($statement, "sss", array($client_id, $order_id, "Confirmed"));
-        if ($mysqli_checks===false) {
+        if($mysqli_checks===false){
             throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
         }
 
         $mysqli_checks = $api->execute($statement);
-        if($mysqli_checks===false) {
+        if($mysqli_checks===false){
             throw new Exception('Execute error: The prepared statement could not be executed.');
         }
 
@@ -172,7 +172,7 @@
 
         $api->free_result($statement);
         $mysqli_checks = $api->close($statement);
-        if ($mysqli_checks===false) {
+        if($mysqli_checks===false){
           throw new Exception('The prepared statement could not be closed.');
         } else {
           $res = null;
@@ -180,7 +180,7 @@
         }
       }
     }
-  } catch (Exception $e) {
+  } catch (Exception $e){
     exit();
     $_SESSION['res'] = $e->getMessage();
     Header("Location: ./index.php");
@@ -189,23 +189,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <!-- fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
-  <!-- bootstrap -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-  
+  <?php require_once '../common/meta.php'; ?>
   <!-- native style -->
-  <link href="../style/bootstrap.css" rel="stylesheet">
-  <link href="../style/style.css" rel="stylesheet">
   <style>
     .tabs {
       transition: color .4s;
@@ -335,7 +320,7 @@
 
                       $api->free_result($statement);
                       $mysqli_checks = $api->close($statement);
-                      if ($mysqli_checks===false) {
+                      if($mysqli_checks===false){
                         throw new Exception('The prepared statement could not be closed.');
                       }
                     } catch (Exception $e){
@@ -620,6 +605,7 @@
     </form>
   </div>
 </body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 <?php if(isset($workorder)){ ?>
 <script>
   // page tabs
@@ -662,15 +648,15 @@
     
     select_all_items.classList.add('d-inline-block');
 
-    select_all_items.addEventListener('mouseover', function() {
+    select_all_items.addEventListener('mouseover', function(){
       this.classList.remove('text-decoration-none');
     });
 
-    select_all_items.addEventListener('mouseout', function() {
+    select_all_items.addEventListener('mouseout', function(){
       this.classList.add('text-decoration-none');
     });
 
-    select_all_items.addEventListener('click', function() {
+    select_all_items.addEventListener('click', function(){
       all_orders_selected = !all_orders_selected;
       all_orders_selected ? this.innerText = "Deselect" : this.innerText = "Select All";
 
@@ -697,15 +683,15 @@
 
     select_all_referrals.classList.add('d-none');
 
-    select_all_referrals.addEventListener('mouseover', function() {
+    select_all_referrals.addEventListener('mouseover', function(){
       this.classList.remove('text-decoration-none');
     });
 
-    select_all_referrals.addEventListener('mouseout', function() {
+    select_all_referrals.addEventListener('mouseout', function(){
       this.classList.add('text-decoration-none');
     });
 
-    select_all_referrals.addEventListener('click', function() {
+    select_all_referrals.addEventListener('click', function(){
       all_referrals_selected = !all_referrals_selected;
       all_referrals_selected ? this.innerText = "Deselect" : this.innerText = "Select All";
 
@@ -727,7 +713,6 @@
   <?php } ?>
 <?php } ?>
 <script src="../api/bootstrap-bundle-min.js"></script>
-<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script> -->
 </html>
 <?php
   if(isset($_SESSION['referral_err'])){

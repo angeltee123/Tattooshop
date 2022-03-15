@@ -12,25 +12,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <!-- fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
-    <!-- bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-    
-    <!-- native style -->
-    <link href="../style/bootstrap.css" rel="stylesheet">
-    <link href="../style/style.css" rel="stylesheet">
-    <link href="../style/catalogue.css" rel="stylesheet" scoped>
-    <title>Catalogue | NJC Tattoo</title>
+  <?php require_once '../common/meta.php'; ?>
+  <!-- native style -->
+  <link href="../style/catalogue.css" rel="stylesheet" scoped>
+  <title>Catalogue | NJC Tattoo</title>
 </head>
 <body class="w-100">
   <header class="header">
@@ -196,7 +181,7 @@
                     <label for="image" class="form-label text-muted">Tattoo Image</label>
                     <input type="file" class="form-control form-control-lg" accept="image/*" onchange="loadpreview_<?php echo $id; ?>(event)" name="image" id="image_<?php echo $id; ?>"/>
                     <p class="my-2 d-none text-danger"></p>
-                    <?php echo "<script>var loadpreview_" . $id . " = function(event) { var image_" . $id . " = document.getElementById('image_". $id ."'); var preview_" . $id . " = document.getElementById('preview_". $id ."'); if(image_". $id .".value.length != 0) { preview_" . $id . ".style.backgroundImage = 'url(' + URL.createObjectURL(event.target.files[0]) + ')'; preview_" . $id . ".onload = () => { URL.revokeObjectURL(preview_" . $id . ".style.backgroundImage); }} else { preview_" . $id . ".style.backgroundImage = 'url(". $image .")'; }};</script>"; ?>
+                    <?php echo "<script>var loadpreview_" . $id . " = function(event){ var image_" . $id . " = document.getElementById('image_". $id ."'); var preview_" . $id . " = document.getElementById('preview_". $id ."'); if(image_". $id .".value.length != 0){ preview_" . $id . ".style.backgroundImage = 'url(' + URL.createObjectURL(event.target.files[0]) + ')'; preview_" . $id . ".onload = () => { URL.revokeObjectURL(preview_" . $id . ".style.backgroundImage); }} else { preview_" . $id . ".style.backgroundImage = 'url(". $image .")'; }};</script>"; ?>
                   </div>
                   <button type="submit" class="btn btn-primary btn-lg" name="update_tattoo">Save Changes</button>
                   <button type="button" class="btn btn-outline-danger btn-lg" data-bs-toggle="modal" data-bs-target="#delete_<?php echo $id; ?>">Delete</button>
@@ -212,7 +197,7 @@
     </div>
   </div>
 </body>
-<script src="../api/bootstrap-bundle-min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 <script>
   // search bar
   var search = document.getElementById('search');
@@ -225,7 +210,7 @@
   var cards = document.getElementsByClassName('tattoo-card');
 
   // searching for tattoo
-  search.addEventListener('input', function () {
+  search.addEventListener('input', function (){
     if(search.value.length == 0){
       catalogue.classList.remove('justify-content-evenly');
       catalogue.classList.add('justify-content-between');
@@ -240,7 +225,7 @@
 
       for(var i = 0, count = cards.length; i < count; i++){
         item_name = cards[i].href.toLowerCase();
-        if(item_name.indexOf(search.value.toLowerCase()) > -1 && cards[i] !== new_tattoo){
+        if(item_name.indexOf(search.value.toLowerCase().replaceAll(' ', '%20')) > -1 && cards[i] !== new_tattoo){
           cards[i].classList.remove('d-none');
           cards[i].classList.add('d-block');
         } else {
@@ -251,7 +236,6 @@
     }
   });
 </script>
-<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script> -->
 </html>
 <?php
   if(isset($_SESSION['width_err'])){

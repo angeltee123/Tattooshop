@@ -4,7 +4,7 @@
   if(!isset($_SESSION['user_id'])){
     Header("Location: ./reservations.php");
     die();
-  } elseif(empty($_POST)) {
+  } elseif(empty($_POST)){
     $warning = "Please select an item";
     echo "<script>alert('$warning');</script>";
     die();
@@ -18,44 +18,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <!-- fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
-  <!-- bootstrap -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-  
+  <?php require_once '../common/meta.php'; ?>
   <!-- native style -->
-  <link href="../style/bootstrap.css" rel="stylesheet">
-  <link href="../style/style.css" rel="stylesheet">
-  <title>New Booking | NJC Tattoo</title>
   <style>
-  main{
-      display:flex;
-      flex-direction:column;
-      width: 100vw;
-      height:100vh;
-      text-align:center;
-      background-image: url("img/reserve.png");
-      background-position: center;
-      background-repeat: no-repeat;
-      background-size: cover;
-      padding-top:70px;
-  }
-  
-  .tatname {
-      border-radius: 3px;
-      margin-left: 12px;
-      width: 255px;
-  } 
-  
+    main {
+        display:flex;
+        flex-direction:column;
+        width: 100vw;
+        height:100vh;
+        text-align:center;
+        background-image: url("img/reserve.png");
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        padding-top:70px;
+    }
+    
+    .tatname {
+        border-radius: 3px;
+        margin-left: 12px;
+        width: 255px;
+    }
   </style>
+  <title>New Booking | NJC Tattoo</title>
 </head>
 <body>
   <header class="header border-bottom border-2">
@@ -92,17 +77,17 @@
 
         try{
           $statement = $api->prepare($query);
-          if ($statement===false) {
+          if($statement===false){
               throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
           }
       
           $mysqli_checks = $api->bind_params($statement, "s", $id);
-          if ($mysqli_checks===false) {
+          if($mysqli_checks===false){
               throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
           }
       
           $mysqli_checks = $api->execute($statement);
-          if($mysqli_checks===false) {
+          if($mysqli_checks===false){
               throw new Exception('Execute error: The prepared statement could not be executed.');
           }
 
@@ -110,7 +95,7 @@
           if($res===false){
             throw new Exception('get_result() error: Getting result set from statement failed.');
           }
-        } catch (Exception $e) {
+        } catch (Exception $e){
             exit();
             $_SESSION['res'] = $e->getMessage();
             Header("Location: ../client/reservations.php");
@@ -190,10 +175,10 @@
     $api->free_result($statement);
 
     $mysqli_checks = $api->close($statement);
-    if ($mysqli_checks===false) {
+    if($mysqli_checks===false){
         throw new Exception('The prepared statement could not be closed.');
     }
-  } catch (Exception $e) {
+  } catch (Exception $e){
     echo $e->getMessage();
     Header("Location: ./index.php");
   }

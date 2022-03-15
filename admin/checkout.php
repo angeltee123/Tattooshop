@@ -23,17 +23,17 @@
   try {
     // retrieve order data
     $statement = $api->prepare("SELECT client_fname, client_lname, order_date, amount_due_total, incentive FROM (workorder JOIN client ON workorder.client_id=client.client_id) WHERE order_id=? AND workorder.client_id=? ORDER BY order_date ASC LIMIT 1");
-    if ($statement===false) {
+    if($statement===false){
         throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
     }
 
     $mysqli_checks = $api->bind_params($statement, "ss", array($order_id, $client_id));
-    if ($mysqli_checks===false) {
+    if($mysqli_checks===false){
         throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
     }
     
     $mysqli_checks = $api->execute($statement);
-    if($mysqli_checks===false) {
+    if($mysqli_checks===false){
         throw new Exception('Execute error: The prepared statement could not be executed.');
     }
 
@@ -50,7 +50,7 @@
 
     $api->free_result($statement);
     $mysqli_checks = $api->close($statement);
-    if ($mysqli_checks===false) {
+    if($mysqli_checks===false){
     throw new Exception('The prepared statement could not be closed.');
     } else {
       $statement = null;
@@ -58,17 +58,17 @@
 
     // retrieving order items
     $statement = $api->prepare("SELECT order_item.item_id, tattoo_name, tattoo_image, tattoo_price, tattoo_quantity, order_item.tattoo_width, order_item.tattoo_height, paid, item_status, amount_addon FROM ((order_item INNER JOIN tattoo ON order_item.tattoo_id=tattoo.tattoo_id) LEFT JOIN reservation ON order_item.item_id=reservation.item_id) WHERE order_id=? ORDER BY item_status ASC, paid ASC");
-    if ($statement===false) {
+    if($statement===false){
         throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
     }
 
     $mysqli_checks = $api->bind_params($statement, "s", $order_id);
-    if ($mysqli_checks===false) {
+    if($mysqli_checks===false){
         throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
     }
 
     $mysqli_checks = $api->execute($statement);
-    if($mysqli_checks===false) {
+    if($mysqli_checks===false){
         throw new Exception('Execute error: The prepared statement could not be executed.');
     }
 
@@ -79,14 +79,14 @@
 
     $api->free_result($statement);
     $mysqli_checks = $api->close($statement);
-    if ($mysqli_checks===false) {
+    if($mysqli_checks===false){
       throw new Exception('The prepared statement could not be closed.');
     } else {
       $statement = null;
     }
 
     echo (strcasecmp($order['incentive'], "15% Discount") == 0) ? "<script>const discounted = true;</script>" : "<script>const discounted = false;</script>";
-  } catch (Exception $e) {
+  } catch (Exception $e){
       exit();
       $_SESSION['res'] = $e->getMessage();
       Header("Location: ./orders.php");
@@ -95,27 +95,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <!-- fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  
-  <!-- bootstrap -->
-  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-  
+  <?php require_once '../common/meta.php'; ?>
   <!-- native style -->
-  <link href="../style/bootstrap.css" rel="stylesheet">
-  <link href="../style/style.css" rel="stylesheet">
   <style>
     .tattoo-image {
-      max-width: 275x;
+      max-width: 275px;
       max-height: 275px;
       width: 275px;
       height: 275px;
@@ -319,6 +303,7 @@
     </form>
   </div>
 </body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 <script>
   var items = Array.from(document.querySelectorAll('input[type=checkbox].form-check-input'));
   var quantity = document.getElementsByClassName('quantity');
@@ -336,14 +321,14 @@
   }
 
   for(var i=0, item_count=items.length; i < item_count; i++){
-    items[i].addEventListener('change', function() {
+    items[i].addEventListener('change', function(){
       item_index = items.indexOf(this);
       
-      if(this.checked) {
+      if(this.checked){
         checked.push(item_index);
       } else {
         var index = checked.indexOf(item_index);
-        if (index > -1) {
+        if(index > -1){
           checked.splice(index, 1);
         }
       }
@@ -365,6 +350,4 @@
     });
   }
 </script>
-<script src="../api/bootstrap-bundle-min.js"></script>
-<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script> -->
 </html>
