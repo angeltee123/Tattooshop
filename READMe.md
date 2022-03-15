@@ -6,7 +6,7 @@ The primary objective of this project is to develop an online Information System
 
 ## API Documentation
 
-<details><summary>GENERAL USE HELPER FUNCTIONS</summary>
+<details><summary>General User Helper Functions</summary>
 <p>
 
 ## $api->sanitize_data($data, $type)
@@ -114,10 +114,10 @@ $data = $api->sanitize_data("Hello world!", "string");
 </p>
 </details>
 
-<details><summary>MYSQLI FUNCTIONS</summary>
+<details><summary>MySQLi Functions</summary>
 <p>
 
-<details><summary>CLAUSE FUNCTIONS</summary>
+<details><summary>Clause Helpers</summary>
 <p>
 
 ## $api->table($string, $params)
@@ -310,7 +310,7 @@ $query = $api->table($query, 'table');
 </p>
 </details>
 
-<details><summary>INSERT FUNCTIONS</summary>
+<details><summary>Insert Functions</summary>
 <p>
 
 ## $api->insert()
@@ -357,7 +357,7 @@ $query = $api->columns($query, array('value1', 'value2', 'value3'));
 </p>
 </details>
 
-<details><summary>UPDATE FUNCTIONS</summary>
+<details><summary>Update Functions</summary>
 <p>
 
 ## $api->update()
@@ -398,7 +398,7 @@ $query = $api->where($query, 'column', 'value');
 </p>
 </details>
 
-<details><summary>DELETE FUNCTION</summary>
+<details><summary>Delete Function</summary>
 <p>
 
 ## $api->delete()
@@ -420,7 +420,7 @@ $query = $api->where($query, 'column', 'value');
 </p>
 </details>
 
-<details><summary>PREPARED STATEMENT FUNCTIONS</summary>
+<details><summary>Prepared Statement Functions</summary>
 <p>
 
 ## $api->prepare($query)
