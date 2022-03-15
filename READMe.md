@@ -582,7 +582,7 @@ $boolean = $api->close($statement);
 </details>
 
 ## Contributors
-**IM-2 Group 8**
+**CIS 2104 - Information Management 2 Group 8**
   - Lenel John Baring
   - Jan Ann Ebon
   - Jan Michael Garot
