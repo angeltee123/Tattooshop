@@ -4,9 +4,13 @@ NJC Tattoo is a small-scale growing tattoo business based in Mandaue City, Cebu,
 ## Project Description
 The primary objective of this project is to develop an online Information System for NJC Tattoo using the database approach. The system will largely automate the process of managing and organizing the client's business and provide them greater freedom and control over their operations, as well as enable tattoo inclined individuals to easily avail themselves of the services offered by NJC Tattoo with convenience.
 
+## Links
+* [Facebook Page](https://www.facebook.com/getinkedbyNJCTattoo/)
+* [Proposal Document](https://docs.google.com/document/d/1QtkuUKhs3iTo1Qr1rWOsPFMz4suSzS6ggTEr0WGX9q0/edit?usp=sharing)
+
 ## API Documentation
 
-<details><summary>General User Helper Functions</summary>
+<details><summary>General Use Helper Functions</summary>
 <p>
 
 ## $api->sanitize_data($data, $type)
