@@ -45,7 +45,7 @@
             <ul class="dropdown-menu dropdown-menu-end">
               <li><a class="dropdown-item" href="user.php">Profile</a></li>
               <li>
-                <form action="../api/queries.php" method="post">
+                <form action="../scripts/php/queries.php" method="post">
                   <button type="submit" class="dropdown-item btn-link" name="logout">Sign Out</button>
                 </form>
               </li>

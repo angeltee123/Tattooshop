@@ -222,7 +222,7 @@
             <ul class="dropdown-menu dropdown-menu-end">
               <li><a class="dropdown-item" href="user.php">Profile</a></li>
               <li>
-                <form action="../api/queries.php" method="post">
+                <form action="../scripts/php/queries.php" method="post">
                   <button type="submit" class="dropdown-item btn-link" name="logout">Sign Out</button>
                 </form>
               </li>
@@ -232,7 +232,7 @@
     </nav>
   </header>
   <div class="content w-80">
-    <form method="POST" action="../api/queries.php">
+    <form method="POST" action="../scripts/php/queries.php">
       <div>
         <div class="pb-6 border-bottom">
           <h2 class="fw-bold display-3">Orders</h2>

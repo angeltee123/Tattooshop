@@ -37,7 +37,7 @@
     <div class="flex-grow-1">
       <div style="margin-left: 7.5rem; width: 48%">
         <h1 class="display-4">NJC Tattoo</h1>
-        <form action="../api/queries.php" method="post">
+        <form action="../scripts/php/queries.php" method="post">
           <div class="my-4">
             <input type="email" class="form-control py-2 ps-3 border-2 rounded-pill" name="email" id="email" placeholder="Email" required />
           </div>

@@ -39,7 +39,7 @@
       <div class="flex-grow-1">
         <div style="margin-left: 7.5rem; width: 48%">
           <h1 class="display-4">Create Account</h1>
-          <form action="../api/queries.php" method="post">
+          <form action="../scripts/php/queries.php" method="post">
             <div class="my-4">
               <input type="text" class="form-control form-control py-2 ps-3 border-2 rounded-pill" name="first_name" id="first_name" placeholder="First Name" />
               <?php if(!empty($_SESSION['first_name_err'])){ ?>

@@ -46,7 +46,7 @@
             <ul class="dropdown-menu dropdown-menu-end">
               <li><a class="dropdown-item" href="user.php">Profile</a></li>
               <li>
-                <form action="../api/queries.php" method="post">
+                <form action="../scripts/php/queries.php" method="post">
                   <button type="submit" class="dropdown-item btn-link" name="logout">Sign Out</button>
                 </form>
               </li>
@@ -114,7 +114,7 @@
               <a href="./explore.php" class="stretched-link"><span class="material-icons md-48 display-5" style="width: 24px;">arrow_back_ios</span></a>
             </div>
               <div class="w-60 ms-9">
-                <form action="../api/queries.php" method="POST">
+                <form action="../scripts/php/queries.php" method="POST">
                   <input type="hidden" class="d-none" name="tattoo_id" value="<?php echo $id ?>" required>
                   <input type="hidden" class="d-none" name="tattoo_name" value="<?php echo $id ?>" required>
                   <div>

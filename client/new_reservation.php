@@ -56,7 +56,7 @@
             <ul class="dropdown-menu dropdown-menu-end">
               <li><a class="dropdown-item" href="user.php">Profile</a></li>
               <li>
-                <form action="../api/queries.php" method="post">
+                <form action="../scripts/php/queries.php" method="post">
                   <button type="submit" class="dropdown-item btn-link" name="logout">Sign Out</button>
                 </form>
               </li>
@@ -106,7 +106,7 @@
         } else {
           $row = $api->fetch_assoc($res);
       ?>
-      <form action="../api/queries.php" method="POST" class="form px-3">
+      <form action="../scripts/php/queries.php" method="POST" class="form px-3">
         <div class="mt-3">
             <div class="row">
                 <h2><?php echo $row['tattoo_name'] ?></h2>

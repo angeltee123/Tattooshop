@@ -123,7 +123,7 @@
             <ul class="dropdown-menu dropdown-menu-end">
               <li><a class="dropdown-item" href="user.php">Profile</a></li>
               <li>
-                <form action="../api/queries.php" method="post">
+                <form action="../scripts/php/queries.php" method="post">
                   <button type="submit" class="dropdown-item btn-link" name="logout">Sign Out</button>
                 </form>
               </li>
@@ -133,7 +133,7 @@
     </nav>
   </header>
   <div class="content w-70">
-    <form action="../api/queries.php" method="POST">
+    <form action="../scripts/php/queries.php" method="POST">
       <div class="pb-6 border-bottom">
         <h2 class="fw-bold display-3">Checkout</h2>
         <p class="d-inline fs-5 text-muted">Pay for your ongoing tattoo orders here. Tick the checkboxes of the items you wish to include in your payment.</p>

@@ -151,7 +151,7 @@
             <ul class="dropdown-menu dropdown-menu-end">
               <li><a class="dropdown-item" href="user.php">Profile</a></li>
               <li>
-                <form action="../api/queries.php" method="post">
+                <form action="../scripts/php/queries.php" method="post">
                   <button type="submit" class="dropdown-item btn-link" name="logout">Sign Out</button>
                 </form>
               </li>
@@ -254,7 +254,7 @@
               </h5><p class="d-inline text-muted"><?php echo " on " . $api->sanitize_data($date[0], 'string') . " " . $api->sanitize_data($date[1], 'int') . ", " . $api->sanitize_data($date[2], 'int'); ?></p>
             </button>
             <div class="collapse border-top p-7 reservation" id="item_<?php echo $item_id; ?>">
-              <form action="../api/queries.php" method="POST">
+              <form action="../scripts/php/queries.php" method="POST">
                 <div class="mt-3">
                   <div class="d-flex align-items-center justify-content-between">
                     <!-- tattoo image -->

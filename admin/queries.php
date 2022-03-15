@@ -6,7 +6,7 @@ $api = new api();
 
 /******** TATTOO CATALOGUE MANAGEMENT ********/
 
-// Creating new tattoo catalog entry
+// Creating New Tattoo Catalog Entry
 if(isset($_POST['catalog_tattoo'])){
     if(isset($_FILES['image'])){
         $errors = array();
@@ -218,7 +218,7 @@ if(isset($_POST['catalog_tattoo'])){
     Header("Location: ./catalogue.php");
 }
 
-// Update tattoo catalog entry
+// Update Tattoo Catalog Entry
 if(isset($_POST['update_tattoo'])){
     $errors = array();
 
@@ -437,7 +437,7 @@ if(isset($_POST['update_tattoo'])){
     Header("Location: ./catalogue.php");
 }
 
-// Delete tattoo catalog entry
+// Delete Tattoo Catalog Entry
 if(isset($_POST['delete_tattoo'])){
     $id = $api->sanitize_data($_POST['tattoo_id'], "string");
 
@@ -472,7 +472,7 @@ if(isset($_POST['delete_tattoo'])){
 
 /******** ORDER MANAGEMENT ********/
 
-// Update client order
+// Update Client Order
 if(isset($_POST['update_item'])){
     $errors = array();
 
@@ -713,7 +713,7 @@ if(isset($_POST['update_item'])){
     Header("Location: ./orders.php");
 }
 
-// Remove client order
+// Remove Client Order
 if(isset($_POST['delete_item'])){
     $item_id = $api->sanitize_data($_POST['item_id'], "string");
 
@@ -801,7 +801,7 @@ if(isset($_POST['delete_item'])){
 
 /******** REFERRAL MANAGEMENT ********/
 
-// Update client referral details
+// Update Client Referral Details
 if(isset($_POST['update_referral'])){
     $errors = array();
 
@@ -1003,7 +1003,7 @@ if(isset($_POST['update_referral'])){
     Header("Location: ./orders.php");
 }
 
-// Remove client referral
+// Remove Client Referral
 if(isset($_POST['remove_referral'])){
     try {
         $referral_id = $api->sanitize_data($_POST['referral_id'], "string");
@@ -1077,7 +1077,7 @@ if(isset($_POST['remove_referral'])){
 
 /******** BOOKING MANAGEMENT ********/
 
-// Update client reservation detilas
+// Update Client Reservation Details
 if(isset($_POST['update_reservation'])){
     $errors = array();
 
@@ -1149,7 +1149,7 @@ if(isset($_POST['update_reservation'])){
     Header("Location: ./reservations.php");
 }
 
-// Start tattoo worksession
+// Start Tattoo Worksession
 if(isset($_POST['start_worksession'])){
     $cstrong = true;
 
@@ -1201,7 +1201,7 @@ if(isset($_POST['start_worksession'])){
     Header("Location: ./reservations.php");
 }
 
-// Cancel client reservation
+// Cancel Client Reservation
 if(isset($_POST['cancel_reservation'])){
     $reservation_id = $api->sanitize_data($_POST['reservation_id'], "string");
     $item_id = $api->sanitize_data($_POST['item_id'], "string");
@@ -1390,7 +1390,7 @@ if(isset($_POST['cancel_reservation'])){
     Header("Location: ./reservations.php");
 }
 
-// Finish tattoo worksession
+// Finish Tattoo Worksession
 if(isset($_POST['finish_worksession'])){
     $item_id = $api->sanitize_data($_POST['item_id'], "string");
     $reservation_id = $api->sanitize_data($_POST['reservation_id'], "string");
@@ -1588,7 +1588,7 @@ if(isset($_POST['finish_worksession'])){
 
 /******** PAYMENT LOGGING ********/
 
-// Logging client payment
+// Logging Client Payment
 if(isset($_POST['log_payment'])){
     if(isset($_POST['item']) && !empty($_POST['item'])){
         try {
@@ -2318,7 +2318,7 @@ if(isset($_POST['log_payment'])){
 
 /******** ILLEGAL ACCESS CATCHING ********/
 
-// Navigation guard
+// Navigation Guard
 if(empty($_POST)){
     Header("Location: ./index.php");
     die();
