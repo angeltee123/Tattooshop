@@ -46,7 +46,7 @@
     } else {
       $statement = null;
     }
-  } catch (Exception $e){
+  } catch (Exception $e) {
     exit();
     $_SESSION['res'] = $e->getMessage();
     Header("Location: ./index.php");
@@ -199,7 +199,7 @@
                 if($mysqli_checks===false){
                   throw new Exception('The prepared statement could not be closed.');
                 }
-              } catch (Exception $e){
+              } catch (Exception $e) {
                   exit();
                   $_SESSION['res'] = $e->getMessage();
                   Header("Location: ./index.php");
@@ -357,7 +357,7 @@
               if($mysqli_checks===false){
                 throw new Exception('The prepared statement could not be closed.');
               }
-            } catch (Exception $e){
+            } catch (Exception $e) {
                 exit();
                 $_SESSION['res'] = $e->getMessage();
                 Header("Location: ./index.php");
@@ -398,7 +398,7 @@
                   <p class="my-0"><?php echo $first_name; ?></p>
                 <?php } else { ?>
                   <div class="form-floating">
-                    <input type="text" class="form-control" value="<?php echo $first_name; ?>" maxlength="50" placeholder="First Name" name="referral_fname" required>
+                    <input type="text" class="form-control" value="<?php echo $first_name; ?>" maxlength="50" placeholder="First Name" name="referral_fname" required />
                     <label for="referral_fname">First Name</label>
                     <p class="d-none my-2 text-danger"></p>
                   </div>
@@ -410,7 +410,7 @@
                   <p class="my-0"><?php echo $mi; ?>.</p>
                 <?php } else { ?>
                   <div class="form-floating">
-                    <input type="text" class="form-control" style="width: 50px;" value="<?php echo $mi; ?>" minlength="1" maxlength="1" placeholder="MI" name="referral_mi" required>
+                    <input type="text" class="form-control" style="width: 50px;" value="<?php echo $mi; ?>" minlength="1" maxlength="1" placeholder="MI" name="referral_mi" required />
                     <label for="referral_mi">M.I.</label>
                     <p class="d-none my-2 text-danger"></p>
                   </div>
@@ -422,7 +422,7 @@
                   <p class="my-0"><?php echo $last_name; ?></p>
                 <?php } else { ?>
                   <div class="form-floating">
-                    <input type="text" class="form-control" value="<?php echo $last_name; ?>" maxlength="50" placeholder="Last Name" name="referral_lname" required>
+                    <input type="text" class="form-control" value="<?php echo $last_name; ?>" maxlength="50" placeholder="Last Name" name="referral_lname" required />
                     <label for="referral_lname">Last Name</label>
                     <p class="d-none my-2 text-danger"></p>
                   </div>
@@ -434,7 +434,7 @@
                   <p class="my-0"><?php echo $age; ?></p>
                 <?php } else { ?>
                   <div class="form-floating">
-                    <input type="number" class="form-control" style="width: 60px;" value="<?php echo $age; ?>" name="referral_age" min="17" max="90" required>
+                    <input type="number" class="form-control" style="width: 60px;" value="<?php echo $age; ?>" name="referral_age" min="17" max="90" required />
                     <label for="referral_age">Age</label>
                     <p class="d-none my-2 text-danger"></p>
                   </div>
@@ -458,7 +458,7 @@
                   <p class="my-0"><?php echo $email; ?></p>
                 <?php } else { ?>
                   <div class="form-floating">
-                    <input type="email" class="form-control" value="<?php echo $email; ?>" maxlength="62" placeholder="Email" name="referral_email" required>
+                    <input type="email" class="form-control" value="<?php echo $email; ?>" maxlength="62" placeholder="Email" name="referral_email" required />
                     <label for="referral_email">Email</label>
                     <p class="d-none my-2 text-danger"></p>
                   </div>

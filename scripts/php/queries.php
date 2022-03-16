@@ -92,7 +92,7 @@ if(isset($_POST['signup'])){
         if($mysqli_checks===false){
             throw new Exception('The prepared statement could not be closed.');
         }
-    } catch (Exception $e){
+    } catch (Exception $e) {
         $_SESSION['res'] = $e->getMessage();
         exit();
         Header("Location: ..client/register.php");
@@ -200,7 +200,7 @@ if(isset($_POST['signup'])){
             if($mysqli_checks===false){
                 throw new Exception('The prepared statement could not be closed.');
             }
-        } catch (Exception $e){
+        } catch (Exception $e) {
             exit();
             $_SESSION['res'] = $e->getMessage();
             Header("Location: ../../client/register.php");
@@ -328,7 +328,7 @@ if(isset($_POST['login'])){
             if($mysqli_checks===false){
                 throw new Exception('The prepared statement could not be closed.');
             }
-        } catch (Exception $e){
+        } catch (Exception $e) {
             exit();
             $_SESSION['res'] = $e->getMessage();
             Header("Location: ../../client/login.php");
@@ -528,7 +528,7 @@ if(isset($_POST['order_item'])){
                         }
                     }
                 }
-            } catch (Exception $e){
+            } catch (Exception $e) {
                 exit();
                 $_SESSION['res'] = $e->getMessage();
                 Header("Location: ../../client/explore.php#".$name);
@@ -597,7 +597,7 @@ if(isset($_POST['order_item'])){
                 } else {
                     $statement = null;
                 }
-            } catch (Exception $e){
+            } catch (Exception $e) {
                 exit();
                 $_SESSION['res'] = $e->getMessage();
                 Header("Location: ../../client/explore.php#".$name);
@@ -610,7 +610,7 @@ if(isset($_POST['order_item'])){
             if($mysqli_checks===false){
                 throw new Exception('Error: Updating amount due total of current order failed.');
             }
-        } catch (Exception $e){
+        } catch (Exception $e) {
             exit();
             $_SESSION['res'] = $e->getMessage();
             Header("Location: ../../client/explore.php");
@@ -782,7 +782,7 @@ if(isset($_POST['refer']) && isset($_SESSION['order_id']) && !empty($_SESSION['o
                 throw new Exception('The prepared statement could not be closed.');
             }
         }
-    } catch (Exception $e){
+    } catch (Exception $e) {
         exit();
         $_SESSION['res'] = $e->getMessage();
         Header("Location: ../../client/orders.php");
@@ -870,7 +870,7 @@ if(isset($_POST['avail_incentive']) && isset($_SESSION['order_id']) && !empty($_
                     throw new Exception('The prepared statement could not be closed.');
                 }
             }
-        } catch (Exception $e){
+        } catch (Exception $e) {
             exit();
             $_SESSION['res'] = $e->getMessage();
             Header("Location: ../../client/orders.php");
@@ -1005,7 +1005,7 @@ if(isset($_POST['update_referrals']) && isset($_SESSION['order_id']) && !empty($
                     }
                 }
             }
-        } catch (Exception $e){
+        } catch (Exception $e) {
             exit();
             $_SESSION['res'] = $e->getMessage();
             Header("Location: ../../client/orders.php");
@@ -1045,7 +1045,7 @@ if(isset($_POST['remove_referrals']) && isset($_SESSION['order_id']) && !empty($
                     throw new Exception('The prepared statement could not be closed.');
                 }
             }
-        } catch (Exception $e){
+        } catch (Exception $e) {
             exit();
             $_SESSION['res'] = $e->getMessage();
             Header("Location: ../../client/orders.php");
@@ -1285,7 +1285,7 @@ if(isset($_POST['update_items']) && isset($_SESSION['order_id']) && !empty($_SES
             if($mysqli_checks===false){
                 throw new Exception('Error: Updating amount due total of current order failed.');
             }
-        } catch (Exception $e){
+        } catch (Exception $e) {
             exit();
             $_SESSION['res'] = $e->getMessage();
             Header("Location: ../../client/orders.php");
@@ -1334,7 +1334,7 @@ if(isset($_POST['remove_items']) && isset($_SESSION['order_id']) && !empty($_SES
             if($mysqli_checks===false){
                 throw new Exception('Error: Updating amount due total of current order failed.');
             }
-        } catch (Exception $e){
+        } catch (Exception $e) {
             exit();
             $_SESSION['res'] = $e->getMessage();
             Header("Location: ../../client/orders.php");
@@ -1590,7 +1590,7 @@ if(isset($_POST['book']) && isset($_SESSION['order_id']) && !empty($_SESSION['or
             if($mysqli_checks===false){
                 throw new Exception('Error: Updating amount due total of current order failed.');
             }
-        } catch (Exception $e){
+        } catch (Exception $e) {
             exit();
             $_SESSION['res'] = $e->getMessage();
             Header("Location: ../../client/reservations.php");
@@ -1667,7 +1667,7 @@ if(isset($_POST['update_reservation'])){
             if($mysqli_checks===false){
                 throw new Exception('Error: Updating amount due total of current order failed.');
             }
-        } catch (Exception $e){
+        } catch (Exception $e) {
             exit();
             $_SESSION['res'] = $e->getMessage();
             Header("Location: ../../client/reservations.php");
@@ -1737,7 +1737,7 @@ if(isset($_POST['confirm_reservation'])){
             if($mysqli_checks===false){
                 throw new Exception('The prepared statement could not be closed.');
             }
-        } catch (Exception $e){
+        } catch (Exception $e) {
             exit();
             $_SESSION['res'] = $e->getMessage();
             Header("Location: ../../client/reservations.php");
@@ -1932,7 +1932,7 @@ if(isset($_POST['cancel_reservation'])){
         if($mysqli_checks===false){
             throw new Exception('Error: Updating amount due total of current order failed.');
         }
-    } catch (Exception $e){
+    } catch (Exception $e) {
         exit();
         $_SESSION['res'] = $e->getMessage();
         Header("Location: ../../client/reservations.php");
@@ -2709,7 +2709,7 @@ if(isset($_POST['checkout']) && isset($_SESSION['order_id']) && !empty($_SESSION
                     throw new Exception('The prepared statement could not be closed.');
                 }
             }
-        } catch (Exception $e){
+        } catch (Exception $e) {
             exit();
             $_SESSION['res'] = $e->getMessage();
             Header("Location: ../../client/checkout.php");

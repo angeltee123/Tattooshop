@@ -129,17 +129,19 @@ class API {
         return $checks;
     }
 
-    /*  checks if scheduled time is within service hours
-    public function within_service_hours($time){
-        $checks = false;
-        if($this->is_valid_time($time)){
-            $hour = date("H", strtotime($time));
+    /*
+     * checks if scheduled time is within service hours
+        public function within_service_hours($time){
+            $checks = false;
+            if($this->is_valid_time($time)){
+                $hour = date("H", strtotime($time));
 
-            $checks = ($hour >= 8 && $hour <= 18);
+                $checks = ($hour >= 8 && $hour <= 18);
+            }
+
+            return $checks;
         }
-
-        return $checks;
-    } */
+    */
 
     /***** MYSQL HELPERS *****/
 

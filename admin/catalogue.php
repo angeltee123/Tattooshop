@@ -76,7 +76,7 @@
           if($res===false){
             throw new Exception('get_result() error: Getting result set from statement failed.');
           }
-        } catch (Exception $e){
+        } catch (Exception $e) {
           exit;
           Header("Location: ./index.php");
           echo $e->getMessage();
@@ -116,7 +116,7 @@
             </div>
           </div>
         </div>
-        <div id="<?php echo $name; ?>" class="tattoo_detail row justify-content-center align-items-start h-100 w-100">
+        <div id="<?php echo $name; ?>" class="tattoo_detail row justify-content-center align-items-start h-100 w-100 mx-0">
           <div class="order-first tattoo-image col-5 bg-light" style="background-image: url(<?php echo $image; ?>)" id="preview_<?php echo $id; ?>"></div>
           <div class="order-last d-flex col vh-100 border-start border-1 justify-content-center align-items-center">
             <div class="flex-grow-1">
@@ -136,13 +136,13 @@
                     <p class="my-2 d-none text-danger"></p>
                   </div>
                   <div class="my-3">
-                    <textarea class="form-control p-3 text-wrap" name="tattoo_description" rows="5" placeholder="Tattoo Description" required><?php echo $description; ?></textarea>
+                    <textarea class="form-control p-3 text-wrap" name="tattoo_description" rows="5" placeholder="Tattoo Description" required /><?php echo $description; ?></textarea>
                     <p class="my-2 d-none text-danger"></p>
                   </div>
                   <div class="row my-3">
                     <div class="col">
                       <div class="form-floating">
-                        <select name="color_scheme" class="form-select" required>
+                        <select name="color_scheme" class="form-select" required />
                         <option value="Monochrome" <?php if(strcasecmp($color_scheme, 'Monochrome') == 0){ echo "selected"; } ?>>Monochrome</option>
                         <option value="Multicolor" <?php if(strcasecmp($color_scheme, 'Multicolor') == 0){ echo "selected"; } ?>>Multicolor</option>
                         </select>
@@ -152,7 +152,7 @@
                     </div>
                     <div class="col">
                       <div class="form-floating">
-                        <select name="complexity_level" class="form-select" required>
+                        <select name="complexity_level" class="form-select" required />
                           <option value="Simple" <?php if(strcasecmp($complexity, 'Simple') == 0){ echo "selected"; } ?>>Simple</option>
                           <option value="Complex" <?php if(strcasecmp($complexity, 'Complex') == 0){ echo "selected"; } ?>>Complex</option>
                         </select>
@@ -164,14 +164,14 @@
                   <div class="row my-3">
                     <div class="col">
                       <div class="form-floating">
-                        <input type="number" class="form-control" placeholder="Width" min="1" max="24" value="<?php echo $width; ?>" name="tattoo_width" required>
+                        <input type="number" class="form-control" placeholder="Width" min="1" max="24" value="<?php echo $width; ?>" name="tattoo_width" required />
                         <label for="tattoo_width">Width (in inches)</label>
                         <p class="my-2 d-none text-danger"></p>
                       </div>
                     </div>
                     <div class="col">
                       <div class="form-floating">
-                        <input type="number" class="form-control" placeholder="Height" min="1" max="36" value="<?php echo $height; ?>" name="tattoo_height" required>
+                        <input type="number" class="form-control" placeholder="Height" min="1" max="36" value="<?php echo $height; ?>" name="tattoo_height" required />
                         <label for="tattoo_height">Height (in inches)</label>
                         <p class="my-2 d-none text-danger"></p>
                       </div>

@@ -16,7 +16,7 @@
       if($mysqli_checks!==true){
         throw new Exception('Error: Retrieving client workorder failed.');
       }
-    } catch (Exception $e){
+    } catch (Exception $e) {
       exit();
       $_SESSION['res'] = $e->getMessage();
       Header("Location: ./index.php");
@@ -87,7 +87,7 @@
           if($res===false){
             throw new Exception('get_result() error: Getting result set from statement failed.');
           }
-        } catch (Exception $e){
+        } catch (Exception $e) {
           exit;
           Header("Location: ./index.php");
           echo $e->getMessage();
@@ -115,8 +115,8 @@
             </div>
               <div class="w-60 ms-9">
                 <form action="../scripts/php/queries.php" method="POST">
-                  <input type="hidden" class="d-none" name="tattoo_id" value="<?php echo $id ?>" required>
-                  <input type="hidden" class="d-none" name="tattoo_name" value="<?php echo $id ?>" required>
+                  <input type="hidden" class="d-none" name="tattoo_id" value="<?php echo $id ?>" required />
+                  <input type="hidden" class="d-none" name="tattoo_name" value="<?php echo $id ?>" required />
                   <div>
                     <h1 class="display-4 fw-bold my-0"><?php echo $name ?></h1>
                     <h4 class="text-secondary">₱<?php echo $price ?></h4>
@@ -144,21 +144,21 @@
                   <div class="my-5 row">
                     <div class="col">
                       <div class="form-floating">
-                        <input type="number" class="form-control" min="1" value="1" placeholder="Quantity" name="quantity" required>
+                        <input type="number" class="form-control" min="1" value="1" placeholder="Quantity" name="quantity" required />
                         <label for="tattoo_width">Order Quantity</label>
                         <p class="my-2 <?php echo isset($_SESSION['quantity_err']) ? "d-block" : "d-none"; ?> text-danger quantity_err"><?php if(isset($_SESSION['quantity_err'])){ echo $_SESSION['quantity_err']; } ?></p>
                       </div>
                     </div>
                     <div class="col">
                       <div class="form-floating">
-                        <input type="number" class="form-control" placeholder="Width" min="1" max="24" value="<?php echo $width ?>" name="width" required>
+                        <input type="number" class="form-control" placeholder="Width" min="1" max="24" value="<?php echo $width ?>" name="width" required />
                         <label for="tattoo_width">Width (in inches)</label>
                         <p class="my-2 <?php echo isset($_SESSION['width_err']) ? "d-block" : "d-none"; ?> text-danger width_err"><?php if(isset($_SESSION['width_err'])){ echo $_SESSION['width_err']; } ?></p>
                       </div>
                     </div>
                     <div class="col">
                       <div class="form-floating">
-                        <input type="number" class="form-control" placeholder="Height" min="1" max="36" value="<?php echo $height ?>" name="height" required>
+                        <input type="number" class="form-control" placeholder="Height" min="1" max="36" value="<?php echo $height ?>" name="height" required />
                         <label for="tattoo_height">Height (in inches)</label>
                         <p class="my-2 <?php echo isset($_SESSION['height_err']) ? "d-block" : "d-none"; ?> text-danger height_err"><?php if(isset($_SESSION['height_err'])){ echo $_SESSION['height_err']; } ?></p>
                       </div>

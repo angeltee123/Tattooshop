@@ -84,7 +84,7 @@
       }
 
       echo (strcasecmp($incentive, "15% Discount") == 0) ? "<script>const discounted = true;</script>" : "<script>const discounted = false;</script>";
-    } catch (Exception $e){
+    } catch (Exception $e) {
         exit();
         $_SESSION['res'] = $e->getMessage();
         Header("Location: ./orders.php");
@@ -242,12 +242,12 @@
           <h4 class="mb-3">Client Name</h4>
           <div class="col">
             <label class="form-label text-muted" for="first_name">First Name</label>
-            <input type="text" class="form-control" value="<?php echo $first_name; ?>" <?php if($item_count == 0){ echo "disabled"; }?> name="first_name" minlength="2" maxlength="50" required>
+            <input type="text" class="form-control" value="<?php echo $first_name; ?>" <?php if($item_count == 0){ echo "disabled"; }?> name="first_name" minlength="2" maxlength="50" required />
             <p class="my-2 <?php echo isset($_SESSION['first_name_err']) ? "d-block" : "d-none"; ?> text-danger height_err"><?php if(isset($_SESSION['first_name_err'])){ echo $_SESSION['first_name_err']; } ?></p>
           </div>
           <div class="col">
             <label class="form-label text-muted" for="last_name">Last Name</label>
-            <input type="text" class="form-control" value="<?php echo $last_name; ?>" <?php if($item_count == 0){ echo "disabled"; }?> name="last_name" minlength="2" maxlength="50" required>
+            <input type="text" class="form-control" value="<?php echo $last_name; ?>" <?php if($item_count == 0){ echo "disabled"; }?> name="last_name" minlength="2" maxlength="50" required />
             <p class="my-2 <?php echo isset($_SESSION['last_name_err']) ? "d-block" : "d-none"; ?> text-danger height_err"><?php if(isset($_SESSION['last_name_err'])){ echo $_SESSION['last_name_err']; } ?></p>
           </div>
         </div>
@@ -255,12 +255,12 @@
           <h4 class="mb-3">Billing Address</h4>
           <div class="col">
             <label class="form-label text-muted" for="street_address">Street Address</label>
-            <input type="text" class="form-control" <?php if($item_count == 0){ echo "disabled"; }?> name="street_address" maxlength="255" required>
+            <input type="text" class="form-control" <?php if($item_count == 0){ echo "disabled"; }?> name="street_address" maxlength="255" required />
             <p class="my-2 <?php echo isset($_SESSION['street_address_err']) ? "d-block" : "d-none"; ?> text-danger height_err"><?php if(isset($_SESSION['street_address_err'])){ echo $_SESSION['street_address_err']; } ?></p>
           </div>
           <div class="col">
             <label class="form-label text-muted" for="city">City</label>
-            <input type="text" class="form-control" <?php if($item_count == 0){ echo "disabled"; }?> name="city" maxlength="35" required>
+            <input type="text" class="form-control" <?php if($item_count == 0){ echo "disabled"; }?> name="city" maxlength="35" required />
             <p class="my-2 <?php echo isset($_SESSION['city_err']) ? "d-block" : "d-none"; ?> text-danger height_err"><?php if(isset($_SESSION['city_err'])){ echo $_SESSION['city_err']; } ?></p>
           </div>
         </div>
@@ -281,22 +281,22 @@
             <h4 class="mb-3">Payment Amount</h4>
             <div class="input-group">
               <span class="input-group-text">₱</span>
-              <input type="number" class="form-control" <?php if($item_count == 0){ echo "disabled"; }?> name="amount_paid" required>
+              <input type="number" class="form-control" <?php if($item_count == 0){ echo "disabled"; }?> name="amount_paid" required />
             </div>
             <p class="my-2 <?php echo isset($_SESSION['amount_paid_err']) ? "d-block" : "d-none"; ?> text-danger height_err"><?php if(isset($_SESSION['amount_paid_err'])){ echo $_SESSION['amount_paid_err']; } ?></p>
           </div>
           <div class="col">
             <h4 class="mb-3">Payment Method</h4>
             <div class="form-check form-check-inline mt-2">
-              <input class="form-check-input" type="radio" <?php if($item_count == 0){ echo "disabled"; }?> name="payment_method" value="Debit" required>
+              <input class="form-check-input" type="radio" <?php if($item_count == 0){ echo "disabled"; }?> name="payment_method" value="Debit" required />
               <label class="form-check-label" for="inlineRadio1"><i class="far fa-credit-card"></i>Debit Card</label>
             </div>
             <div class="form-check form-check-inline mt-2">
-              <input class="form-check-input" type="radio" <?php if($item_count == 0){ echo "disabled"; }?> name="payment_method" value="Credit" required>
+              <input class="form-check-input" type="radio" <?php if($item_count == 0){ echo "disabled"; }?> name="payment_method" value="Credit" required />
               <label class="form-check-label" for="inlineRadio2"><i class="far fa-credit-card"></i>Credit Card</label>
             </div>
             <div class="form-check form-check-inline mt-2">
-              <input class="form-check-input" type="radio" <?php if($item_count == 0){ echo "disabled"; }?> name="payment_method" value="Prepaid" required>
+              <input class="form-check-input" type="radio" <?php if($item_count == 0){ echo "disabled"; }?> name="payment_method" value="Prepaid" required />
               <label class="form-check-label" for="inlineRadio2"><i class="far fa-credit-card"></i>Prepaid Card</label>
             </div>
             <p class="my-2 <?php echo isset($_SESSION['payment_method_err']) ? "d-block" : "d-none"; ?> text-danger height_err"><?php if(isset($_SESSION['payment_method_err'])){ echo $_SESSION['payment_method_err']; } ?></p>
@@ -305,17 +305,17 @@
         <div class="row my-4">
           <div class="col">
             <h4 class="mb-3">Card Number</h4>
-            <input type="text" inputmode="numeric" class="form-control" <?php if($item_count == 0){ echo "disabled"; }?> name="card_number" minlength="11" maxlength="16" required>
+            <input type="text" inputmode="numeric" class="form-control" <?php if($item_count == 0){ echo "disabled"; }?> name="card_number" minlength="11" maxlength="16" required />
             <p class="my-2 <?php echo isset($_SESSION['card_number_err']) ? "d-block" : "d-none"; ?> text-danger height_err"><?php if(isset($_SESSION['card_number_err'])){ echo $_SESSION['card_number_err']; } ?></p>
           </div>
           <div class="col">
             <h4 class="mb-3">PIN</h4>
-            <input type="password" inputmode="numeric" class="form-control" <?php if($item_count == 0){ echo "disabled"; }?> name="pin" minlength="6" maxlength="6" required>
+            <input type="password" inputmode="numeric" class="form-control" <?php if($item_count == 0){ echo "disabled"; }?> name="pin" minlength="6" maxlength="6" required />
             <p class="my-2 <?php echo isset($_SESSION['pin_err']) ? "d-block" : "d-none"; ?> text-danger height_err"><?php if(isset($_SESSION['pin_err'])){ echo $_SESSION['pin_err']; } ?></p>
           </div>
           <div class="col">
             <h4 class="mb-3">Bank Name</h4>
-            <input type="text" class="form-control" <?php if($item_count == 0){ echo "disabled"; }?> name="bank_name" required>
+            <input type="text" class="form-control" <?php if($item_count == 0){ echo "disabled"; }?> name="bank_name" required />
             <p class="my-2 <?php echo isset($_SESSION['bank_name_err']) ? "d-block" : "d-none"; ?> text-danger height_err"><?php if(isset($_SESSION['bank_name_err'])){ echo $_SESSION['bank_name_err']; } ?></p>
           </div>
         </div>

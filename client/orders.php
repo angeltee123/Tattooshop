@@ -180,7 +180,7 @@
         }
       }
     }
-  } catch (Exception $e){
+  } catch (Exception $e) {
     exit();
     $_SESSION['res'] = $e->getMessage();
     Header("Location: ./index.php");
@@ -277,7 +277,7 @@
                 <button type="submit" class="btn btn-outline-secondary rounded-pill d-flex align-items-center me-1" name="update_referrals"><span class="material-icons lh-base pe-2">person</span>Update Referrals</button>
               </div>
               <div class="d-inline-block">
-                <button type="submit" class="btn btn-outline-danger rounded-pill d-flex align-items-center me-1" name="remove_referrals"><span class="material-icons lh-base pe-2">person_remove</span>Remove Referrals</button>
+                <button type="submit" class="btn btn-outline-danger rounded-pill d-flex align-items-center" name="remove_referrals"><span class="material-icons lh-base pe-2">person_remove</span>Remove Referrals</button>
               </div>
               <?php } ?>
             </div>
@@ -323,7 +323,7 @@
                       if($mysqli_checks===false){
                         throw new Exception('The prepared statement could not be closed.');
                       }
-                    } catch (Exception $e){
+                    } catch (Exception $e) {
                       exit;
                       Header("Location: ./index.php");
                       echo $e->getMessage();
@@ -520,28 +520,28 @@
               </div>
               <div>
                 <div class="form-floating">
-                  <input type="text" class="form-control" value="<?php echo $first_name; ?>" maxlength="50" placeholder="First Name" name="referral_fname[]" required>
+                  <input type="text" class="form-control" value="<?php echo $first_name; ?>" maxlength="50" placeholder="First Name" name="referral_fname[]" required />
                   <label for="tattoo_width">First Name</label>
                   <p class="d-none my-2 text-danger"></p>
                 </div>
               </div>
               <div>
                 <div class="form-floating">
-                  <input type="text" class="form-control" style="width: 50px;" value="<?php echo $mi; ?>" minlength="1" maxlength="1" placeholder="MI" name="referral_mi[]" required>
+                  <input type="text" class="form-control" style="width: 50px;" value="<?php echo $mi; ?>" minlength="1" maxlength="1" placeholder="MI" name="referral_mi[]" required />
                   <label for="tattoo_width">M.I.</label>
                   <p class="d-none my-2 text-danger"></p>
                 </div>
               </div>
               <div>
                 <div class="form-floating">
-                  <input type="text" class="form-control" value="<?php echo $last_name; ?>" maxlength="50" placeholder="Last Name" name="referral_lname[]" required>
+                  <input type="text" class="form-control" value="<?php echo $last_name; ?>" maxlength="50" placeholder="Last Name" name="referral_lname[]" required />
                   <label for="tattoo_width">Last Name</label>
                   <p class="d-none my-2 text-danger"></p>
                 </div>
               </div>
               <div>
                 <div class="form-floating">
-                  <input type="number" class="form-control" style="width: 60px;" value="<?php echo $age; ?>" name="referral_age[]" min="17" max="90" required>
+                  <input type="number" class="form-control" style="width: 60px;" value="<?php echo $age; ?>" name="referral_age[]" min="17" max="90" required />
                   <label for="tattoo_width">Age</label>
                   <p class="d-none my-2 text-danger"></p>
                 </div>
@@ -555,7 +555,7 @@
               </div>
               <div>
                 <div class="form-floating">
-                  <input type="email" class="form-control" value="<?php echo $email; ?>" maxlength="62" placeholder="Email" name="referral_email[]" required>
+                  <input type="email" class="form-control" value="<?php echo $email; ?>" maxlength="62" placeholder="Email" name="referral_email[]" required />
                   <label for="tattoo_width">Email</label>
                   <p class="d-none my-2 text-danger"></p>
                 </div>
@@ -712,7 +712,6 @@
   </script>
   <?php } ?>
 <?php } ?>
-<script src="../api/bootstrap-bundle-min.js"></script>
 </html>
 <?php
   if(isset($_SESSION['referral_err'])){

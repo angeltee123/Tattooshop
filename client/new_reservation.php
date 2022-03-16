@@ -4,15 +4,63 @@
   if(!isset($_SESSION['user_id'])){
     Header("Location: ./reservations.php");
     die();
-  } elseif(empty($_POST)){
-    $warning = "Please select an item";
+  } elseif(!isset($_POST) || empty($_POST)){
+    $warning = "Please select an item.";
     echo "<script>alert('$warning');</script>";
+    Header("Location: ./reservations.php");
     die();
   } else {
     require_once '../api/api.php';
     $api = new api();
-    $client_id = $_SESSION['client_id'];
-    $id = $_POST['item'];
+    $client_id = $api->sanitize_data($_SESSION['client_id'], "string");
+    $item_id = $api->sanitize_data($_POST['item'], "string");
+  }
+
+  $join = $api->join("", "tattoo", "order_item", "tattoo.tattoo_id", "order_item.tattoo_id");
+  $query = $api->select();
+  $query = $api->params($query, array("tattoo_image", "tattoo_quantity"));
+  $query = $api->from($query);
+  $query = $api->table($query, $join);
+  $query = $api->where($query, "item_id", "?");
+
+  try {
+    $statement = $api->prepare($query);
+    if($statement===false){
+        throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+    }
+
+    $mysqli_checks = $api->bind_params($statement, "s", $item_id);
+    if($mysqli_checks===false){
+        throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
+    }
+
+    $mysqli_checks = $api->execute($statement);
+    if($mysqli_checks===false){
+        throw new Exception('Execute error: The prepared statement could not be executed.');
+    }
+
+    $res = $api->get_result($statement);
+    if($res===false){
+      throw new Exception('get_result() error: Getting result set from statement failed.');
+    }
+
+    if($api->num_rows($res) > 0){
+      $item = $api->fetch_assoc($res);
+      $tattoo_image = $api->sanitize_data($item['tattoo_image'], "string");
+      $quantity = $api->sanitize_data($item['tattoo_quantity'], "int");
+    } else {
+      throw new Exception('The prepared statement could not be closed.');
+    }
+
+    $api->free_result($statement);
+    $mysqli_checks = $api->close($statement);
+    if($mysqli_checks===false){
+      throw new Exception('Error: Retrieving order item data failed.');
+    } 
+  } catch(Exception $e) {
+    exit();
+    $_SESSION['res'] = $e->getMessage();
+    Header("Location: ./reservations.php");
   }
 ?>
 <!DOCTYPE html>
@@ -21,26 +69,17 @@
   <?php require_once '../common/meta.php'; ?>
   <!-- native style -->
   <style>
-    main {
-        display:flex;
-        flex-direction:column;
-        width: 100vw;
-        height:100vh;
-        text-align:center;
-        background-image: url("img/reserve.png");
-        background-position: center;
-        background-repeat: no-repeat;
-        background-size: cover;
-        padding-top:70px;
+    .content .row > div {
+      height: 100%;
     }
-    
-    .tatname {
-        border-radius: 3px;
-        margin-left: 12px;
-        width: 255px;
+
+    #preview {
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
     }
   </style>
-  <title>New Booking | NJC Tattoo</title>
+  <title>New Reservation | NJC Tattoo</title>
 </head>
 <body>
   <header class="header border-bottom border-2">
@@ -65,121 +104,59 @@
       </div>
     </nav>
   </header>
-  <main>
-    <div class="container">
-      <?php
-        $join = $api->join("", "tattoo", "order_item", "tattoo.tattoo_id", "order_item.tattoo_id");
-        $query = $api->select();
-        $query = $api->params($query, "*");
-        $query = $api->from($query);
-        $query = $api->table($query, $join);
-        $query = $api->where($query, "item_id", "?");
-
-        try{
-          $statement = $api->prepare($query);
-          if($statement===false){
-              throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
-          }
-      
-          $mysqli_checks = $api->bind_params($statement, "s", $id);
-          if($mysqli_checks===false){
-              throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
-          }
-      
-          $mysqli_checks = $api->execute($statement);
-          if($mysqli_checks===false){
-              throw new Exception('Execute error: The prepared statement could not be executed.');
-          }
-
-          $res = $api->get_result($statement);
-          if($res===false){
-            throw new Exception('get_result() error: Getting result set from statement failed.');
-          }
-        } catch (Exception $e){
-            exit();
-            $_SESSION['res'] = $e->getMessage();
-            Header("Location: ../client/reservations.php");
-        }
-
-        if($api->num_rows($res) <= 0){
-          Header("Location: ../client/reservations.php");
-        } else {
-          $row = $api->fetch_assoc($res);
-      ?>
-      <form action="../scripts/php/queries.php" method="POST" class="form px-3">
-        <div class="mt-3">
-            <div class="row">
-                <h2><?php echo $row['tattoo_name'] ?></h2>
-                <div class="col-md-3 mt-4 btn-light tatname">
-                  <input type="hidden" readonly class="d-none" value="<?php echo $api->sanitize_data($row['item_id'], 'string'); ?>" name="item_id" />
+  <div class="content w-80">
+    <div class="row justify-content-center align-items-start w-100 vh-100 mx-0">
+      <div class="col-5 order-first border rounded shadow" id="preview" style="background-image: url(<?php echo $tattoo_image; ?>);"></div>  
+      <div class="col order-last d-flex justify-content-center align-items-center">
+        <div class="flex-grow-1">
+          <div class="ms-4 me-8">
+            <form class="mt-4" action="../scripts/php/queries.php" method="post">
+              <input type="hidden" readonly class="d-none" value="<?php echo $item_id; ?>" name="item_id" />
+              <input type="hidden" readonly class="d-none" name="original_quantity" value="<?php echo $quantity; ?>" required />
+              <div class="row mb-4">
+                <div class="col-5">
+                  <div class="form-floating">
+                    <input type="number" class="form-control" placeholder="Quantity" min="1" max="<?php echo $quantity; ?>" value="<?php echo $quantity; ?>" id="quantity" name="quantity" required />
+                    <label for="quantity">Quantity</label>
+                    <p class="my-2 <?php echo isset($_SESSION['width_err']) ? "d-block" : "d-none"; ?> text-danger width_err"><?php if(isset($_SESSION['width_err'])){ echo $_SESSION['width_err']; } ?></p>
+                  </div>
                 </div>
-
-                <!--- Item Quantity--->
-                <div class="col-md-3 mt-4">
-                  <input type="hidden" class="d-none" name="original_quantity" value="<?php echo $api->sanitize_data($row['tattoo_quantity'], 'int'); ?>" required />
-                  <input type="text" class="form-control" name="quantity" id="quantity" value="<?php echo $api->sanitize_data($row['tattoo_quantity'], 'int'); ?>" min="1" max="<?php echo $api->sanitize_data($row['tattoo_quantity'], 'int') ?>" placeholder="Item Quantity" required />
-                </div>
-            </div>
-
-            <div class="row">
-
-                <!--- Service Type--->
-                <div class="col-md-4 mt-4">
-                    <select name="service_type" class="form-select form-select-md mb-3" >
-                        <option value="" hidden selected> Service Type</option>
-                        <option value="Walk-in">Walk-in</option>
-                        <option value="Home Service">Home Service</option>
+                <div class="col">
+                  <div class="form-floating">
+                    <select name="service_type" id="service_type" class="form-select">
+                      <option value="Walk-in" selected>Walk-in</option>
+                      <option value="Home Service">Home Service</option>
                     </select>
+                    <label for="service_type">Service Type</label>
+                  </div>
                 </div>
-
-                <!--- Time --->
-                <div class="col-md-4 mt-4">
-                    <input type="time" class="form-control" id="time" name="scheduled_time">
-                </div>
-            
-                <!--- Date --->
-                <div class="col-md-4 mt-4">
-                    <input type="date" class="form-control" id="date" name="scheduled_date" required>
-                </div>
-            </div>
-            
-            <div class="row">
-                <!--- Address --->
-                <div class="col-md-12 mt-4">
-                    <input type="text" class="form-control" name="address" placeholder="Address" required>
-                </div>
-            </div>
-
-            <div class="row">
-                <!--- Demands --->
-                <div class="col-md-12 mt-4">
-                    <input type="text" class="form-control" name="description" placeholder="Demands" required>
-                </div>
-            </div>
-        
-            
-            <!-- SUBMIT BUTTON -->
-            <div class="container text-center py-5">
-                <button class="btn btn-primary submit_btn" name="book" type="submit">Book Now</button>
-            </div>
+              </div>
+              <div class="form-floating mb-4">
+                <input type="text" disabled class="form-control" placeholder="Service Location" name="address" id="address" value="Mandaue City, Cebu" required />
+                <label for="address">Service Location</label>
+                <p class="my-2 <?php echo isset($_SESSION['width_err']) ? "d-block" : "d-none"; ?> text-danger width_err"><?php if(isset($_SESSION['width_err'])){ echo $_SESSION['width_err']; } ?></p>
+              </div>
+              <div class="form-floating mb-4">
+                <input type="date" class="form-control" placeholder="Date" name="scheduled_date" id="scheduled_date" required />
+                <label for="scheduled_date">Date</label>
+                <p class="my-2 <?php echo isset($_SESSION['width_err']) ? "d-block" : "d-none"; ?> text-danger width_err"><?php if(isset($_SESSION['width_err'])){ echo $_SESSION['width_err']; } ?></p>
+              </div>
+              <div class="form-floating mb-4">
+                <input type="time" class="form-control" placeholder="Time" name="scheduled_time" id="scheduled_time" required />
+                <label for="scheduled_time">Time</label>
+                <p class="my-2 <?php echo isset($_SESSION['width_err']) ? "d-block" : "d-none"; ?> text-danger width_err"><?php if(isset($_SESSION['width_err'])){ echo $_SESSION['width_err']; } ?></p>
+              </div>
+              <div class="mb-4">
+                <textarea class="form-control p-3 text-wrap" name="reservation_demands" rows="5" placeholder="Demands (Optional)"></textarea>
+                <p class="my-2 d-none text-danger"></p>
+              </div>
+              <button type="submit" class="btn btn-dark rounded-pill d-flex align-items-center" name="book"><span class="material-icons lh-base pe-2">bookmark_add</span>Book Now</button>
+            </form>
+          </div>
         </div>
-      </form>
-    <?php } ?>
+      </div>
     </div>
-  </main>
+  </div>
 </body>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 </html>
-<?php
-  try {
-    $api->free_result($statement);
-
-    $mysqli_checks = $api->close($statement);
-    if($mysqli_checks===false){
-        throw new Exception('The prepared statement could not be closed.');
-    }
-  } catch (Exception $e){
-    echo $e->getMessage();
-    Header("Location: ./index.php");
-  }
-?>

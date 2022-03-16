@@ -71,7 +71,7 @@
     if($mysqli_checks===false){
         throw new Exception('The prepared statement could not be closed.');
     }
-  } catch (Exception $e){
+  } catch (Exception $e) {
       exit();
       $_SESSION['res'] = $e->getMessage();
       Header("Location: ./index.php");

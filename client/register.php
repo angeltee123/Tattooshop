@@ -10,8 +10,6 @@
 <head>
   <?php require_once '../common/meta.php'; ?>  
   <!-- native style -->
-  <link href="../style/bootstrap.css" rel="stylesheet">
-  <link href="../style/style.css" rel="stylesheet">
   <style>
     .content h1{
       font-family: 'Libre Caslon Text', 'Arial', sans-serif;
@@ -33,7 +31,7 @@
   <title>Sign Up | NJC Tattoo</title>
 </head>
 <body>
-  <div class="row justify-content-center align-items-start w-100 vh-100">
+  <div class="row justify-content-center align-items-start w-100 vh-100 mx-0">
     <div class="col-5 order-first bg-img"></div>  
     <div class="col order-last d-flex justify-content-center align-items-center">
       <div class="flex-grow-1">

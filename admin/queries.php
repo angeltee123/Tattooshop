@@ -205,7 +205,7 @@ if(isset($_POST['catalog_tattoo'])){
                 } else {
                     throw new Exception("Sorry, an error occured during the file upload, please try again later.");
                 }
-            } catch (Exception $e){
+            } catch (Exception $e) {
                 $_SESSION['res'] = $e->getMessage();
                 Header("Location: ./catalogue.php");
                 exit();
@@ -427,7 +427,7 @@ if(isset($_POST['update_tattoo'])){
             if($mysqli_checks===false){
                 throw new Exception('The prepared statement could not be closed.');
             }
-        } catch (Exception $e){
+        } catch (Exception $e) {
             $_SESSION['res'] = $e->getMessage();
             Header("Location: ./catalogue.php#".$name);
             exit();
@@ -461,7 +461,7 @@ if(isset($_POST['delete_tattoo'])){
         if($mysqli_checks===false){
             throw new Exception('The prepared statement could not be closed.');
         }        
-    } catch (Exception $e){
+    } catch (Exception $e) {
         $_SESSION['res'] = $e->getMessage();
         Header("Location: ./catalogue.php");
         exit();
@@ -701,7 +701,7 @@ if(isset($_POST['update_item'])){
                     throw new Exception('Retrieving order item with the given ID failed.');
                 }
             }
-        } catch (Exception $e){
+        } catch (Exception $e) {
             $_SESSION['res'] = $e->getMessage();
             Header("Location: ./orders.php");
             exit();
@@ -790,7 +790,7 @@ if(isset($_POST['delete_item'])){
                 throw new Exception('Retrieving order item with the given ID failed.');
             }
         }
-    } catch (Exception $e){
+    } catch (Exception $e) {
         $_SESSION['res'] = $e->getMessage();
         Header("Location: ./orders.php");
         exit();
@@ -994,7 +994,7 @@ if(isset($_POST['update_referral'])){
                 throw new Exception('The prepared statement could not be closed.');
             }
         }
-    } catch (Exception $e){
+    } catch (Exception $e) {
         $_SESSION['res'] = $e->getMessage();
         Header("Location: ../client/orders.php");
         exit();
@@ -1066,7 +1066,7 @@ if(isset($_POST['remove_referral'])){
         if($mysqli_checks===false){
             throw new Exception('The prepared statement could not be closed.');
         }
-    } catch (Exception $e){
+    } catch (Exception $e) {
         $_SESSION['res'] = $e->getMessage();
         Header("Location: ../client/orders.php");
         exit();
@@ -1137,7 +1137,7 @@ if(isset($_POST['update_reservation'])){
             if($mysqli_checks===false){
                 throw new Exception('The prepared statement could not be closed.');
             }
-        } catch (Exception $e){
+        } catch (Exception $e) {
             $_SESSION['res'] = $e->getMessage();
             Header("Location: ./reservations.php");
             exit();
@@ -1191,7 +1191,7 @@ if(isset($_POST['start_worksession'])){
             if($mysqli_checks===false){
                 throw new Exception('The prepared statement could not be closed.');
             }
-        } catch (Exception $e){
+        } catch (Exception $e) {
             $_SESSION['res'] = $e->getMessage();
             Header("Location: ./reservations.php");
             exit();
@@ -1381,7 +1381,7 @@ if(isset($_POST['cancel_reservation'])){
         if($mysqli_checks===false){
             throw new Exception('Error: Updating amount due total of current order failed.');
         }
-    } catch (Exception $e){
+    } catch (Exception $e) {
         $_SESSION['res'] = $e->getMessage();
         Header("Location: ./reservations.php");
         exit();
@@ -1577,7 +1577,7 @@ if(isset($_POST['finish_worksession'])){
                 throw new Exception('Retrieving order item with the given ID failed.');
             }
         }
-    } catch (Exception $e){
+    } catch (Exception $e) {
         $_SESSION['res'] = $e->getMessage();
         Header("Location: ./reservations.php");
         exit();
@@ -2304,7 +2304,7 @@ if(isset($_POST['log_payment'])){
                     $statement = null;
                 }
             }
-        } catch (Exception $e){
+        } catch (Exception $e) {
             $_SESSION['res'] = $e->getMessage();
             Header("Location: ./orders.php");
             exit();

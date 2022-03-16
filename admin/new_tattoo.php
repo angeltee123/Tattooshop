@@ -26,7 +26,7 @@
 </head>
 <body class="w-100 h-100">
   <main>
-  <div class="row justify-content-center align-items-start h-100 w-100">
+  <div class="row justify-content-center align-items-start h-100 w-100 mx-0">
     <div class="order-first d-flex col-5 bg-light vh-100 justify-content-center align-items-center" id="preview">
       <h1 class="text-muted" id="preview_text">Image Preview</h1>
       <div class="position-absolute top-0 start-0 mt-5 ms-5 d-flex align-items-center justify-content-center bg-white border" style="width: 75px; height: 75px;">

@@ -18,7 +18,7 @@
       if($mysqli_checks!==true){
         throw new Exception('Error: Retrieving client workorder failed.');
       }
-    } catch (Exception $e){
+    } catch (Exception $e) {
       exit();
       $_SESSION['res'] = $e->getMessage();
       Header("Location: ./index.php");
@@ -109,7 +109,7 @@
     if($mysqli_checks===false){
         throw new Exception('The prepared statement could not be closed.');
     }
-  } catch (Exception $e){
+  } catch (Exception $e) {
       exit();
       $_SESSION['res'] = $e->getMessage();
       Header("Location: ../client/index.php");
@@ -184,7 +184,7 @@
           <?php
             }
           ?>
-          <button type="submit" class="d-inline-block btn btn-outline-dark rounded-pill px-3 py-2"  data-bs-toggle="collapse" data-bs-target="#new_reservation" aria-expanded="false" aria-controls="new_reservation">Make a Reservation</button>
+          <button type="submit" class="d-inline-block btn btn-outline-dark rounded-pill px-3 py-2"  data-bs-toggle="collapse" data-bs-target="#new_reservation" aria-expanded="false" aria-controls="new_reservation">New Reservation</button>
         </div>
       </div>
       <div class="collapse border-bottom rounded mt-3 mb-7 py-7" id="new_reservation">
@@ -349,7 +349,7 @@
                       <?php if(strcasecmp($status, "Confirmed") == 0){ ?>
                         <p><?php echo $description; ?></p>
                       <?php } else { ?>
-                        <textarea readonly class="<?php if(strcasecmp($status, "Pending") == 0){ echo "reservations "; } ?>form-control p-3 text-wrap" name="reservation_demands" rows="5" placeholder="Reservation Demands" required><?php echo $description; ?></textarea>
+                        <textarea readonly class="<?php if(strcasecmp($status, "Pending") == 0){ echo "reservations "; } ?>form-control p-3 text-wrap" name="reservation_demands" rows="5" placeholder="Reservation Demands" required /><?php echo $description; ?></textarea>
                         <p class="my-2 d-none text-danger"></p>
                       <?php } ?>
                     </div>
