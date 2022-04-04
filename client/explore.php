@@ -7,6 +7,33 @@
   } else {
     require_once '../api/api.php';
     $api = new api();
+
+    try {
+      $statement = $api->prepare("SELECT * FROM tattoo ORDER BY cataloged DESC");
+      if($statement===false){
+        throw new Exception("prepare() error: The statement could not be prepared.");
+      }
+  
+      $mysqli_checks = $api->execute($statement);
+      if($mysqli_checks===false){
+        throw new Exception('Execute error: The prepared statement could not be executed.');
+      }
+  
+      $res = $api->get_result($statement);
+      if($res===false){
+        throw new Exception('get_result() error: Getting result set from statement failed.');
+      }
+
+      $api->free_result($statement);
+      $mysqli_checks = $api->close($statement);
+      if($mysqli_checks===false){
+      throw new Exception('The prepared statement could not be closed.');
+      }
+    } catch (Exception $e) {
+      Header("Location: ./index.php");
+      echo $e->getMessage();
+      exit;
+    }
   }
 
   if(!isset($_SESSION['order']['order_id']) || empty($_SESSION['order']['order_id'])){
@@ -73,44 +100,17 @@
     </div>
     <div class="Catalogue__cards justify-content-between" id="Catalogue">
       <?php
-        $query = $api->select();
-        $query = $api->params($query, "*");
-        $query = $api->from($query);
-        $query = $api->table($query, "tattoo");
-        $query = $api->order($query, "cataloged", "DESC");
-
-        try {
-          $statement = $api->prepare($query);
-          if($statement===false){
-            throw new Exception("prepare() error: The statement could not be prepared.");
-          }
-      
-          $mysqli_checks = $api->execute($statement);
-          if($mysqli_checks===false){
-            throw new Exception('Execute error: The prepared statement could not be executed.');
-          }
-      
-          $res = $api->get_result($statement);
-          if($res===false){
-            throw new Exception('get_result() error: Getting result set from statement failed.');
-          }
-        } catch (Exception $e) {
-          exit;
-          Header("Location: ./index.php");
-          echo $e->getMessage();
-        }
-
         if($api->num_rows($res) > 0){
-          while($row = $api->fetch_assoc($res)){
-            $id = $api->sanitize_data($row['tattoo_id'], 'string');
-            $name = $api->sanitize_data($row['tattoo_name'], 'string');
-            $price = number_format($api->sanitize_data($row['tattoo_price'], "float"), 2, '.', '');
-            $height = $api->sanitize_data($row['tattoo_height'], 'int');
-            $width = $api->sanitize_data($row['tattoo_width'], 'int');
-            $image = $api->sanitize_data($row['tattoo_image'], 'string');
-            $description = $api->sanitize_data($row['tattoo_description'], 'string');
-            $color_scheme = $api->sanitize_data($row['color_scheme'], 'string');
-            $complexity = $api->sanitize_data($row['complexity_level'], 'string');  
+          while($tattoo = $api->fetch_assoc($res)){
+            $id = $api->sanitize_data($tattoo['tattoo_id'], 'string');
+            $name = $api->sanitize_data($tattoo['tattoo_name'], 'string');
+            $price = number_format($api->sanitize_data($tattoo['tattoo_price'], "float"), 2, '.', '');
+            $height = $api->sanitize_data($tattoo['tattoo_height'], 'int');
+            $width = $api->sanitize_data($tattoo['tattoo_width'], 'int');
+            $image = $api->sanitize_data($tattoo['tattoo_image'], 'string');
+            $description = $api->sanitize_data($tattoo['tattoo_description'], 'string');
+            $color_scheme = $api->sanitize_data($tattoo['color_scheme'], 'string');
+            $complexity = $api->sanitize_data($tattoo['complexity_level'], 'string');  
       ?>
         <a class="Catalogue__cards__card shadow-sm d-block" href="#<?php echo $name?>" style="background-image: url(<?php echo $image; ?>)"></a>
         <div id="<?php echo $name?>" class="Catalogue__cards__modal">
