@@ -33,16 +33,23 @@ textarea {
 }
 
 .content {
-  margin: 100px auto;
+  margin: 100px auto !important;
 }
 
 .tabs {
   transition: color .4s;
 }
 
-
 .form-select-plaintext {
-  background-color: #e9ecef;
+  background-color: #e9ecef !important;
+}
+
+.avatar {
+  border-radius: 360px;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-repeat: no-repeat;
 }
 
 /* CUSTOM BOOTSTRAP CLASSES */
@@ -57,30 +64,34 @@ textarea {
   pointer-events: none;
 }
 
+.text-justify {
+  text-align: justify !important;
+}
+
 /* custom backgrounds */
-.bg-none { background-color: rgba(255, 255, 255, 0); } .bg-extralight { background-color: #fefefe; }
+.bg-none { background-color: rgba(255, 255, 255, 0) !important; } .bg-extralight { background-color: #fefefe !important; } .bg-center-fit { background-position: center; background-repeat: no-repeat; background-size: cover; background-repeat: no-repeat; }
 
 /* custom borders */
 .border-x { border-left: 1px solid #dee2e6 !important; border-right: 1px solid #dee2e6 !important; } .border-y { border-top: 1px solid #dee2e6 !important; border-bottom: 1px solid #dee2e6 !important; }
 .border-x-0 { border-left: none !important; border-right: none !important; } .border-y-0 { border-top: none !important; border-bottom: none !important; }
 
 /* custom fonts */
-.fs-display-1 { font-size: 5rem; } .fs-display-2 { font-size: 4.5rem; } .fs-display-3 {font-size: 4rem; } .fs-display-4 { font-size: 3.5rem; } .fs-display-5 { font-size: 3rem; } .fs-display-6 { font-size: 2.5rem; }
+.fs-display-1 { font-size: 5rem !important; } .fs-display-2 { font-size: 4.5rem !important; } .fs-display-3 {font-size: 4rem !important; } .fs-display-4 { font-size: 3.5rem !important; } .fs-display-5 { font-size: 3rem !important; } .fs-display-6 { font-size: 2.5rem !important; }
 
 /* custom widths */
-.w-60 { width: 60%; } .w-65 { width: 65%; } .w-70 { width: 70%; } .w-80 { width: 80%; } .w-85 { width: 85%; } .w-90 { width: 90%; }
+.w-60 { width: 60% !important; } .w-65 { width: 65% !important; } .w-70 { width: 70% !important; } .w-80 { width: 80% !important; } .w-85 { width: 85% !important; } .w-90 { width: 90% !important; }
 
 /* custom font-weights */
 
-.fw-semibold { font-weight: 600; }
-.fw-extrabold { font-weight: 800; }
+.fw-semibold { font-weight: 600 !important; }
+.fw-extrabold { font-weight: 800 !important; }
 
 /* CUSTOM SPACING */
 /* custom margins */
-.m-6 { margin: 3.5rem; } .mx-6 { margin-left: 3.5rem; margin-right: 3.5rem; } .ms-6 { margin-left: 3.5rem; } .me-6 { margin-right: 3.5rem; } .my-6 { margin-top: 3.5rem; margin-bottom: 3.5rem; } .mt-6 { margin-top: 3.5rem; } .mb-6 { margin-bottom: 3.5rem; }
-.m-7 { margin: 4rem; } .mx-7 { margin-left: 4rem; margin-right: 4rem; } .ms-7 { margin-left: 4rem; } .me-7 { margin-right: 4rem; } .my-7 { margin-top: 4rem; margin-bottom: 4rem; } .mt-7 { margin-top: 4rem; } .mb-7 { margin-bottom: 4rem; }
-.m-8 { margin: 4.5rem; } .mx-8 { margin-left: 4.5rem; margin-right: 4.5rem; } .ms-8 { margin-left: 4.5rem; } .me-8 { margin-right: 4.5rem; } .my-8 { margin-top: 4.5rem; margin-bottom: 4.5rem; } .mt-8 { margin-top: 4.5rem; } .mb-8 { margin-bottom: 4.5rem; }
-.m-9 { margin: 5rem; } .mx-9 { margin-left: 5rem; margin-right: 5rem; } .ms-9 { margin-left: 5rem; } .me-9 { margin-right: 5rem; } .my-9 { margin-top: 5rem; margin-bottom: 5rem; } .mt-9 { margin-top: 5rem; } .mb-9 { margin-bottom: 5rem; }
+.m-6 { margin: 3.5rem !important; } .mx-6 { margin-left: 3.5rem !important; margin-right: 3.5rem !important; } .ms-6 { margin-left: 3.5rem !important; } .me-6 { margin-right: 3.5rem !important; } .my-6 { margin-top: 3.5rem !important; margin-bottom: 3.5rem !important; } .mt-6 { margin-top: 3.5rem !important; } .mb-6 { margin-bottom: 3.5rem !important; }
+.m-7 { margin: 4rem !important; } .mx-7 { margin-left: 4rem !important; margin-right: 4rem !important; } .ms-7 { margin-left: 4rem !important; } .me-7 { margin-right: 4rem !important; } .my-7 { margin-top: 4rem !important; margin-bottom: 4rem !important; } .mt-7 { margin-top: 4rem !important; } .mb-7 { margin-bottom: 4rem !important; }
+.m-8 { margin: 4.5rem !important; } .mx-8 { margin-left: 4.5rem !important; margin-right: 4.5rem !important; } .ms-8 { margin-left: 4.5rem !important; } .me-8 { margin-right: 4.5rem !important; } .my-8 { margin-top: 4.5rem !important; margin-bottom: 4.5rem !important; } .mt-8 { margin-top: 4.5rem !important; } .mb-8 { margin-bottom: 4.5rem !important; }
+.m-9 { margin: 5rem !important; } .mx-9 { margin-left: 5rem !important; margin-right: 5rem !important; } .ms-9 { margin-left: 5rem !important; } .me-9 { margin-right: 5rem !important; } .my-9 { margin-top: 5rem !important; margin-bottom: 5rem !important; } .mt-9 { margin-top: 5rem !important; } .mb-9 { margin-bottom: 5rem !important; }
 
 /*
   padding: 0 auto;
@@ -90,10 +101,10 @@ textarea {
     padding-bottom: 0;
 */
 
-.p-6 { padding: 3.5rem; } .px-6 { padding-left: 3.5rem; padding-right: 3.5rem; } .ps-6 { padding-left: 3.5rem; } .pe-6 { padding-right: 3.5rem; } .py-6 { padding-top: 3.5rem; padding-bottom: 3.5rem; } .pt-6 { padding-top: 3.5rem; } .pb-6 { padding-bottom: 3.5rem; }
-.p-7 { padding: 4rem; } .px-7 { padding-left: 4rem; padding-right: 4rem; } .ps-7 { padding-left: 4rem; } .pe-7 { padding-right: 4rem; } .py-7 { padding-top: 4rem; padding-bottom: 4rem; } .pt-7 { padding-top: 4rem; } .pb-7 { padding-bottom: 4rem; }
-.p-8 { padding: 4.5rem; } .px-8 { padding-left: 4.5rem; padding-right: 4.5rem; } .ps-8 { padding-left: 4.5rem; } .pe-8 { padding-right: 4.5rem; } .py-8 { padding-top: 4.5rem; padding-bottom: 4.5rem; } .pt-8 { padding-top: 4.5rem; } .pb-8 { padding-bottom: 4.5rem; }
-.p-9 { padding: 5rem; } .px-9 { padding-left: 5rem; padding-right: 5rem; } .ps-9 { padding-left: 5rem; } .pe-9 { padding-right: 5rem; } .py-9 { padding-top: 5rem; padding-bottom: 5rem; } .pt-9 { padding-top: 5rem; } .pb-9 { padding-bottom: 5rem; }
+.p-6 { padding: 3.5rem !important; } .px-6 { padding-left: 3.5rem !important; padding-right: 3.5rem !important; } .ps-6 { padding-left: 3.5rem !important; } .pe-6 { padding-right: 3.5rem !important; } .py-6 { padding-top: 3.5rem !important; padding-bottom: 3.5rem !important; } .pt-6 { padding-top: 3.5rem !important; } .pb-6 { padding-bottom: 3.5rem !important; }
+.p-7 { padding: 4rem !important; } .px-7 { padding-left: 4rem !important; padding-right: 4rem !important; } .ps-7 { padding-left: 4rem !important; } .pe-7 { padding-right: 4rem !important; } .py-7 { padding-top: 4rem !important; padding-bottom: 4rem !important; } .pt-7 { padding-top: 4rem !important; } .pb-7 { padding-bottom: 4rem !important; }
+.p-8 { padding: 4.5rem !important; } .px-8 { padding-left: 4.5rem !important; padding-right: 4.5rem !important; } .ps-8 { padding-left: 4.5rem !important; } .pe-8 { padding-right: 4.5rem !important; } .py-8 { padding-top: 4.5rem !important; padding-bottom: 4.5rem !important; } .pt-8 { padding-top: 4.5rem !important; } .pb-8 { padding-bottom: 4.5rem !important; }
+.p-9 { padding: 5rem !important; } .px-9 { padding-left: 5rem !important; padding-right: 5rem !important; } .ps-9 { padding-left: 5rem !important; } .pe-9 { padding-right: 5rem !important; } .py-9 { padding-top: 5rem !important; padding-bottom: 5rem !important; } .pt-9 { padding-top: 5rem !important; } .pb-9 { padding-bottom: 5rem !important; }
 
 /* COLLAPSIBLE STYLE */
 
@@ -129,6 +140,11 @@ textarea {
 
 .header .nav-bar #nav-links li:hover {
   border-bottom: solid 5px #000;
+}
+
+.header .nav-bar .user-avatar {
+  width: 55px;
+  height: 55px;
 }
 
 .header .nav-bar #nav-user ul li button, .header .nav-bar #nav-user ul li a {

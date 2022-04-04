@@ -1,7 +1,7 @@
 <?php
   session_name("sess_id");
   session_start();
-  // if(!isset($_SESSION['user_id']) || strcasecmp($_SESSION['user_type'], "User") == 0){
+  // if(!isset($_SESSION['user']['user_id']) || strcasecmp($_SESSION['user']['user_type'], "Admin") != 0){
   //   Header("Location: ../client/index.php");
   //   die();
   // } else {
@@ -13,37 +13,46 @@
 <html lang="en">
 <head>
   <?php require_once '../common/meta.php'; ?>
-  <!-- native style -->
   <link href="../style/catalogue.css" rel="stylesheet" scoped>
-  <style>
-    #preview {
-      background-position: center;
-      background-repeat: no-repeat;
-      background-size: cover;
+  <style scoped>
+    .Catalogue__cards__modal {
+      display: flex;
+    }
+
+    .Catalogue__cards__modal__preview-image {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f8f9fa;
+      order: -1 !important;
+    }
+
+    .Catalogue__cards__modal__preview-body__form {
+      width: 65% !important;
     }
   </style>
+  <!-- native style -->
   <title>Catalog New Tattoo | NJC Tattoo</title>
 </head>
 <body class="w-100 h-100">
-  <main>
-  <div class="row justify-content-center align-items-start h-100 w-100 mx-0">
-    <div class="order-first d-flex col-5 bg-light vh-100 justify-content-center align-items-center" id="preview">
-      <h1 class="text-muted" id="preview_text">Image Preview</h1>
-      <div class="position-absolute top-0 start-0 mt-5 ms-5 d-flex align-items-center justify-content-center bg-white border" style="width: 75px; height: 75px;">
+  <div class="Catalogue__cards__modal">
+    <div class="Catalogue__cards__modal__preview-image col-5" id="Preview">
+      <h1 class="text-muted" id="Preview__text">Image Preview</h1>
+      <div class="Catalogue__cards__modal--back">
         <a href="./catalogue.php" class="stretched-link"><span class="material-icons md-48 display-5" style="width: 24px;">arrow_back_ios</span></a>
       </div>
     </div>
-    <div class="order-last d-flex col vh-100 border-start border-1 justify-content-center align-items-center">
+    <div class="Catalogue__cards__modal__preview-body col">
       <div class="flex-grow-1">
-        <div class="w-65 ms-9">
+        <div class="Catalogue__cards__modal__preview-body__form">
           <form action="queries.php" method="POST" enctype="multipart/form-data">
             <div class="my-3">
-              <input type="text" class="form-control form-control-lg ps-3 fs-display-5 fw-bold" maxlength="50" placeholder="Name" name="tattoo_name" required/>
+              <input type="text" class="form-control form-control-lg ps-3 fs-display-5 fw-bold" name="tattoo_name" maxlength="50" placeholder="Name" required/>
               <p class="my-2 d-none text-danger"></p>
             </div>
             <div class="input-group my-3">
               <span class="input-group-text">₱</span>
-              <input type="number" class="form-control form-control-lg" min="1" name="tattoo_price" value="0.00" placeholder="Price" required/>
+              <input type="number" class="form-control form-control-lg" name="tattoo_price" min="1" value="0.00" placeholder="Price" required/>
               <p class="my-2 d-none text-danger"></p>
             </div>
             <div class="my-3">
@@ -75,14 +84,14 @@
             <div class="row my-3">
               <div class="col">
                 <div class="form-floating">
-                  <input type="number" class="form-control" placeholder="Width" min="1" max="24" name="tattoo_width" required>
+                  <input type="number" class="form-control" name="tattoo_width" min="1" max="24" placeholder="Width" required/>
                   <label for="tattoo_width">Width (in inches)</label>
                   <p class="my-2 d-none text-danger"></p>
                 </div>
               </div>
               <div class="col">
                 <div class="form-floating">
-                  <input type="number" class="form-control" placeholder="Height" min="1" max="36" name="tattoo_height" required>
+                  <input type="number" class="form-control" name="tattoo_height" min="1" max="36" placeholder="Height" required/>
                   <label for="tattoo_height">Height (in inches)</label>
                   <p class="my-2 d-none text-danger"></p>
                 </div>
@@ -99,19 +108,53 @@
       </div>
     </div>
   </div>
-  </main>
 </body>
 <script>
   var loadFile = function(event){
     var imageField = document.getElementById('image');
-    var preview = document.getElementById('preview');
-    var previewText = document.getElementById('preview_text');
+    var preview = document.getElementById('Preview');
+    var previewText = document.getElementById('Preview__text');
     if(imageField.value.length != 0){
       preview.style.backgroundImage = "url('" + URL.createObjectURL(event.target.files[0]) + "')";
       preview.onload = () => { URL.revokeObjectURL(preview.style.backgroundImage); }
-      if(!previewText.classList.contains('d-none')){ previewText.classList.add('d-none'); }
+      previewText.classList.add('d-none');
+    } else {
+      previewText.classList.remove('d-none');
+      preview.style.backgroundImage = "none";
     }
   };
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 </html>
+<?php
+  if(isset($_SESSION['name_err'])){
+    unset($_SESSION['name_err']);
+  }
+  if(isset($_SESSION['price_err'])){
+    unset($_SESSION['price_err']);
+  }
+  if(isset($_SESSION['description_err'])){
+    unset($_SESSION['description_err']);
+  }
+  if(isset($_SESSION['complexity_level_err'])){
+    unset($_SESSION['complexity_level_err']);
+  }
+  if(isset($_SESSION['color_scheme_err'])){
+    unset($_SESSION['color_scheme-err']);
+  }
+  if(isset($_SESSION['width_err'])){
+    unset($_SESSION['width_err']);
+  }
+  if(isset($_SESSION['height_err'])){
+    unset($_SESSION['height_err']);
+  }
+  if(isset($_SESSION['quantity_err'])){
+    unset($_SESSION['quantity_err']);
+  }
+  if(isset($_SESSION['tattoo_image_err'])){
+    unset($_SESSION['tattoo_image_err']);
+  }
+  if(isset($_SESSION['res'])){
+    unset($_SESSION['res']);
+  }
+?>

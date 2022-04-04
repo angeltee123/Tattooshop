@@ -1,52 +1,114 @@
-/* tattoo cards */
-.tattoo-card {
+/* Catalogue */
+.Catalogue {
+    width: 70% !important;
+}
+
+.Catalogue__header {
+    text-align: center;
+    margin-bottom: 4.5rem;
+}
+
+/* Catalogue search bar */
+.Catalogue__search-bar {
+    position: relative;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: flex-start;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.Catalogue__search-bar__input {
+    padding-top: 1.25rem;
+    padding-left: 4.25rem;
+    padding-bottom: 1.25rem;
+    padding-right: 1.25rem;
+    border-radius: 50px !important;
+}
+
+/* Catalogue cards */
+.Catalogue__cards {
+    display: flex;
+    flex-flow: row wrap;
+    align-items: flex-start;
+    width: 100%;
+}
+
+.Catalogue__cards__card {
     max-width: 425px;
     max-height: 550px;
     width: 425px;
     height: 550px;
+    margin-top: 1rem !important;
+    margin-bottom: 1rem !important;
+    border-radius: .25rem !important;
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
+    background-repeat: no-repeat;
     transition: .35s;
 }
 
-.tattoo-card:hover {
+.Catalogue__cards__card:hover {
     transform: scale(1.02, 1.02);
 }
 
-.tattoo-content {
-    background: #ffffff;
-}
-
-.tattoo-image {
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-    height: 100vh;
-}
-
-/* modal */
-.tattoo_detail {
+/* Catalogue card modals */
+.Catalogue__cards__modal {
     position: fixed;
-    height: 100vh;
-    width: 100%;
     z-index: 1040;
+    display: none;
+    flex-flow: row nowrap;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
     top: 0;
     left: 0;
     background-color: #fff;
-    display: none;
     transition: all 0.5s;
 }
 
-/* open modal styling */
-
-.tattoo_detail:target{
+.Catalogue__cards__modal:target {
     display: flex;
 }
 
-/* Chrome, Safari, Edge, Opera */
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+.Catalogue__cards__modal > div {
+    height: 100vh;
+}
+
+.Catalogue__cards__modal__preview-image {
+    order: -1 !important;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.Catalogue__cards__modal__preview-body {
+    order: 6 !important;
+    display: flex;
+    background-color: #fff;
+    justify-content: center;
+    align-items: center;
+    border-right: 1px solid #dee2e6 !important;
+}
+
+.Catalogue__cards__modal--back {
+    position: absolute;
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+    align-items: center;
+    height: 75px;
+    width: 75px;
+    top: 0;
+    left: 0;
+    margin: 3rem 0 0 3rem;
+    background-color: #fff;
+    border: 1px solid #dee2e6 !important;
+}
+
+.Catalogue__cards__modal__preview-body__form {
+    margin-left: 5rem !important;
 }

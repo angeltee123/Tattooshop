@@ -1,7 +1,7 @@
 <?php
   session_name("sess_id");
   session_start();
-  // if(!isset($_SESSION['user_id']) || strcasecmp($_SESSION['user_type'], "User") == 0){
+  // if(!isset($_SESSION['user']['user_id']) || strcasecmp($_SESSION['user']['user_type'], "Admin") != 0){
   //   Header("Location: ../client/index.php");
   //   die();
   // } else {
@@ -13,8 +13,21 @@
 <html lang="en">
 <head>
   <?php require_once '../common/meta.php'; ?>
-  <!-- native style -->
   <link href="../style/catalogue.css" rel="stylesheet" scoped>
+  <!-- native style -->
+  <style scoped>
+    #new_tattoo {
+      flex-flow: column nowrap;
+      justify-content: center;
+      align-items: center;
+      border: 1px solid #dee2e6!important;
+      background-color: #f8f9fa;
+    }
+
+    .Catalogue__cards__modal__preview-body__form {
+      width: 65%;
+    }
+  </style>
   <title>Catalogue | NJC Tattoo</title>
 </head>
 <body class="w-100">
@@ -40,17 +53,17 @@
       </div>
     </nav>
   </header>
-  <div class="content w-70">
-    <div class="text-center mb-8">
+  <div class="Catalogue content">
+    <div class="Catalogue__header">
       <h2 class="fw-bold display-3">Catalogue</h2>
       <p class="fs-5 text-muted">Manage your catalogue of tattoos and add new tattoos to it.</p>
     </div>
-    <div class="mb-4 position-relative d-flex flex-row justify-content-start align-items-center">
+    <div class="Catalogue__search-bar">
       <div class="material-icons position-absolute fs-2 ms-4 no-select">search</div>
-      <input type="text" class="form-control form-control-lg rounded-pill" style="padding-top: 1.25rem; padding-left: 4.5rem; padding-bottom: 1.25rem; padding-right: 1.25rem;" id="search" placeholder="Search">
+      <input type="text" class="Catalogue__search-bar__input form-control form-control-lg" id="search" placeholder="Search">
     </div>
-    <div class="w-100 d-flex flex-row flex-wrap justify-content-between align-items-start" id="catalogue">
-      <a class="order-first tattoo-card d-flex bg-light my-4 border shadow-sm rounded flex-column justify-content-center align-items-center" id="new_tattoo" href="./new_tattoo.php">
+    <div class="Catalogue__cards justify-content-between" id="Catalogue">
+      <a class="Catalogue__cards__card shadow-sm order-first d-flex" id="new_tattoo" href="./new_tattoo.php">
         <h1 class="my-0"><span class="material-icons md-48 display-1">add</span></h1>
         <h3>Add New Tattoo</h3>
       </a>
@@ -94,7 +107,7 @@
             $color_scheme = $api->sanitize_data($row['color_scheme'], "string");
             $complexity = $api->sanitize_data($row['complexity_level'], "string");  
       ?>
-        <a class="tattoo-card my-4 d-block shadow-sm rounded" href="#<?php echo $name; ?>" style="background-image: url(<?php echo $image; ?>)"></a>
+        <a class="Catalogue__cards__card shadow-sm d-block" href="#<?php echo $name; ?>" style="background-image: url(<?php echo $image; ?>)"></a>
         <!-- deletion-modal -->
         <div class="modal fade" id="delete_<?php echo $id; ?>" tabindex="-1" aria-labelledby="delete_<?php echo $name; ?>_label" aria-hidden="true">
           <div class="modal-dialog">
@@ -116,18 +129,18 @@
             </div>
           </div>
         </div>
-        <div id="<?php echo $name; ?>" class="tattoo_detail row justify-content-center align-items-start h-100 w-100 mx-0">
-          <div class="order-first tattoo-image col-5 bg-light" style="background-image: url(<?php echo $image; ?>)" id="preview_<?php echo $id; ?>"></div>
-          <div class="order-last d-flex col vh-100 border-start border-1 justify-content-center align-items-center">
+        <div id="<?php echo $name; ?>" class="Catalogue__cards__modal">
+          <div class="Catalogue__cards__modal__preview-image col-5" style="background-image: url(<?php echo $image; ?>)" id="preview_<?php echo $id; ?>"></div>
+          <div class="Catalogue__cards__modal__preview-body col">
             <div class="flex-grow-1">
-              <div class="position-absolute top-0 start-0 mt-5 ms-5 d-flex align-items-center justify-content-center bg-white border" style="width: 75px; height: 75px;">
+              <div class="Catalogue__cards__modal--back">
                 <a href="./catalogue.php" class="stretched-link"><span class="material-icons md-48 display-5">close</span></a>
               </div>
-              <div class="w-65 ms-9">
+              <div class="Catalogue__cards__modal__preview-body__form">
                 <form action="queries.php" method="POST" enctype="multipart/form-data">
-                  <input type="hidden" class="d-none" name="tattoo_id" value="<?php echo $id; ?>">
+                  <input type="hidden" class="d-none" name="tattoo_id" value="<?php echo $id; ?>" required/>
                   <div class="my-3">
-                    <input type="text" class="form-control form-control-lg ps-3 fs-display-5 fw-bold" maxlength="50" value="<?php echo $name; ?>" placeholder="Name" name="tattoo_name" required/>
+                    <input type="text" class="form-control form-control-lg ps-3 fs-display-5 fw-bold" name="tattoo_name" maxlength="50" value="<?php echo $name; ?>" placeholder="Name" required/>
                     <p class="my-2 d-none text-danger"></p>
                   </div>
                   <div class="input-group my-3">
@@ -136,15 +149,15 @@
                     <p class="my-2 d-none text-danger"></p>
                   </div>
                   <div class="my-3">
-                    <textarea class="form-control p-3 text-wrap" name="tattoo_description" rows="5" placeholder="Tattoo Description" required /><?php echo $description; ?></textarea>
+                    <textarea class="form-control p-3 text-wrap text-justify" name="tattoo_description" rows="5" placeholder="Tattoo Description" required><?php echo $description; ?></textarea>
                     <p class="my-2 d-none text-danger"></p>
                   </div>
                   <div class="row my-3">
                     <div class="col">
                       <div class="form-floating">
-                        <select name="color_scheme" class="form-select" required />
-                        <option value="Monochrome" <?php if(strcasecmp($color_scheme, 'Monochrome') == 0){ echo "selected"; } ?>>Monochrome</option>
-                        <option value="Multicolor" <?php if(strcasecmp($color_scheme, 'Multicolor') == 0){ echo "selected"; } ?>>Multicolor</option>
+                        <select name="color_scheme" class="form-select" required>
+                          <option value="Monochrome" <?php if(strcasecmp($color_scheme, 'Monochrome') == 0){ echo "selected"; } ?>>Monochrome</option>
+                          <option value="Multicolor" <?php if(strcasecmp($color_scheme, 'Multicolor') == 0){ echo "selected"; } ?>>Multicolor</option>
                         </select>
                         <label for="color_scheme">Color Scheme</label>
                         <p class="my-2 d-none text-danger"></p>
@@ -152,7 +165,7 @@
                     </div>
                     <div class="col">
                       <div class="form-floating">
-                        <select name="complexity_level" class="form-select" required />
+                        <select name="complexity_level" class="form-select" required>
                           <option value="Simple" <?php if(strcasecmp($complexity, 'Simple') == 0){ echo "selected"; } ?>>Simple</option>
                           <option value="Complex" <?php if(strcasecmp($complexity, 'Complex') == 0){ echo "selected"; } ?>>Complex</option>
                         </select>
@@ -164,14 +177,14 @@
                   <div class="row my-3">
                     <div class="col">
                       <div class="form-floating">
-                        <input type="number" class="form-control" placeholder="Width" min="1" max="24" value="<?php echo $width; ?>" name="tattoo_width" required />
+                        <input type="number" class="form-control" name="tattoo_width" min="1" max="24" value="<?php echo $width; ?>" placeholder="Width" required/>
                         <label for="tattoo_width">Width (in inches)</label>
                         <p class="my-2 d-none text-danger"></p>
                       </div>
                     </div>
                     <div class="col">
                       <div class="form-floating">
-                        <input type="number" class="form-control" placeholder="Height" min="1" max="36" value="<?php echo $height; ?>" name="tattoo_height" required />
+                        <input type="number" class="form-control" name="tattoo_height" min="1" max="36" value="<?php echo $height; ?>" placeholder="Height" required/>
                         <label for="tattoo_height">Height (in inches)</label>
                         <p class="my-2 d-none text-danger"></p>
                       </div>
@@ -179,7 +192,7 @@
                   </div>
                   <div class="my-3">
                     <label for="image" class="form-label text-muted">Tattoo Image</label>
-                    <input type="file" class="form-control form-control-lg" accept="image/*" onchange="loadpreview_<?php echo $id; ?>(event)" name="image" id="image_<?php echo $id; ?>"/>
+                    <input type="file" class="form-control form-control-lg" accept="image/*" name="image" id="image_<?php echo $id; ?>" onchange="loadpreview_<?php echo $id; ?>(event)"/>
                     <p class="my-2 d-none text-danger"></p>
                     <?php echo "<script>var loadpreview_" . $id . " = function(event){ var image_" . $id . " = document.getElementById('image_". $id ."'); var preview_" . $id . " = document.getElementById('preview_". $id ."'); if(image_". $id .".value.length != 0){ preview_" . $id . ".style.backgroundImage = 'url(' + URL.createObjectURL(event.target.files[0]) + ')'; preview_" . $id . ".onload = () => { URL.revokeObjectURL(preview_" . $id . ".style.backgroundImage); }} else { preview_" . $id . ".style.backgroundImage = 'url(". $image .")'; }};</script>"; ?>
                   </div>
@@ -206,31 +219,26 @@
   var new_tattoo = document.getElementById('new_tattoo');
 
   // catalogue
-  var catalogue = document.getElementById('catalogue');
-  var cards = document.getElementsByClassName('tattoo-card');
+  var catalogue = document.getElementById('Catalogue');
+  var cards = document.getElementsByClassName('Catalogue__cards__card');
 
   // searching for tattoo
   search.addEventListener('input', function (){
     if(search.value.length == 0){
-      catalogue.classList.remove('justify-content-evenly');
-      catalogue.classList.add('justify-content-between');
+      catalogue.classList.replace('justify-content-evenly', 'justify-content-between');
 
       for(var i = 0, count = cards.length; i < count; i++){
-        cards[i].classList.remove('d-none');
-        cards[i].classList.add('d-block');
+        cards[i].classList.replace('d-none', 'd-block');
       }
     } else {
-      catalogue.classList.remove('justify-content-between');
-      catalogue.classList.add('justify-content-evenly');
+      catalogue.classList.replace('justify-content-between', 'justify-content-evenly');
 
       for(var i = 0, count = cards.length; i < count; i++){
         item_name = cards[i].href.toLowerCase();
         if(item_name.indexOf(search.value.toLowerCase().replaceAll(' ', '%20')) > -1 && cards[i] !== new_tattoo){
-          cards[i].classList.remove('d-none');
-          cards[i].classList.add('d-block');
+          cards[i].classList.replace('d-none', 'd-block');
         } else {
-          cards[i].classList.remove('d-block');
-          cards[i].classList.add('d-none');
+          cards[i].classList.replace('d-block', 'd-none');
         }
       }
     }
@@ -238,6 +246,21 @@
 </script>
 </html>
 <?php
+  if(isset($_SESSION['name_err'])){
+    unset($_SESSION['name_err']);
+  }
+  if(isset($_SESSION['price_err'])){
+    unset($_SESSION['price_err']);
+  }
+  if(isset($_SESSION['description_err'])){
+    unset($_SESSION['description_err']);
+  }
+  if(isset($_SESSION['complexity_level_err'])){
+    unset($_SESSION['complexity_level_err']);
+  }
+  if(isset($_SESSION['color_scheme_err'])){
+    unset($_SESSION['color_scheme-err']);
+  }
   if(isset($_SESSION['width_err'])){
     unset($_SESSION['width_err']);
   }
@@ -246,6 +269,9 @@
   }
   if(isset($_SESSION['quantity_err'])){
     unset($_SESSION['quantity_err']);
+  }
+  if(isset($_SESSION['tattoo_image_err'])){
+    unset($_SESSION['tattoo_image_err']);
   }
   if(isset($_SESSION['res'])){
     unset($_SESSION['res']);
