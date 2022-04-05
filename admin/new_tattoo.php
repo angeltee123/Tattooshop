@@ -48,16 +48,16 @@
           <form action="queries.php" method="POST" enctype="multipart/form-data">
             <div class="my-3">
               <input type="text" class="form-control form-control-lg ps-3 fs-display-5 fw-bold" name="tattoo_name" maxlength="50" placeholder="Name" required/>
-              <p class="my-2 d-none text-danger"></p>
+              <label id="name_err" class="error-message <?php echo isset($_SESSION['name_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><?php if(isset($_SESSION['name_err'])) { echo $_SESSION['name_err']; } ?></label>
             </div>
             <div class="input-group my-3">
               <span class="input-group-text">₱</span>
               <input type="number" class="form-control form-control-lg" name="tattoo_price" min="1" value="0.00" placeholder="Price" required/>
-              <p class="my-2 d-none text-danger"></p>
+              <label id="price_err" class="error-message <?php echo isset($_SESSION['price_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><?php if(isset($_SESSION['price_err'])) { echo $_SESSION['price_err']; } ?></label>
             </div>
             <div class="my-3">
               <textarea class="form-control p-3 text-wrap" name="tattoo_description" rows="5" placeholder="Tattoo Description" required></textarea>
-              <p class="my-2 d-none text-danger"></p>
+              <label id="description_err" class="error-message <?php echo isset($_SESSION['description_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><?php if(isset($_SESSION['description_err'])) { echo $_SESSION['description_err']; } ?></label>
             </div>
             <div class="row my-3">
               <div class="col">
@@ -67,8 +67,8 @@
                     <option value="Multicolor">Multicolor</option>
                   </select>
                   <label for="color_scheme">Color Scheme</label>
-                  <p class="my-2 d-none text-danger"></p>
                 </div>
+                <label id="color_scheme_err" class="error-message <?php echo isset($_SESSION['color_scheme_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><?php if(isset($_SESSION['color_scheme_err'])) { echo $_SESSION['color_scheme_err']; } ?></label>
               </div>
               <div class="col">
                 <div class="form-floating">
@@ -77,8 +77,8 @@
                     <option value="Complex">Complex</option>
                   </select>
                   <label for="complexity_level">Complexity</label>
-                  <p class="my-2 d-none text-danger"></p>
                 </div>
+                <label id="complexity_level_err" class="error-message <?php echo isset($_SESSION['complexity_level_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><?php if(isset($_SESSION['complexity_level_err'])) { echo $_SESSION['complexity_level_err']; } ?></label>
               </div>
             </div>
             <div class="row my-3">
@@ -86,23 +86,26 @@
                 <div class="form-floating">
                   <input type="number" class="form-control" name="tattoo_width" min="1" max="24" placeholder="Width" required/>
                   <label for="tattoo_width">Width (in inches)</label>
-                  <p class="my-2 d-none text-danger"></p>
                 </div>
+                <label id="width_err" class="error-message <?php echo isset($_SESSION['width_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><?php if(isset($_SESSION['width_err'])) { echo $_SESSION['width_err']; } ?></label>
               </div>
               <div class="col">
                 <div class="form-floating">
                   <input type="number" class="form-control" name="tattoo_height" min="1" max="36" placeholder="Height" required/>
                   <label for="tattoo_height">Height (in inches)</label>
-                  <p class="my-2 d-none text-danger"></p>
                 </div>
+                <label id="height_err" class="error-message <?php echo isset($_SESSION['height_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><?php if(isset($_SESSION['height_err'])) { echo $_SESSION['height_err']; } ?></label>
               </div>
             </div>
             <div class="my-3">
               <label for="image" class="form-label text-muted">Tattoo Image</label>
               <input type="file" class="form-control form-control-lg" accept="image/*" onchange="loadFile(event)" name="image" id="image" required/>
-              <p class="my-2 d-none text-danger"></p>
+              <label id="image_err" class="error-message <?php echo isset($_SESSION['tattoo_image_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><?php if(isset($_SESSION['tattoo_image_err'])) { echo $_SESSION['tattoo_image_err']; } ?></label>
             </div>
             <button type="submit" class="btn btn-lg btn-dark" name="catalog_tattoo">Catalog Tattoo</button>
+            <?php if(isset($_SESSION['res'])){ ?>
+              <label class="error-message d-flex"><?php echo $_SESSION['res']; ?></label>
+            <?php } ?>
           </form>
         </div>
       </div>

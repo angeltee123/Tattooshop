@@ -150,21 +150,27 @@
                         <input type="number" class="form-control" name="quantity" min="1" value="1" placeholder="Quantity" required/>
                         <label for="tattoo_width">Order Quantity</label>
                       </div>
+                      <label class="error-message quantity_err <?php echo isset($_SESSION['quantity_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><?php if(isset($_SESSION['quantity_err'])) { echo $_SESSION['quantity_err']; } ?></label>
                     </div>
                     <div class="col">
                       <div class="form-floating">
                         <input type="number" class="form-control" name="width" min="1" max="24" value="<?php echo $width ?>" placeholder="Width" required/>
                         <label for="tattoo_width">Width (in inches)</label>
                       </div>
+                      <label class="error-message width_err <?php echo isset($_SESSION['width_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><?php if(isset($_SESSION['width_err'])) { echo $_SESSION['width_err']; } ?></label>
                     </div>
                     <div class="col">
                       <div class="form-floating">
                         <input type="number" class="form-control" name="height" min="1" max="36" value="<?php echo $height ?>" placeholder="Height" required/>
                         <label for="tattoo_height">Height (in inches)</label>
                       </div>
+                      <label class="error-message height_err <?php echo isset($_SESSION['height_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><?php if(isset($_SESSION['height_err'])) { echo $_SESSION['height_err']; } ?></label>
                     </div>
                   </div>
                   <button type="submit" class="btn btn-dark btn-lg d-flex align-items-center" name="order_item"><span class="material-icons md-48 lh-base pe-2">add_shopping_cart</span>Add to Order</button>
+                  <?php if(isset($_SESSION['res'])){ ?>
+                    <label class="error-message d-flex"><?php echo $_SESSION['res']; ?></label>
+                  <?php } ?>
                 </form>
               </div>
             </div>
