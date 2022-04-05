@@ -195,13 +195,13 @@
   // searching for tattoo
   search.addEventListener('input', function (){
     if(search.value.length == 0){
-      catalogue.classList.replace('justify-content-evenly', 'justify-content-between');
+      catalogue.classList.replace('justify-content-center', 'justify-content-between');
 
       for(var i = 0, count = cards.length; i < count; i++){
         cards[i].classList.replace('d-none', 'd-block');
       }
     } else {
-      catalogue.classList.replace('justify-content-between', 'justify-content-evenly');
+      catalogue.classList.replace('justify-content-between', 'justify-content-center');
 
       for(var i = 0, count = cards.length; i < count; i++){
         item_name = cards[i].href.toLowerCase();

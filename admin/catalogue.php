@@ -58,28 +58,7 @@
   <title>Catalogue | NJC Tattoo</title>
 </head>
 <body class="w-100">
-  <header class="header">
-    <nav class="nav-bar row mx-0">
-      <ul class="col my-0" id="nav-links">
-        <li class="active"><a href="catalogue.php">Catalogue</a></li>
-        <li><a href="orders.php">Orders</a></li>
-        <li><a href="reservations.php">Bookings</a></li>
-      </ul>
-      <div class="col d-flex align-items-center justify-content-end my-0 mx-5">
-        <div class="btn-group" id="nav-user">
-          <button type="button" class="btn p-0" data-bs-toggle="dropdown" aria-expanded="false"><span class="material-icons lh-base display-5">account_circle</span></button>
-            <ul class="dropdown-menu dropdown-menu-end">
-              <li><a class="dropdown-item" href="user.php">Profile</a></li>
-              <li>
-                <form action="../api/queries.php" method="post">
-                  <button type="submit" class="dropdown-item btn-link" name="logout">Sign Out</button>
-                </form>
-              </li>
-            </ul>
-        </div>
-      </div>
-    </nav>
-  </header>
+  <?php require_once '../common/header.php'; ?>
   <div class="Catalogue content">
     <div class="Catalogue__header">
       <h2 class="fw-bold display-3">Catalogue</h2>
@@ -228,13 +207,13 @@
   // searching for tattoo
   search.addEventListener('input', function (){
     if(search.value.length == 0){
-      catalogue.classList.replace('justify-content-evenly', 'justify-content-between');
+      catalogue.classList.replace('justify-content-center', 'justify-content-between');
 
       for(var i = 0, count = cards.length; i < count; i++){
         cards[i].classList.replace('d-none', 'd-block');
       }
     } else {
-      catalogue.classList.replace('justify-content-between', 'justify-content-evenly');
+      catalogue.classList.replace('justify-content-between', 'justify-content-center');
 
       for(var i = 0, count = cards.length; i < count; i++){
         item_name = cards[i].href.toLowerCase();
