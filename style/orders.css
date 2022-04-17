@@ -1,0 +1,189 @@
+/* Order page */
+.Orders {
+    width: 80% !important;
+}
+
+.Orders__header {
+    padding-bottom: 3.5rem;
+    border-bottom: 1px solid #dee2e6 !important;
+}
+
+/* Order controls */
+.Orders__controls {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
+    align-items: center;
+    margin: 1.5rem 0 1rem 0 !important;
+}
+
+.Orders__controls--tab {
+    font-size: 1.25rem !important;
+    background: rgba(255, 255, 255, 0) !important;
+    border-color: #212529 !important;
+    border-width: 3px !important;
+    padding: 0 0.25rem 0.5rem 0.25rem !important;
+    margin: 0 0.5rem !important;
+    transition: color .4s;
+}
+
+.Orders__controls__control {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50rem !important;
+}
+
+.Orders__controls__control > span {
+    line-height: 1.5 !important;
+}
+
+.Orders__controls__control__text {
+    margin: 0 0 0 0.5rem !important;
+}
+
+/* Order */
+.Orders__order-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 3rem !important;
+}
+
+.Orders__order-item__checkbox {
+    padding: 0.5rem !important;
+    border: solid 1px #212529 !important;
+}
+
+.Orders__order-item__tattoo-preview {
+    max-width: 275px;
+    max-height: 275px;
+    background-position: center !important;
+    background-size: cover !important;
+    background-repeat: no-repeat !important;
+    border-radius: 360px !important;
+}
+
+.Orders__order-item__details {
+    width: 100%;
+}
+
+.Orders__order-item__details .row {
+    margin: 3rem 0 !important;
+}
+
+.Order__order__details {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 3rem !important;
+    margin: 0 0 3rem 0 !important;
+}
+
+.Order__order__details > div {
+    width: 100%;
+    align-items: flex-start;
+}
+
+/* Referral */
+.Orders__referral {
+    width: 100%;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    padding: 1.5rem !important;
+    border-bottom: 1px solid #dee2e6 !important;
+}
+
+.Orders__referral__input-group {
+    width: 100%;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+}
+
+/* Order reactive styling */
+
+@media (min-width: 1275px){
+    .Orders__order-item__tattoo-preview {
+        width: 275px;
+        height: 275px;
+    }
+}
+
+@media (max-width: 1275px){
+    .Orders__order-item__tattoo-preview {
+        width: 200px;
+        height: 200px;
+    }
+}
+
+@media (min-width: 968px){
+    .Orders__order-item {
+        flex-flow: row nowrap;
+    }
+
+    .Orders__order-item__details {
+        margin: 0 0 0 3.5rem !important;
+    }
+}
+
+@media (max-width: 968px){
+    .Orders__order-item {
+        flex-flow: column nowrap;
+    }
+
+    .Orders__order-item__details {
+        margin: 0 !important;
+    }
+
+    .Orders__order-item__tattoo-preview {
+        width: 275px;
+        height: 275px;
+    }
+}
+
+@media (min-width: 1166px){
+    .Orders__order__details {
+        flex-flow: row nowrap;
+    }
+}
+
+@media (max-width: 1166px){
+    .Order__order__details {
+        flex-flow: column nowrap;
+    }
+}
+
+@media (min-width: 1210px){
+    .Orders__controls__control__text {
+        display: block;
+    }
+}
+
+@media (max-width: 1210px){
+    .Orders__controls__control__text {
+        display: none;
+    }
+}
+
+/* Referral reactive styling */
+@media (min-width: 1655px){
+    .Orders__referral {
+        flex-flow: row nowrap;
+    }
+
+    .Orders__referral__input-group {
+        margin: 0;
+    }
+}
+
+@media (max-width: 1655px){
+    .Orders__referral {
+        flex-flow: column nowrap;
+    }
+
+    .Orders__referral__input-group {
+        margin: 0.5rem 0 !important;
+    }
+}

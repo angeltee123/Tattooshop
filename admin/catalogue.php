@@ -69,7 +69,7 @@
       <input type="text" class="Catalogue__search-bar__input form-control form-control-lg" id="search" placeholder="Search">
     </div>
     <div class="Catalogue__cards justify-content-between" id="Catalogue">
-      <a class="Catalogue__cards__card shadow-sm order-first d-flex" id="new_tattoo" href="./new_tattoo.php">
+      <a class="Catalogue__cards__card shadow-sm order-first d-flex text-center" id="new_tattoo" href="./new_tattoo.php">
         <h1 class="my-0"><span class="material-icons md-48 display-1">add</span></h1>
         <h3>Add New Tattoo</h3>
       </a>

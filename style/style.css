@@ -44,6 +44,16 @@ textarea {
   background-color: #e9ecef !important;
 }
 
+.error-message {
+  color: #dc3545 !important;
+  margin-top: 0.5rem !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.material-icons, .material-icons-outlined, .material-icons-round, .material-icons-sharp, .material-icons-two-tone {
+  line-height: 1.5 !important;
+}
+
 .avatar {
   border-radius: 360px;
   background-position: center;
@@ -116,38 +126,84 @@ textarea {
 
 /* NAVBAR STYLE */
 
-.header .nav-bar ul {
-  list-style-type: none;
+.navbar {
+  background-color: #fff !important;
 }
 
-.header .nav-bar #nav-links {
-  font-family: 'Libre Caslon Text', 'Arial', sans-serif;
+.nav-link {
+  display: block;
+  color: #000;
+  font-size: 1.4rem !important;
+  font-family: 'Libre Caslon Text', 'Arial', sans-serif !important;
+  padding: 40px 1.5rem !important;
+  text-decoration: none;
+  transition: border .2s !important;
 }
 
-.header .nav-bar #nav-links li {
-  float: left;
-  padding: 40px 1.5rem;
-  transition: border .2s;
+.nav-link--active, .nav-link:hover {
+  color: #000;
 }
 
-.header .nav-bar ul .active {
-  border-bottom: solid 5px #000;
+.nav-link--hidden {
+  display: none !important;
 }
 
-.header .nav-bar ul li a {
-  font-size: 1.5em;
+#nav__links button {
+  width: 100%;
+  text-align: left;
+  border: none;
+  outline: 0;
 }
 
-.header .nav-bar #nav-links li:hover {
-  border-bottom: solid 5px #000;
-}
-
-.header .nav-bar .user-avatar {
+#user-avatar {
   width: 55px;
   height: 55px;
 }
 
-.header .nav-bar #nav-user ul li button, .header .nav-bar #nav-user ul li a {
+.navbar-nav #user-avatar ul li button {
   font-size: 1.10em;
   padding: .5rem 1.25rem;
+}
+
+@media (min-width: 992px) {
+  .navbar .container-fluid {
+    padding: 0 3rem 0 1.5rem;
+  }
+
+  .nav-link--active, .nav-link:hover {
+    border-bottom: solid 5px #000 !important;
+  }
+}
+
+@media (max-width: 992px) {
+  .navbar .container-fluid {
+    padding: 0;
+    justify-content: flex-end;
+  }
+
+  .navbar-toggler:focus {
+    box-shadow: 0 0 0 0.25rem rgb(13 110 253 / 25%);
+  }
+
+  #nav__links {
+    margin-top: .25rem !important;
+  }
+
+  .nav-link {
+    font-size: 1rem !important;
+    background-color: #fbfbfb;
+    padding: 25px .75rem !important;
+  }
+
+  .nav-link--hidden {
+    display: block !important;
+  }
+
+  .nav-link--active, .nav-link:hover {
+    font-weight: 600 !important;
+  }
+
+  #user-avatar {
+    display: none;
+  }
 }

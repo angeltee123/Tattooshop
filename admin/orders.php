@@ -1,7 +1,7 @@
 <?php
   session_name("sess_id");
   session_start();
-  // if(!isset($_SESSION['user_id']) || strcasecmp($_SESSION['user_type'], "User") == 0){
+  // if(!isset($_SESSION['user']['user_id']) || strcasecmp($_SESSION['user']['user_type'], "Admin") != 0){
   //   Header("Location: ../client/index.php");
   //   die();
   // } else {
@@ -10,10 +10,11 @@
   // }
 
   try {
-    $join = $api->join("INNER", "workorder", "client", "workorder.client_id", "client.client_id");
+    $left = $api->join("INNER", "client", "user", "client.client_id", "user.client_id");
+    $join = $api->join("INNER", $left, "workorder", "client.client_id", "workorder.client_id");
 
     $query = $api->select();
-    $query = $api->params($query, array("workorder.client_id", "client_fname", "client_lname", "order_id", "order_date", "amount_due_total", "incentive"));
+    $query = $api->params($query, array("workorder.client_id", "client_fname", "client_lname", "user_avatar", "order_id", "order_date", "amount_due_total", "incentive"));
     $query = $api->from($query);
     $query = $api->table($query, $join);
     $query = $api->where($query, "status", "?");
@@ -57,60 +58,92 @@
 <head>
   <?php require_once '../common/meta.php'; ?>
   <!-- native style -->
+  <link href="../style/orders.css" rel="stylesheet">
   <style>
-    .tabs {
-      transition: color .4s;
+    .Order__order__details {
+      margin: 0 !important;
     }
 
-    .order {
+    .Orders__order__collapsible {
+      display: flex;
+      flex-flow: row nowrap;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid #dee2e6 !important;
+      border-radius: 50rem !important;
+    }
+
+    .Orders__order__collapsible--toggler {
+      display: flex;
+      flex-flow: row wrap;
+      justify-content: flex-start;
+      align-items: center;
+      text-align: left;
+      background-color: rgba(255, 255, 255, 0) !important;
+      padding: 3.25rem !important;
+      border: 0 !important;
+    }
+
+    .Orders__order__collapsible__avatar {
+      height: 50px !important;
+      width: 50px !important;
+      border: 1px solid #dee2e6 !important;
+    }
+
+    .Orders__order__collapsible__header {
+      margin: 0 0.35rem 0 1.25rem !important;
+    }
+
+    .Orders__order {
       transition: margin .5s;
     }
 
-    .tattoo-image {
-      max-width: 275px;
-      max-height: 275px;
-      width: 275px;
-      height: 275px;
-      background-position: center;
-      background-repeat: no-repeat;
-      background-size: cover;
+    .Orders__order-item {
+      border-top: 1px solid #dee2e6 !important;
+    }
+
+    .Orders__referral {
+      border: 0 !important;
+    }
+
+    @media (min-width: 914px){
+      .Orders__order__collapsible__header {
+        display: block;
+      }
+
+      .Orders__order__collapsible__date {
+        font-size: 1rem !important;
+        color: #6c757d !important;
+        margin: 0 !important;
+      }
+    }
+
+    @media (max-width: 914px){
+      .Orders__order__collapsible__header {
+        display: none;
+      }
+
+      .Orders__order__collapsible__date {
+        font-size: 1.25rem !important;
+        color: #6c757d !important;
+        margin: 0 0 0 0.5rem !important;
+      }
     }
   </style>
   <title>Orders | NJC Tattoo</title>
 </head>
 <body class="w-100">
-  <header class="header">
-    <nav class="nav-bar row mx-0">
-      <ul class="col my-0" id="nav-links">
-        <li><a href="catalogue.php">Catalogue</a></li>
-        <li class="active"><a href="orders.php">Orders</a></li>
-        <li><a href="reservations.php">Bookings</a></li>
-      </ul>
-      <div class="col d-flex align-items-center justify-content-end my-0 mx-5">
-        <div class="btn-group" id="nav-user">
-          <button type="button" class="btn p-0" data-bs-toggle="dropdown" aria-expanded="false"><span class="material-icons lh-base display-5">account_circle</span></button>
-            <ul class="dropdown-menu dropdown-menu-end">
-              <li><a class="dropdown-item" href="user.php">Profile</a></li>
-              <li>
-                <form action="../api/queries.php" method="post">
-                  <button type="submit" class="dropdown-item btn-link" name="logout">Sign Out</button>
-                </form>
-              </li>
-            </ul>
-        </div>
-      </div>
-    </nav>
-  </header>
-  <div class="content w-80">
-    <div class="pb-6 border-bottom">
+  <?php require_once '../common/header.php'; ?>
+  <div class="Orders content">
+    <div class="Orders__header">
       <h2 class="fw-bold display-3">Orders</h2>
       <p class="d-inline fs-5 text-muted">Manage all your ongoing orders and client referrals here. <?php if(isset($workorder)){ echo "Tick the checkboxes of the items you want to modify or remove."; } ?></p>
     </div>
-    <div class="d-flex justify-content-between align-items-center mt-4 mb-3">
+    <div class="Orders__controls">
       <div>
-        <button type="button" class="tabs mx-2 pb-2 px-1 bg-none border-dark border-3 fs-5 border-x-0 border-top-0 text-black" id="all-items-tab">All items</button>
-        <button type="button" class="tabs mx-2 pb-2 px-1 bg-none border-dark border-3 fs-5 border-0 text-muted" id="orders-tab">Orders only</button>
-        <button type="button" class="tabs mx-2 pb-2 px-1 bg-none border-dark border-3 fs-5 border-0 text-muted" id="referrals-tab">Referrals only</button>
+        <button type="button" class="Orders__controls--tab border-0 border-bottom text-black" id="Orders__controls--tab--all-items">All items</button>
+        <button type="button" class="Orders__controls--tab border-0 text-muted" id="Orders__controls--tab--orders">Orders only</button>
+        <button type="button" class="Orders__controls--tab border-0 text-muted" id="Orders__controls--tab--referrals">Referrals only</button>
       </div>
       <div>
         <button type="button" class="pb-2 bg-none fs-5 border-0" id="toggle_orders">Show All Orders</button>
@@ -123,14 +156,16 @@
             $client_id = $api->sanitize_data($order['client_id'], "string");
             $client_fname = $api->sanitize_data($order['client_fname'], "string");
             $client_lname = $api->sanitize_data($order['client_lname'], "string");
+            $user_avatar = $api->sanitize_data($order['user_avatar'], "string");
             $order_id = $api->sanitize_data($order['order_id'], "string");
             $total = number_format($api->sanitize_data($order['amount_due_total'], "float"), 2, '.', '');
             $incentive = $api->sanitize_data($order['incentive'], "string");
       ?>
-      <div class="my-2 order">
-        <div class="collapsible d-flex align-items-center justify-content-between border rounded-pill">
-          <button type="button" class="text-start bg-none border-0 col" data-bs-toggle="collapse" data-bs-target="#order_<?php echo $order_id; ?>" aria-expanded="false" aria-controls="order_<?php echo $order_id; ?>" style="padding: 3.25rem;">
-            <h5 class="d-inline">Order placed by
+      <div class="Orders__order my-2">
+        <div class="Orders__order__collapsible collapsible">
+          <button type="button" class="Orders__order__collapsible--toggler col" data-bs-toggle="collapse" data-bs-target="#order_<?php echo $order_id; ?>" aria-expanded="false" aria-controls="order_<?php echo $order_id; ?>">
+            <div class="Orders__order__collapsible__avatar avatar" style="background-image: url(<?php echo $user_avatar; ?>)"></div>
+            <h5 class="Orders__order__collapsible__header">Order placed by
               <?php
                 $datetime = explode('-', $api->sanitize_data($order['order_date'], "string"));
                 $timestamp = explode(' ', $api->sanitize_data($order['order_date'], "string"));
@@ -140,38 +175,42 @@
                 echo $client_fname . " " . $client_lname;
               ?>
             </h5>
-            <p class="d-inline text-muted"><?php echo " on " . $api->sanitize_data($date[0], "string") . " " . $api->sanitize_data($date[1], "int") . ", " . $api->sanitize_data($date[2], "int"); ?></p>
+            <p class="Orders__order__collapsible__date"><?php echo " on " . $api->sanitize_data($date[0], "string") . " " . $api->sanitize_data($date[1], "int") . ", " . $api->sanitize_data($date[2], "int"); ?></p>
           </button>
           <form method="POST" action="./checkout.php" class="w-auto mx-3 pe-5">
             <input type="hidden" readonly class="d-none" value="<?php echo $client_id; ?>" name="client_id" />
             <input type="hidden" readonly class="d-none" value="<?php echo $order_id; ?>" name="order_id" />
-            <button type="submit" class="btn btn-outline-dark rounded-pill d-flex align-items-center me-1" name="order_checkout"><span class="material-icons lh-base pe-2">shopping_cart_checkout</span>Log Payment</button>
+            <button type="submit" class="Orders__controls__control btn btn-outline-dark me-1" name="order_checkout" data-bs-toggle="tooltip" data-bs-placement="top" title="Log Payment"><span class="Orders__controls__control__icon material-icons">shopping_cart_checkout</span><span class="Orders__controls__control__text">Log Payment</span></button>
           </form>
         </div>
-        <div class="collapse rounded reservation mt-3 order_collapsible" id="order_<?php echo $order_id; ?>">
-          <div class="row mx-0 p-5">
-            <!-- order id -->
-            <div class="col">
-              <label class="form-label fw-semibold">Order ID</label>
-              <p><?php echo $order_id; ?></p>
+        <div class="collapse mt-3 Orders__order__collapsible__body" id="order_<?php echo $order_id; ?>">
+          <div class="Order__order__details">
+            <div class="row">
+              <div class="col">
+                <!-- order id -->
+                <label class="form-label fw-semibold">Order ID</label>
+                <p class="w-auto"><?php echo $order_id; ?></p>
+              </div>
+              <div class="col">
+                <!-- order date -->
+                <label class="form-label fw-semibold">Placed on</label>
+                <p class="w-auto"><?php echo $api->sanitize_data($date[0], 'string') . " " . $api->sanitize_data($date[1], 'int') . ", " . $api->sanitize_data($date[2], 'int') . ", " . $api->sanitize_data($time, 'string') ?></p>
+              </div>
             </div>
-            <!-- order datetime -->
-            <div class="col">
-              <label class="form-label fw-semibold">Placed on</label>
-              <p><?php echo $api->sanitize_data($date[0], "string") . " " . $api->sanitize_data($date[1], "int") . ", " . $api->sanitize_data($date[2], "int") . ", " . $api->sanitize_data($time, "string"); ?></p>
-            </div>
-            <!-- amount due total -->
-            <div class="col">
-              <label class="form-label fw-semibold">Amount Due Total</label>
-              <p>Php <?php echo $total; ?></p>
-            </div>
-            <!-- incentive -->
-            <div class="col">
-              <label class="form-label fw-semibold">Incentive</label>
-              <p><?php echo $incentive; ?></p>
+            <div class="row">
+              <div class="col">
+                <!-- incentive -->
+                <label class="form-label fw-semibold">Incentive</label>
+                <p><?php echo $incentive; ?></p>
+              </div>
+              <div class="col">
+                <!-- amount due total -->
+                <label for="status" class="form-label fw-semibold">Amount Due Total</label>
+                <p>₱<?php echo $total; ?></p>
+              </div>
             </div>
           </div>
-          <div class="items">
+          <div class="Orders__order__items d-block">
             <?php
               try {    
                 $retrieve_items = $api->prepare("SELECT order_item.item_id, tattoo_name, tattoo_image, tattoo_price, tattoo_quantity, order_item.tattoo_width, order_item.tattoo_height, paid, item_status, amount_addon FROM ((order_item INNER JOIN tattoo ON order_item.tattoo_id=tattoo.tattoo_id) LEFT JOIN reservation ON order_item.item_id=reservation.item_id) WHERE order_id=? ORDER BY paid ASC, item_status DESC");
@@ -218,33 +257,33 @@
                   $item_status = $api->sanitize_data($item['item_status'], "string");
                   $addon = number_format($api->sanitize_data($item['amount_addon'], "float"), 2, '.', '');
             ?>
-            <<?php if((strcasecmp($item_status, "Standing") == 0 && strcasecmp($paid, "Unpaid") == 0)){ ?>form action="./queries.php" method="POST"<?php } else { ?>div<?php } ?> class="border-top d-flex align-items-center justify-content-between p-5">
-              <div>
-                <div class="tattoo-image rounded-pill shadow-sm" style="background-image: url(<?php echo $tattoo_image; ?>)"></div>
+            <<?php if((strcasecmp($item_status, "Standing") == 0 && strcasecmp($paid, "Unpaid") == 0)){ ?>form action="./queries.php" method="POST"<?php } else { ?>div<?php } ?> class="Orders__order-item">
+              <div class="Orders__order-item__preview">
+                <div class="Orders__order-item__tattoo-preview shadow-sm" style="background-image: url(<?php echo $tattoo_image; ?>)"></div>
               </div>
-              <div class="w-100 ms-6">
+              <div class="Orders__order-item__details">
                 <div class="row my-5">
-                  <!-- tattoo name -->
                   <div class="col">
+                    <!-- tattoo name -->
                     <label class="form-label fw-semibold">Item</label>
                     <p><?php echo $tattoo_name; ?></p>
                     <input type="hidden" readonly class="d-none" value="<?php echo $item_id; ?>" name="item_id" />
                   </div>
-                  <!-- item status -->
                   <div class="col">
+                    <!-- item status -->
                     <label class="form-label fw-semibold">Item Status</label>
                     <p><?php echo $item_status; ?></p>
                     <?php if((strcasecmp($item_status, "Standing") == 0 && strcasecmp($paid, "Unpaid") == 0)){ ?>
                       <input type="hidden" class="d-none" name="status[]" value="<?php echo $item_status; ?>" />
                     <?php } ?>
                   </div>
-                  <!-- amount_addon -->
                   <div class="col">
+                    <!-- amount_addon -->
                     <label class="form-label fw-semibold">Amount Addon</label>
                     <p><?php echo ($addon == 0) ? "N/A" : "₱" . $addon; ?></p>
                   </div>
-                  <!-- payment status -->
                   <div class="col">
+                    <!-- payment status -->
                     <label class="form-label fw-semibold">Payment Status</label>
                     <p><?php echo $paid; ?></p>
                     <?php if((strcasecmp($item_status, "Standing") == 0 && strcasecmp($paid, "Unpaid") == 0)){ ?>
@@ -253,34 +292,37 @@
                   </div>
                 </div>
                 <div class="row my-5">
-                  <!-- price -->
                   <div class="col">
+                    <!-- price -->
                     <label class="form-label fw-semibold">Price</label>
                     <p>₱<?php echo $price; ?></p>
                   </div>
-                  <!-- quantity -->
                   <div class="col">
+                    <!-- quantity -->
                     <label for="quantity" class="form-label fw-semibold">Quantity</label>
                     <?php if((strcasecmp($item_status, "Standing") == 0 && strcasecmp($paid, "Unpaid") == 0)){ ?>
-                      <input type="number" class="form-control" value="<?php echo $quantity; ?>" min="1" name="quantity" />
+                      <input type="number" class="form-control" name="quantity" min="1" value="<?php echo $quantity; ?>"/>
+                      <label class="error-message quantity_err d-none"><span class="material-icons-outlined fs-6 me-1">info</span></label>
                     <?php } else { ?>
                       <p><?php echo $quantity; ?></p>
                     <?php } ?>
                   </div>
-                  <!-- width -->
                   <div class="col">
+                    <!-- width -->
                     <label for="width" class="form-label fw-semibold">Width</label>
                     <?php if((strcasecmp($item_status, "Standing") == 0 && strcasecmp($paid, "Unpaid") == 0)){ ?>
-                      <input type="number" class="form-control" value="<?php echo $width; ?>" min="1" name="width" />
+                      <input type="number" class="form-control" name="width" min="1" value="<?php echo $width; ?>"/>
+                      <label class="error-message width_err d-none"><span class="material-icons-outlined fs-6 me-1">info</span></label>
                     <?php } else { ?>
                       <p><?php echo $width; ?></p>
                     <?php } ?>
                   </div>
-                  <!-- height --->
                   <div class="col">
+                    <!-- height --->
                     <label for="height" class="form-label fw-semibold">Height</label>
                     <?php if((strcasecmp($item_status, "Standing") == 0 && strcasecmp($paid, "Unpaid") == 0)){ ?>
-                      <input type="number" class="form-control" value="<?php echo $tattoo_height; ?>" min="1" name="height" />
+                      <input type="number" class="form-control" name="height" min="1" value="<?php echo $height; ?>"/>
+                      <label class="error-message height_err d-none"><span class="material-icons-outlined fs-6 me-1">info</span></label>
                     <?php } else { ?>
                       <p><?php echo $height; ?></p>
                     <?php } ?>
@@ -329,7 +371,7 @@
             } else { ?>
               <div class="p-5"><h1 class="m-3 display-4 fst-italic text-muted">No tattoos ordered.</h1></div>
           <?php } ?>
-          <div class="referrals">
+          <div class="Orders__order__referrals d-block">
           <?php
             try {    
               $retrieve_referrals = $api->prepare("SELECT referral_id, referral_fname, referral_mi, referral_lname, referral_contact_no, referral_email, referral_age, confirmation_status FROM (workorder INNER JOIN referral ON workorder.order_id=referral.order_id) WHERE referral.order_id=? AND referral.client_id=?");
@@ -374,104 +416,112 @@
                 $age = $api->sanitize_data($referral['referral_age'], "int");
                 $confirmation_status = $api->sanitize_data($referral['confirmation_status'], "string");
             ?>
-            <form method="POST" action="./queries.php" class="d-flex justify-content-between align-items-center py-4 border-top">
-              <div>
-                <input type="hidden" class="d-none" name="referral_id" value="<?php echo $referral_id; ?>" />
-                <?php if(in_array($confirmation_status, array("Confirmed", "Declined"))){ ?>
-                  <label class="fw-semibold">Status</label>   
-                  <p class="my-0 fw-semibold <?php echo strcasecmp($confirmation_status, "Confirmed") == 0 ? "text-success" : "text-secondary"; ?>"><?php echo $confirmation_status; ?></p>
-                <?php } else { ?>
-                  <div class="form-floating">
-                    <select name="confirmation_status" class="form-select">
-                      <option value="Pending" selected>Pending</option>
-                      <option value="Confirmed">Confirmed</option>
-                      <option value="Declined">Declined</option>
-                    </select>
-                    <label for="confirmation_status">Status</label>   
-                    <p class="d-none my-2 text-danger"></p>                  
+            <form method="POST" action="./queries.php" class="d-flex justify-content-start align-items-center border-top">
+              <div class="Orders__referral">
+                <div class="Orders__referral__input-group">
+                  <div class="<?php echo (in_array($confirmation_status, array("Confirmed", "Declined"))) ? "col" : "flex-fill mx-2"; ?>">
+                    <input type="hidden" class="d-none" name="referral_id" value="<?php echo $referral_id; ?>" />
+                    <?php if(in_array($confirmation_status, array("Confirmed", "Declined"))){ ?>
+                      <label class="fw-semibold">Status</label>   
+                      <p class="my-0 fw-semibold <?php echo strcasecmp($confirmation_status, "Confirmed") == 0 ? "text-success" : "text-secondary"; ?>"><?php echo $confirmation_status; ?></p>
+                    <?php } else { ?>
+                      <div class="form-floating">
+                        <select name="confirmation_status" class="form-select">
+                          <option value="Pending" selected>Pending</option>
+                          <option value="Confirmed">Confirmed</option>
+                          <option value="Declined">Declined</option>
+                        </select>
+                        <label for="confirmation_status">Status</label>   
+                        <label class="error-message referral_status_err d-none"><span class="material-icons-outlined fs-6 me-1">info</span></label>                
+                      </div>
+                    <?php } ?>
                   </div>
-                <?php } ?>
-              </div>
-              <div>
-                <?php if(in_array($confirmation_status, array("Confirmed", "Declined"))){ ?>
-                  <label class="fw-semibold">First Name</label>   
-                  <p class="my-0"><?php echo $first_name; ?></p>
-                <?php } else { ?>
-                  <div class="form-floating">
-                    <input type="text" class="form-control" value="<?php echo $first_name; ?>" maxlength="50" placeholder="First Name" name="referral_fname" required />
-                    <label for="referral_fname">First Name</label>
-                    <p class="d-none my-2 text-danger"></p>
+                  <div class="<?php echo (in_array($confirmation_status, array("Confirmed", "Declined"))) ? "col" : "flex-fill mx-2"; ?>">
+                    <?php if(in_array($confirmation_status, array("Confirmed", "Declined"))){ ?>
+                    <label class="fw-semibold">First Name</label>   
+                    <p class="my-0"><?php echo $first_name; ?></p>
+                    <?php } else { ?>
+                      <div class="form-floating">
+                        <input type="text" class="form-control" value="<?php echo $first_name; ?>" maxlength="50" placeholder="First Name" name="referral_fname" required />
+                        <label for="referral_fname">First Name</label>
+                        <label class="error-message referral_fname_err d-none"><span class="material-icons-outlined fs-6 me-1">info</span></label>
+                      </div>
+                    <?php } ?> 
                   </div>
-                <?php } ?> 
-              </div>
-              <div>
-                <?php if(in_array($confirmation_status, array("Confirmed", "Declined"))){ ?>
-                  <label class="fw-semibold">Middle Initial</label>   
-                  <p class="my-0"><?php echo $mi; ?>.</p>
-                <?php } else { ?>
-                  <div class="form-floating">
-                    <input type="text" class="form-control" style="width: 50px;" value="<?php echo $mi; ?>" minlength="1" maxlength="1" placeholder="MI" name="referral_mi" required />
-                    <label for="referral_mi">M.I.</label>
-                    <p class="d-none my-2 text-danger"></p>
+                  <div class="<?php echo (in_array($confirmation_status, array("Confirmed", "Declined"))) ? "col" : "mx-2"; ?>">
+                    <?php if(in_array($confirmation_status, array("Confirmed", "Declined"))){ ?>
+                    <label class="fw-semibold">Middle Initial</label>   
+                    <p class="my-0"><?php echo $mi; ?>.</p>
+                    <?php } else { ?>
+                      <div class="form-floating">
+                        <input type="text" class="form-control" style="width: 50px;" value="<?php echo $mi; ?>" minlength="1" maxlength="1" placeholder="MI" name="referral_mi" required />
+                        <label for="referral_mi">M.I.</label>
+                        <label class="error-message referral_mi_err d-none"><span class="material-icons-outlined fs-6 me-1">info</span></label>
+                      </div>
+                    <?php } ?>
                   </div>
-                <?php } ?> 
-              </div>
-              <div>
-                <?php if(in_array($confirmation_status, array("Confirmed", "Declined"))){ ?>
-                  <label class="fw-semibold">Last Name</label>   
-                  <p class="my-0"><?php echo $last_name; ?></p>
-                <?php } else { ?>
-                  <div class="form-floating">
-                    <input type="text" class="form-control" value="<?php echo $last_name; ?>" maxlength="50" placeholder="Last Name" name="referral_lname" required />
-                    <label for="referral_lname">Last Name</label>
-                    <p class="d-none my-2 text-danger"></p>
+                  <div class="<?php echo (in_array($confirmation_status, array("Confirmed", "Declined"))) ? "col" : "flex-fill mx-2"; ?>">
+                    <?php if(in_array($confirmation_status, array("Confirmed", "Declined"))){ ?>
+                    <label class="fw-semibold">Last Name</label>   
+                    <p class="my-0"><?php echo $last_name; ?></p>
+                    <?php } else { ?>
+                      <div class="form-floating">
+                        <input type="text" class="form-control" value="<?php echo $last_name; ?>" maxlength="50" placeholder="Last Name" name="referral_lname" required />
+                        <label for="referral_lname">Last Name</label>
+                        <label class="error-message referral_lname_err d-none"><span class="material-icons-outlined fs-6 me-1">info</span></label>
+                      </div>
+                    <?php } ?>
                   </div>
-                <?php } ?>
-              </div>
-              <div>
-                <?php if(in_array($confirmation_status, array("Confirmed", "Declined"))){ ?>
-                  <label class="fw-semibold">Age</label>   
-                  <p class="my-0"><?php echo $age; ?></p>
-                <?php } else { ?>
-                  <div class="form-floating">
-                    <input type="number" class="form-control" style="width: 60px;" value="<?php echo $age; ?>" name="referral_age" min="17" max="90" required />
-                    <label for="referral_age">Age</label>
-                    <p class="d-none my-2 text-danger"></p>
+                </div>
+                <div class="Orders__referral__input-group">
+                  <div class="<?php echo (in_array($confirmation_status, array("Confirmed", "Declined"))) ? "col-2" : "mx-2"; ?>">
+                    <?php if(in_array($confirmation_status, array("Confirmed", "Declined"))){ ?>
+                    <label class="fw-semibold">Age</label>   
+                    <p class="my-0"><?php echo $age; ?></p>
+                    <?php } else { ?>
+                      <div class="form-floating">
+                        <input type="number" class="form-control" style="width: 60px;" value="<?php echo $age; ?>" name="referral_age" min="17" max="90" required />
+                        <label for="referral_age">Age</label>
+                        <label class="error-message referral_age_err d-none"><span class="material-icons-outlined fs-6 me-1">info</span></label>
+                      </div>
+                    <?php } ?>
                   </div>
-                <?php } ?>
-              </div>
-              <div>
-                <?php if(in_array($confirmation_status, array("Confirmed", "Declined"))){ ?>
-                  <label class="fw-semibold">Contact Number</label>   
-                  <p class="my-0"><?php echo $contact_no; ?></p>
-                <?php } else { ?>
-                  <div class="form-floating">
-                    <input type="text" class="form-control" value="<?php echo $contact_no; ?>" minlength="7" maxlength="11" placeholder="Contact Number" name="referral_contact_no">
-                    <label for="referral_contact_no">Contact Number</label>
-                    <p class="d-none my-2 text-danger"></p>
+                  <div class="<?php echo (in_array($confirmation_status, array("Confirmed", "Declined"))) ? "col" : "flex-fill mx-2"; ?>">
+                    <?php if(in_array($confirmation_status, array("Confirmed", "Declined"))){ ?>
+                    <label class="fw-semibold">Contact Number</label>   
+                    <p class="my-0"><?php echo $contact_no; ?></p>
+                    <?php } else { ?>
+                      <div class="form-floating">
+                        <input type="text" class="form-control" value="<?php echo $contact_no; ?>" minlength="7" maxlength="11" placeholder="Contact Number" name="referral_contact_no">
+                        <label for="referral_contact_no">Contact Number</label>
+                        <label class="error-message referral_contact_number_err d-none"><span class="material-icons-outlined fs-6 me-1">info</span></label>
+                      </div>
+                    <?php } ?>
                   </div>
-                <?php } ?>
-              </div>
-              <div>
-                <?php if(in_array($confirmation_status, array("Confirmed", "Declined"))){ ?>
-                  <label class="fw-semibold">Email</label>   
-                  <p class="my-0"><?php echo $email; ?></p>
-                <?php } else { ?>
-                  <div class="form-floating">
-                    <input type="email" class="form-control" value="<?php echo $email; ?>" maxlength="62" placeholder="Email" name="referral_email" required />
-                    <label for="referral_email">Email</label>
-                    <p class="d-none my-2 text-danger"></p>
+                  <div class="<?php echo (in_array($confirmation_status, array("Confirmed", "Declined"))) ? "col" : "flex-fill mx-2"; ?>">
+                    <?php if(in_array($confirmation_status, array("Confirmed", "Declined"))){ ?>
+                    <label class="fw-semibold">Email</label>   
+                    <p class="my-0"><?php echo $email; ?></p>
+                    <?php } else { ?>
+                      <div class="form-floating">
+                        <input type="email" class="form-control" value="<?php echo $email; ?>" maxlength="62" placeholder="Email" name="referral_email" required />
+                        <label for="referral_email">Email</label>
+                        <label class="error-message referral_email_err d-none"><span class="material-icons-outlined fs-6 me-1">info</span></label>
+                      </div>
+                    <?php } ?>
                   </div>
-                <?php } ?>
+                </div>
               </div>
-              <div>
-                <?php if(strcasecmp($confirmation_status, "Pending") == 0){ ?>
+              <div class="w-auto">
+                <div class="Orders__referral__input-group">
+                  <?php if(strcasecmp($confirmation_status, "Pending") == 0){ ?>
+                    <div class="d-inline-block">
+                      <button type="submit" class="Orders__controls__control btn btn-outline-primary me-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Update Referral" name="update_referral"><span class="Orders__controls__control__icon material-icons">edit</span</button>
+                    </div>
+                  <?php } ?>
                   <div class="d-inline-block">
-                    <button type="submit" class="btn btn-outline-primary rounded-pill d-flex align-items-center me-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Update Referral" name="update_referral"><span class="material-icons lh-base">edit</span</button>
+                    <button type="submit" class="Orders__controls__control btn btn-outline-danger me-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Remove Referral" name="remove_referral"><span class="Orders__controls__control__icon material-icons">person_remove</span></button>
                   </div>
-                <?php } ?>
-                <div class="d-inline-block">
-                  <button type="submit" class="btn btn-outline-danger rounded-pill d-flex align-items-center me-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Remove Referral" name="remove_referral"><span class="material-icons lh-base">person_remove</span></button>
                 </div>
               </div>
             </form>
@@ -502,36 +552,34 @@
   // tooltips
   var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
   var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl){
-    return new bootstrap.Tooltip(tooltipTriggerEl)
+    return new bootstrap.Tooltip(tooltipTriggerEl);
   });
 
   // collapsibles
   var show_orders = false;
   var toggle_orders = document.getElementById('toggle_orders');
-  var orders = document.getElementsByClassName('order');
-  var order_collapsibles = document.getElementsByClassName('order_collapsible');
+  var orders = document.getElementsByClassName('Orders__order');
+  var order_collapsibles = document.getElementsByClassName('Orders__order__collapsible__body');
 
-  // tabs
-  var all_items_tab = document.getElementById('all-items-tab');
-  var orders_tab = document.getElementById('orders-tab');
-  var referrals_tab = document.getElementById('referrals-tab');
+  // tab controls
+  var all_items_tab = document.getElementById('Orders__controls--tab--all-items');
+  var orders_tab = document.getElementById('Orders__controls--tab--orders');
+  var referrals_tab = document.getElementById('Orders__controls--tab--referrals');
 
   // tab sections
-  var items = document.getElementsByClassName('items');
-  var referrals = document.getElementsByClassName('referrals');
+  var items = document.getElementsByClassName('Orders__order__items');
+  var referrals = document.getElementsByClassName('Orders__order__referrals');
   
-  // collapsibles stateful styling
+  // collapsibles responsive stacking
   for(var i=0, count=orders.length; i < count; i++){
     let order = orders[i];
 
     order_collapsibles[i].addEventListener('shown.bs.collapse', function (){
-      order.classList.remove('my-2');
-      order.classList.add('my-4');
+      order.classList.replace('my-2', 'my-4');
     });
 
     order_collapsibles[i].addEventListener('hidden.bs.collapse', function (){
-      order.classList.remove('my-4');
-      order.classList.add('my-2');
+      order.classList.replace('my-4', 'my-2');
     });
   }
 
@@ -553,52 +601,46 @@
     }
   });
 
-  // tabs stateful styling
+  // switching between tabs
   all_items_tab.addEventListener('click', function(){
-    this.className = "tabs mx-2 pb-2 px-1 bg-none border-dark border-3 fs-5 border-x-0 border-top-0 text-black";
-    orders_tab.className = "tabs mx-2 pb-2 px-1 bg-none border-dark border-3 fs-5 border-0 text-muted";
-    referrals_tab.className = "tabs mx-2 pb-2 px-1 bg-none border-dark border-3 fs-5 border-0 text-muted";
+    this.className = "Orders__controls--tab border-0 border-bottom text-black";
+    orders_tab.className = "Orders__controls--tab border-0 text-muted";
+    referrals_tab.className = "Orders__controls--tab border-0 text-muted";
 
     for(var i=0, count=items.length; i < count; i++){
-      items[i].classList.remove('d-none');
-      items[i].classList.add('d-block');
+      items[i].classList.replace('d-none', 'd-block');
     }
 
     for(var i=0, count=referrals.length; i < count; i++){
-      referrals[i].classList.remove('d-none');
-      referrals[i].classList.add('d-block');
+      referrals[i].classList.remove('d-none', 'd-block');
     }
   });
 
   orders_tab.addEventListener('click', function(){
-    this.className = "tabs mx-2 pb-2 px-1 bg-none border-dark border-3 fs-5 border-x-0 border-top-0 text-black";
-    referrals_tab.className = "tabs mx-2 pb-2 px-1 bg-none border-dark border-3 fs-5 border-0 text-muted";
-    all_items_tab.className = "tabs mx-2 pb-2 px-1 bg-none border-dark border-3 fs-5 border-0 text-muted";
+    this.className = "Orders__controls--tab border-0 border-bottom text-black";
+    referrals_tab.className = "Orders__controls--tab border-0 text-muted";
+    all_items_tab.className = "Orders__controls--tab border-0 text-muted";
 
     for(var i=0, count=items.length; i < count; i++){
-      items[i].classList.remove('d-none');
-      items[i].classList.add('d-block');
+      items[i].classList.replace('d-none', 'd-block');
     }
 
     for(var i=0, count=referrals.length; i < count; i++){
-      referrals[i].classList.remove('d-block');
-      referrals[i].classList.add('d-none');
+      referrals[i].classList.replace('d-block', 'd-none');
     }
   });
 
   referrals_tab.addEventListener('click', function(){
-    this.className = "tabs mx-2 pb-2 px-1 bg-none border-dark border-3 fs-5 border-x-0 border-top-0 text-black";
-    orders_tab.className = "tabs mx-2 pb-2 px-1 bg-none border-dark border-3 fs-5 border-0 text-muted";
-    all_items_tab.className = "tabs mx-2 pb-2 px-1 bg-none border-dark border-3 fs-5 border-0 text-muted";
+    this.className = "Orders__controls--tab border-0 border-bottom text-black";
+    orders_tab.className = "Orders__controls--tab border-0 text-muted";
+    all_items_tab.className = "Orders__controls--tab border-0 text-muted";
 
     for(var i=0, count=items.length; i < count; i++){
-      items[i].classList.remove('d-block');
-      items[i].classList.add('d-none');
+      items[i].classList.replace('d-block', 'd-none');
     }
 
     for(var i=0, count=referrals.length; i < count; i++){
-      referrals[i].classList.remove('d-none');
-      referrals[i].classList.add('d-block');
+      referrals[i].classList.remove('d-none', 'd-block');
     }
   });
 </script>
