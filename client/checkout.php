@@ -180,31 +180,36 @@
             <h1 class="display-3 fst-italic text-muted">No items available for payment.</h1>
           </div>
       <?php } ?>
-      <div class="Checkout__summary row">
-        <!-- order id -->
-        <div class="col">
-          <label class="form-label fw-semibold">Order ID</label>
-          <p><?php echo $order_id; ?></p>
+      <div class="Checkout__summary">
+        <div class="row">
+          <div class="col">
+            <!-- order id -->
+            <label class="form-label fw-semibold">Order ID</label>
+            <p class="w-auto"><?php echo $order_id; ?></p>
+          </div>
+          <?php
+            $timestamp = explode(' ', $api->sanitize_data($order_date, 'string'));
+            $date = date("M:d:Y", strtotime($timestamp[0]));
+            $time = date("g:i A", strtotime($timestamp[1]));
+            $date = explode(':', $date);
+          ?>
+          <div class="col">
+            <!-- order date -->
+            <label class="form-label fw-semibold">Placed on</label>
+            <p class="w-auto"><?php echo $api->sanitize_data($date[0], 'string') . " " . $api->sanitize_data($date[1], 'int') . ", " . $api->sanitize_data($date[2], 'int') . ", " . $api->sanitize_data($time, 'string') ?></p>
+          </div>
         </div>
-        <?php
-          $timestamp = explode(' ', $api->sanitize_data($order_date, 'string'));
-          $date = date("M:d:Y", strtotime($timestamp[0]));
-          $time = date("g:i A", strtotime($timestamp[1]));
-          $date = explode(':', $date);
-        ?>
-        <div class="col">
-          <label class="form-label fw-semibold">Placed on</label>
-          <p><?php echo $api->sanitize_data($date[0], 'string') . " " . $api->sanitize_data($date[1], 'int') . ", " . $api->sanitize_data($date[2], 'int') . ", " . $api->sanitize_data($time, 'string') ?></p>
-        </div>
-        <!-- 15% discount -->
-        <div class="col">
-          <label class="form-label fw-semibold">15% Discount?</label>
-          <p class="<?php echo (strcasecmp($incentive, "15% Discount") == 0) ? "text-success" : "text-muted"; ?> fw-semibold" id="discount"><?php echo (strcasecmp($incentive, "15% Discount") == 0) ? "Yes" : "No"; ?></p>
-        </div>
-        <!-- amount due total -->
-        <div class="col">
-          <label class="form-label fw-semibold">Amount Due Total</label>
-          <p id="total">₱<?php echo $total; ?></p>
+        <div class="row">
+          <div class="col">
+            <!-- incentive -->
+            <label class="form-label fw-semibold">Incentive</label>
+            <p class="<?php echo (strcasecmp($incentive, "15% Discount") == 0) ? "text-success" : "text-muted"; ?> fw-semibold" id="discount"><?php echo (strcasecmp($incentive, "15% Discount") == 0) ? "Yes" : "No"; ?></p>
+          </div>
+          <div class="col">
+            <!-- amount due total -->
+            <label for="status" class="form-label fw-semibold">Amount Due Total</label>
+            <p id="total">₱<?php echo number_format($api->sanitize_data($total, "float"), 2, '.', ''); ?></p>
+          </div>
         </div>
       </div>
       <hr class="mb-5" />
@@ -260,15 +265,15 @@
             <h4 class="mb-3">Payment Method</h4>
             <div class="form-check form-check-inline mt-2">
               <input class="form-check-input" type="radio" <?php if($item_count == 0){ echo "disabled"; }?> name="payment_method" value="Debit" required/>
-              <label class="form-check-label" for="inlineRadio1"><i class="far fa-credit-card"></i>Debit Card</label>
+              <label class="form-check-label" for="inlineRadio1">Debit Card</label>
             </div>
             <div class="form-check form-check-inline mt-2">
               <input class="form-check-input" type="radio" <?php if($item_count == 0){ echo "disabled"; }?> name="payment_method" value="Credit" required/>
-              <label class="form-check-label" for="inlineRadio2"><i class="far fa-credit-card"></i>Credit Card</label>
+              <label class="form-check-label" for="inlineRadio2">Credit Card</label>
             </div>
             <div class="form-check form-check-inline mt-2">
-              <input class="form-check-input" type="radio" <?php if($item_count == 0){ echo "disabled"; }?> name="payment_method" value="Prepaid" required/>
-              <label class="form-check-label" for="inlineRadio2"><i class="far fa-credit-card"></i>Prepaid Card</label>
+              <input class="form-check-input lh-base" type="radio" <?php if($item_count == 0){ echo "disabled"; }?> name="payment_method" value="Prepaid" required/>
+              <label class="form-check-label" for="inlineRadio2">Prepaid Card</label>
             </div>
             <label id="payment_method_err" class="error-message <?php echo isset($_SESSION['payment_method_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><?php if(isset($_SESSION['payment_method_err'])) { echo $_SESSION['payment_method_err']; } ?></label>
           </div>

@@ -103,7 +103,6 @@
 }
 
 /* Order reactive styling */
-
 @media (min-width: 1275px){
     .Orders__order-item__tattoo-preview {
         width: 275px;
