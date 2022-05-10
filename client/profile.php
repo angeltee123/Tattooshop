@@ -11,15 +11,8 @@
 
   try {
     $client_id = $api->sanitize_data($_SESSION['user']['client_id'], 'string');
-    $join = $api->join("INNER", "client", "user", "client.client_id", "user.client_id");
 
-    $query = $api->select();
-    $query = $api->params($query, array("user_email", "user_password", "client_fname", "client_mi", "client_lname", "home_address", "contact_number", "birthdate"));
-    $query = $api->from($query);
-    $query = $api->table($query, $join);
-    $query = $api->where($query, "user.client_id", "?");
-    $query = $api->limit($query, 1);
-    $statement = $api->prepare($query);
+    $statement = $api->prepare("SELECT user_email, user_password, client_fname, client_mi, client_lname, home_address, contact_number, birthdate FROM (client INNER JOIN user ON client.client_id=user.client_id) WHERE user.client_id=? LIMIT 1");
     if($statement===false){
       throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
     }
@@ -60,10 +53,10 @@
     if($mysqli_checks===false){
       throw new Exception('The prepared statement could not be closed.');
     }
-  } catch (Exception $e) {
-      exit();
-      $_SESSION['res'] = $e->getMessage();
-      Header("Location: ../client/index.php");
+  } catch (Exception $e) { 
+    $_SESSION['res'] = $e->getMessage();
+    Header("Location: ../client/index.php");
+    exit();
   }
 ?>
 <!DOCTYPE html>
@@ -73,17 +66,18 @@
   <!-- native style -->
   <link href="../style/style.css" rel="stylesheet" scoped>
   <style scoped>
-    .Profile {
+    .Profile, .Profile__sidebar {
       display: flex;
-      flex-direction: row;
       justify-content: flex-start;
+    }
+
+    .Profile {
+      flex-direction: row;
       align-items: flex-start;
     }
 
     .Profile__sidebar {
-      display: flex;
       flex-direction: column;
-      justify-content: flex-start;
       align-items: center;
     }
 
@@ -96,17 +90,19 @@
       width: 225px;
     }
 
-    .list-group-item button {
-      transition: all .3s;
+    .list-group-item {
+      padding: 0.5rem !important;
     }
 
     .list-group-item button {
+      width: 100% !important;
       color: #000000 !important;
       text-decoration: none !important;
       display: flex !important;
       flex-flow: row nowrap;
       justify-content: start;
       align-items: center;
+      transition: all .3s;
     }
 
     .list-group-item button:hover{
@@ -115,6 +111,57 @@
 
     .list-group-item:hover {
       background: #000000 !important;
+    }
+
+    .Profile__form {
+      padding: 0 0 0 4rem;
+    }
+
+    .Profile__header--account-details, .Profile__header--change-password {
+      font-weight: 700;
+    }
+
+    .mi {
+      display: block;
+    }
+
+    .mi-shortened {
+      display: none;
+    }
+
+    @media (max-width: 1296px) {
+      .Profile {
+        flex-direction: column !important;
+        justify-content: center !important;
+      }
+
+      .Profile__sidebar {
+        width: 100% !important;
+        justify-content: center !important;
+      }
+
+      .list-group {
+        width: 100% !important;
+      }
+
+      .list-group-item {
+        width: 100% !important;
+        padding: 0 !important;
+      }
+
+      .Profile__form {
+        width: 100 !important;
+        margin: 3rem 0 !important;
+        padding: 0 !important;
+      }
+
+      .mi {
+        display: none !important;
+      }
+
+      .mi-shortened {
+        display: block !important;
+      }
     }
   </style>
   <title>User Profile | NJC Tattoo</title>
@@ -126,58 +173,58 @@
       <div class="Profile__sidebar">
         <div class="avatar border border-3" id="profile_picture" style="background-image: url(<?php echo $_SESSION['user']['user_avatar']; ?>)"></div>
         <ul class="tabs list-group pt-5">
-          <li class="list-group-item p-2"><button type="button" class="btn btn-link stretched-link" id="tabs--account-details"><span class="material-icons me-1">portrait</span>Account Details</button></li>
-          <li class="list-group-item p-2"><button type="button" class="btn btn-link stretched-link" id="tabs--change-password"><span class="material-icons me-1">vpn_key</span>Change Password</button></li>
-          <li class="list-group-item p-2">
+          <li class="list-group-item"><button type="button" class="btn btn-link stretched-link" id="tabs--account-details"><span class="material-icons me-1">portrait</span>Account Details</button></li>
+          <li class="list-group-item"><button type="button" class="btn btn-link stretched-link" id="tabs--change-password"><span class="material-icons me-1">vpn_key</span>Change Password</button></li>
+          <li class="list-group-item">
             <form action="../scripts/php/queries.php" method="post">
               <button type="submit" class="btn btn-link stretched-link" name="logout"><span class="material-icons me-1">logout</span>Sign Out</button>
             </form>
           </li>
         </ul>
       </div>
-      <div class="ps-7 w-100">
+      <div class="Profile__form">
         <div id="Profile__account-details" class="d-block">
           <h1 class="Profile__header--account-details">Account Details</h1>
           <form action="../scripts/php/queries.php" method="post" enctype="multipart/form-data">
             <div class="my-4 row align-items-end">
               <div class="col ms-0">
                 <label for="first_name" class="form-label fs-5 fw-semibold">First Name</label>
-                <input type="text" class="form-control form-control-lg" name="first_name" id="first_name" value="<?php echo $first_name; ?>" minlength="2" maxlength="50" placeholder="First Name" required/>
+                <input type="text" class="form-control" name="first_name" id="first_name" value="<?php echo $first_name; ?>" minlength="2" maxlength="50" placeholder="First Name" required/>
                 <label class="<?php echo isset($_SESSION['first_name_err']) ? "d-flex": "d-none"; ?> text-danger my-2"><span class="material-icons-outlined me-1">info</span><?php if(isset($_SESSION['first_name_err'])) { echo $_SESSION['first_name_err']; } ?></label>
               </div>
               <div class="col-4 me-0">
-                <label for="mi" class="form-label fs-5 fw-semibold">Middle Initial (Optional)</label>
-                <input type="text" class="form-control form-control-lg" name="mi" id="mi" value="<?php echo $mi; ?>" minlength="1" maxlength="2" placeholder="Middle Initial"/>
+                <label for="mi" class="form-label fs-5 fw-semibold"><span class="mi">Middle Initial (Optional)</span><span class="mi-shortened">M.I.</span></label>
+                <input type="text" class="form-control" name="mi" id="mi" value="<?php echo $mi; ?>" minlength="1" maxlength="2" placeholder="Middle Initial"/>
                 <label class="<?php echo isset($_SESSION['mi_err']) ? "d-flex": "d-none"; ?> text-danger my-2"><span class="material-icons-outlined me-1">info</span><?php if(isset($_SESSION['mi_err'])) { echo $_SESSION['mi_err']; } ?></label>
               </div>
             </div>
             <div class="my-4">
               <label for="last_name" class="form-label fs-5 fw-semibold">Last Name</label>
-              <input type="text" class="form-control form-control-lg" name="last_name" id="last_name" value="<?php echo $last_name; ?>" minlength="2" maxlength="50" placeholder="Last Name" required/>
+              <input type="text" class="form-control" name="last_name" id="last_name" value="<?php echo $last_name; ?>" minlength="2" maxlength="50" placeholder="Last Name" required/>
               <label class="<?php echo isset($_SESSION['last_name_err']) ? "d-flex": "d-none"; ?> text-danger my-2"><span class="material-icons-outlined me-1">info</span><?php if(isset($_SESSION['last_name_err'])) { echo $_SESSION['last_name_err']; } ?></label>
             </div>
             <div class="my-4">
               <label for="address" class="form-label fs-5 fw-semibold">Home Address</label>
-              <input type="text" class="form-control form-control-lg" name="address" id="address" value="<?php echo $address; ?>" minlength="2" maxlength="50" placeholder="Address" required/>
+              <input type="text" class="form-control" name="address" id="address" value="<?php echo $address; ?>" minlength="2" maxlength="50" placeholder="Address" required/>
               <label class="<?php echo isset($_SESSION['address_err']) ? "d-flex": "d-none"; ?> text-danger my-2"><span class="material-icons-outlined me-1">info</span><?php if(isset($_SESSION['address_err'])) { echo $_SESSION['address_err']; } ?></label>
             </div>
             <div class="my-4">
               <label for="contact_number" class="form-label fs-5 fw-semibold">Contact Number</label>
-              <input type="number" class="form-control form-control-lg" name="contact_number" id="contact_number" <?php if(!empty($contact_number)) { ?>value="<?php echo $contact_number; ?>"<?php } ?> placeholder="Contact Number" required/>
+              <input type="number" class="form-control" name="contact_number" id="contact_number" <?php if(!empty($contact_number)) { ?>value="<?php echo $contact_number; ?>"<?php } ?> placeholder="Contact Number" required/>
               <label class="<?php echo isset($_SESSION['contact_number_err']) ? "d-flex": "d-none"; ?> text-danger my-2"><span class="material-icons-outlined me-1">info</span><?php if(isset($_SESSION['contact_number_err'])) { echo $_SESSION['contact_number_err']; } ?></label>
             </div>
             <div class="my-4">
-              <label for="mi" class="form-label fs-5 fw-semibold">Email</label>
-              <input type="email" class="form-control form-control-lg" name="email" id="email" value="<?php echo $email; ?>" minlength="2" maxlength="62" placeholder="Email" required/>
+              <label for="email" class="form-label fs-5 fw-semibold">Email</label>
+              <input type="email" class="form-control" name="email" id="email" value="<?php echo $email; ?>" minlength="2" maxlength="62" placeholder="Email" required/>
               <label class="<?php echo isset($_SESSION['email_err']) ? "d-flex": "d-none"; ?> text-danger my-2"><span class="material-icons-outlined me-1">info</span><?php if(isset($_SESSION['email_err'])) { echo $_SESSION['email_err']; } ?></label>
             </div>
             <div class="my-4">
               <label for="birthdate" class="form-label fs-5 fw-semibold">Birthdate</label>
-              <input type="date" class="form-control form-control-lg" name="birthdate" id="birthdate" value="<?php echo date('Y-m-d', strtotime($birthdate)); ?>" />
+              <input type="date" class="form-control" name="birthdate" id="birthdate" value="<?php echo date('Y-m-d', strtotime($birthdate)); ?>" />
               <label class="<?php echo isset($_SESSION['birthdate_err']) ? "d-flex": "d-none"; ?> text-danger my-2"><span class="material-icons-outlined me-1">info</span><?php if(isset($_SESSION['birthdate_err'])) { echo $_SESSION['birthdate_err']; } ?></label>
             </div>
             <div class="my-4">
-              <label for="mi" class="form-label fs-5 fw-semibold">Profile Picture</label>
+              <label for="image" class="form-label fs-5 fw-semibold">Profile Picture</label>
               <input type="file" class="form-control" accept="image/*" name="image" id="image" onchange="loadFile(event)"/>
               <label class="<?php echo isset($_SESSION['image_err']) ? "d-flex": "d-none"; ?> text-danger my-2"><span class="material-icons-outlined me-1">info</span><?php if(isset($_SESSION['image_err'])) { echo $_SESSION['image_err']; } ?></label>
             </div>
@@ -194,17 +241,17 @@
           <form action="../scripts/php/queries.php" method="post"> 
             <div class="my-4">
               <label for="password" class="form-label fs-5 fw-semibold">New Password</label>
-              <input type="password" class="form-control form-control-lg" name="new_password" id="new_password" minlength="2" placeholder="New Password" />
+              <input type="password" class="form-control" name="new_password" id="new_password" minlength="2" placeholder="New Password" />
               <label class="<?php echo isset($_SESSION['new_password_err']) ? "d-flex": "d-none"; ?> text-danger my-2"><span class="material-icons-outlined me-1">info</span><?php if(isset($_SESSION['new_password_err'])) { echo $_SESSION['new_password_err']; } ?></label>
             </div>
             <div class="my-4">
               <label for="confirm_password" class="form-label fs-5 fw-semibold">Confirm New Password</label>
-              <input type="password" class="form-control form-control-lg" name="confirm_password" id="confirm_password" placeholder="Re-enter Password" />
+              <input type="password" class="form-control" name="confirm_password" id="confirm_password" placeholder="Re-enter Password" />
               <label class="<?php echo isset($_SESSION['confirm_password_err']) ? "d-flex": "d-none"; ?> text-danger my-2"><span class="material-icons-outlined me-1">info</span><?php if(isset($_SESSION['confirm_password_err'])) { echo $_SESSION['confirm_password_err']; } ?></label>
             </div>
             <div class="my-4">
               <label for="password" class="form-label">Please enter your old password below to confirm this action.</label>
-              <input type="password" class="form-control form-control-lg" name="password" id="password" placeholder="Password" />
+              <input type="password" class="form-control" name="password" id="password" placeholder="Password" />
               <label class="<?php echo isset($_SESSION['password_err']) ? "d-flex": "d-none"; ?> text-danger my-2"><span class="material-icons-outlined me-1">info</span><?php if(isset($_SESSION['password_err'])) { echo $_SESSION['password_err']; } ?></label>
             </div>
             <input type="hidden" class="d-none" name="client_id" value="<?php echo $client_id; ?>" />
@@ -219,6 +266,9 @@
 <?php echo "<script>var loadFile = function(event){ var image = document.getElementById('image'); var preview = document.getElementById('profile_picture'); if(image.value.length != 0){ preview.style.backgroundImage = 'url(' + URL.createObjectURL(event.target.files[0]) + ')'; preview.onload = () => { URL.revokeObjectURL(preview.style.backgroundImage); }} else { preview.style.backgroundImage = 'url(". $_SESSION['user']['user_avatar'] .")'; }};</script>"; ?>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 <script>
+  // error reporting
+  var errors = [];
+  
   // tabs
   var tab__account_details = document.getElementById('tabs--account-details');
   var tab__change_password = document.getElementById('tabs--change-password');
