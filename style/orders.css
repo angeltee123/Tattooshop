@@ -39,12 +39,14 @@
 }
 
 .Orders__controls__control__text {
+    display: block;
     margin: 0 0 0 0.5rem !important;
 }
 
 /* Order */
 .Orders__order-item {
     display: flex;
+    flex-flow: row nowrap;
     justify-content: space-between;
     align-items: center;
     padding: 3rem !important;
@@ -58,6 +60,8 @@
 .Orders__order-item__tattoo-preview {
     max-width: 275px;
     max-height: 275px;
+    width: 275px;
+    height: 275px;
     background-position: center !important;
     background-size: cover !important;
     background-repeat: no-repeat !important;
@@ -66,6 +70,7 @@
 
 .Orders__order-item__details {
     width: 100%;
+    margin: 0 0 0 3.5rem;
 }
 
 .Orders__order-item__details .row {
@@ -74,6 +79,7 @@
 
 .Order__order__details {
     display: flex;
+    flex-flow: row nowrap;
     justify-content: center;
     align-items: flex-start;
     padding: 3rem !important;
@@ -89,6 +95,7 @@
 .Orders__referral {
     width: 100%;
     display: flex;
+    flex-flow: row nowrap;
     justify-content: start;
     align-items: center;
     padding: 1.5rem !important;
@@ -97,39 +104,23 @@
 
 .Orders__referral__input-group {
     width: 100%;
+    margin: 0;
     display: flex;
     justify-content: start;
     align-items: center;
 }
 
 /* Order reactive styling */
-@media (min-width: 1275px){
-    .Orders__order-item__tattoo-preview {
-        width: 275px;
-        height: 275px;
-    }
-}
-
 @media (max-width: 1275px){
     .Orders__order-item__tattoo-preview {
-        width: 200px;
-        height: 200px;
-    }
-}
-
-@media (min-width: 968px){
-    .Orders__order-item {
-        flex-flow: row nowrap;
-    }
-
-    .Orders__order-item__details {
-        margin: 0 0 0 3.5rem !important;
+        width: 200px !important;
+        height: 200px !important;
     }
 }
 
 @media (max-width: 968px){
     .Orders__order-item {
-        flex-flow: column nowrap;
+        flex-flow: column nowrap !important;
     }
 
     .Orders__order-item__details {
@@ -137,49 +128,27 @@
     }
 
     .Orders__order-item__tattoo-preview {
-        width: 275px;
-        height: 275px;
-    }
-}
-
-@media (min-width: 1166px){
-    .Orders__order__details {
-        flex-flow: row nowrap;
+        width: 275px !important;
+        height: 275px !important;
     }
 }
 
 @media (max-width: 1166px){
     .Order__order__details {
-        flex-flow: column nowrap;
-    }
-}
-
-@media (min-width: 1210px){
-    .Orders__controls__control__text {
-        display: block;
+        flex-flow: column nowrap !important;
     }
 }
 
 @media (max-width: 1210px){
     .Orders__controls__control__text {
-        display: none;
+        display: none !important;
     }
 }
 
 /* Referral reactive styling */
-@media (min-width: 1655px){
-    .Orders__referral {
-        flex-flow: row nowrap;
-    }
-
-    .Orders__referral__input-group {
-        margin: 0;
-    }
-}
-
 @media (max-width: 1655px){
     .Orders__referral {
-        flex-flow: column nowrap;
+        flex-flow: column nowrap !important;
     }
 
     .Orders__referral__input-group {

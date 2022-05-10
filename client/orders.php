@@ -31,17 +31,17 @@
     // retrieving order items
     $statement = $api->prepare("SELECT order_item.item_id, tattoo_name, tattoo_image, tattoo_price, tattoo_quantity, order_item.tattoo_width, order_item.tattoo_height, paid, item_status, amount_addon FROM ((order_item INNER JOIN tattoo ON order_item.tattoo_id=tattoo.tattoo_id) LEFT JOIN reservation ON order_item.item_id=reservation.item_id) WHERE order_id=? ORDER BY item_status ASC, paid ASC");
     if($statement===false){
-        throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+      throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
     }
 
     $mysqli_checks = $api->bind_params($statement, "s", $order_id);
     if($mysqli_checks===false){
-        throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
+      throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
     }
 
     $mysqli_checks = $api->execute($statement);
     if($mysqli_checks===false){
-        throw new Exception('Execute error: The prepared statement could not be executed.');
+      throw new Exception('Execute error: The prepared statement could not be executed.');
     }
 
     $items = $api->get_result($statement);
@@ -51,27 +51,23 @@
 
     $api->free_result($statement);
     $mysqli_checks = $api->close($statement);
-    if($mysqli_checks===false){
-      throw new Exception('The prepared statement could not be closed.');
-    } else {
-      $statement = null;
-    }
+    ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
 
     if(!empty($_SESSION['order']['order_id'])){
       // retrieving editable order item count
       $statement = $api->prepare("SELECT item_id FROM order_item WHERE order_id=? AND paid=? AND item_status=?");
       if($statement===false){
-          throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+        throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
       }
 
       $mysqli_checks = $api->bind_params($statement, "sss", array($order_id, "Unpaid", "Standing"));
       if($mysqli_checks===false){
-          throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
+        throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
       }
 
       $mysqli_checks = $api->execute($statement);
       if($mysqli_checks===false){
-          throw new Exception('Execute error: The prepared statement could not be executed.');
+        throw new Exception('Execute error: The prepared statement could not be executed.');
       }
 
       $res = $api->get_result($statement);
@@ -93,17 +89,17 @@
       // retrieving referrals
       $statement = $api->prepare("SELECT referral_id, referral_fname, referral_mi, referral_lname, referral_contact_no, referral_email, referral_age, confirmation_status FROM referral WHERE client_id=? AND order_id=?");
       if($statement===false){
-          throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+        throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
       }
 
       $mysqli_checks = $api->bind_params($statement, "ss", array($client_id, $order_id));
       if($mysqli_checks===false){
-          throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
+        throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
       }
 
       $mysqli_checks = $api->execute($statement);
       if($mysqli_checks===false){
-          throw new Exception('Execute error: The prepared statement could not be executed.');
+        throw new Exception('Execute error: The prepared statement could not be executed.');
       }
 
       $referrals = $api->get_result($statement);
@@ -113,27 +109,23 @@
 
       $api->free_result($statement);
       $mysqli_checks = $api->close($statement);
-      if($mysqli_checks===false){
-        throw new Exception('The prepared statement could not be closed.');
-      } else {
-        $statement = null;
-      }
+      ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
 
       if(strcasecmp($incentive, "None") == 0){
         // retrieving confirmed referral count
         $statement = $api->prepare("SELECT referral_id FROM referral WHERE client_id=? AND order_id=? AND confirmation_status=?");
         if($statement===false){
-            throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+          throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
         }
 
         $mysqli_checks = $api->bind_params($statement, "sss", array($client_id, $order_id, "Confirmed"));
         if($mysqli_checks===false){
-            throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
+          throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
         }
 
         $mysqli_checks = $api->execute($statement);
         if($mysqli_checks===false){
-            throw new Exception('Execute error: The prepared statement could not be executed.');
+          throw new Exception('Execute error: The prepared statement could not be executed.');
         }
 
         $res = $api->get_result($statement);
@@ -154,9 +146,9 @@
       }
     }
   } catch (Exception $e) {
-    exit();
     $_SESSION['res'] = $e->getMessage();
     Header("Location: ./index.php");
+    exit();
   }
 ?>
 <!DOCTYPE html>
@@ -185,10 +177,8 @@
       display: inline-block;
     }
 
-    @media (min-width: 768px){
-      .Orders__referral-form__col {
-        margin: 1.5rem 0 !important;
-      }
+    .Orders__referral-form__col {
+      margin: 1.5rem 0;
     }
 
     @media (max-width: 768px){
@@ -241,7 +231,7 @@
               </div>
               <?php if($api->num_rows($referrals) > 0){ ?>
                 <div>
-                  <button type="submit" class="Orders__controls__control btn btn-outline-secondary ms-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Update Referrals"><span class="Orders__controls__control__icon material-icons">person</span><span class="Orders__controls__control__text">Update Referrals</span></button>
+                  <button type="submit" class="Orders__controls__control btn btn-outline-secondary ms-1" name="update_referrals" data-bs-toggle="tooltip" data-bs-placement="top" title="Update Referrals"><span class="Orders__controls__control__icon material-icons">person</span><span class="Orders__controls__control__text">Update Referrals</span></button>
                 </div>
                 <div>
                   <button type="submit" class="Orders__controls__control btn btn-outline-danger ms-1" name="remove_referrals" data-bs-toggle="tooltip" data-bs-placement="top" title="Remove Referrals"><span class="Orders__controls__control__icon material-icons">person_remove</span><span class="Orders__controls__control__text">Remove Referrals</span></button>
@@ -290,9 +280,9 @@
                         throw new Exception('The prepared statement could not be closed.');
                       }
                     } catch (Exception $e) {
-                      exit;
                       Header("Location: ./index.php");
                       echo $e->getMessage();
+                      exit;
                     }
 
                     if($api->num_rows($res) > 0){

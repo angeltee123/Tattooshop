@@ -27,7 +27,7 @@
       $api->free_result($statement);
       $mysqli_checks = $api->close($statement);
       if($mysqli_checks===false){
-      throw new Exception('The prepared statement could not be closed.');
+        throw new Exception('The prepared statement could not be closed.');
       }
     } catch (Exception $e) {
       Header("Location: ./index.php");

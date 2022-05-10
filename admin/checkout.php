@@ -24,22 +24,22 @@
     // retrieve order data
     $statement = $api->prepare("SELECT client_fname, client_lname, order_date, amount_due_total, incentive FROM (workorder JOIN client ON workorder.client_id=client.client_id) WHERE order_id=? AND workorder.client_id=? ORDER BY order_date ASC LIMIT 1");
     if($statement===false){
-        throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+      throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
     }
 
     $mysqli_checks = $api->bind_params($statement, "ss", array($order_id, $client_id));
     if($mysqli_checks===false){
-        throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
+      throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
     }
     
     $mysqli_checks = $api->execute($statement);
     if($mysqli_checks===false){
-        throw new Exception('Execute error: The prepared statement could not be executed.');
+      throw new Exception('Execute error: The prepared statement could not be executed.');
     }
 
     $res = $api->get_result($statement);
     if($res===false){
-        throw new Exception('get_result() error: Getting result set from statement failed.');
+      throw new Exception('get_result() error: Getting result set from statement failed.');
     }
 
     if($api->num_rows($res) > 0){
@@ -50,26 +50,22 @@
 
     $api->free_result($statement);
     $mysqli_checks = $api->close($statement);
-    if($mysqli_checks===false){
-    throw new Exception('The prepared statement could not be closed.');
-    } else {
-      $statement = null;
-    }
+    ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
 
     // retrieving order items
     $statement = $api->prepare("SELECT order_item.item_id, tattoo_name, tattoo_image, tattoo_price, tattoo_quantity, order_item.tattoo_width, order_item.tattoo_height, paid, item_status, amount_addon FROM ((order_item INNER JOIN tattoo ON order_item.tattoo_id=tattoo.tattoo_id) LEFT JOIN reservation ON order_item.item_id=reservation.item_id) WHERE order_id=? ORDER BY item_status ASC, paid ASC");
     if($statement===false){
-        throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+      throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
     }
 
     $mysqli_checks = $api->bind_params($statement, "s", $order_id);
     if($mysqli_checks===false){
-        throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
+      throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
     }
 
     $mysqli_checks = $api->execute($statement);
     if($mysqli_checks===false){
-        throw new Exception('Execute error: The prepared statement could not be executed.');
+      throw new Exception('Execute error: The prepared statement could not be executed.');
     }
 
     $items = $api->get_result($statement);
@@ -79,17 +75,13 @@
 
     $api->free_result($statement);
     $mysqli_checks = $api->close($statement);
-    if($mysqli_checks===false){
-      throw new Exception('The prepared statement could not be closed.');
-    } else {
-      $statement = null;
-    }
+    ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
 
     echo (strcasecmp($order['incentive'], "15% Discount") == 0) ? "<script>const discounted = true;</script>" : "<script>const discounted = false;</script>";
   } catch (Exception $e) {
-      exit();
-      $_SESSION['res'] = $e->getMessage();
-      Header("Location: ./orders.php");
+    $_SESSION['res'] = $e->getMessage();
+    Header("Location: ./orders.php");
+    exit();
   }
 ?>
 <!DOCTYPE html>

@@ -40,22 +40,22 @@ if(isset($_POST['catalog_tattoo'])){
         }
 
         elseif(preg_match("/['^£$%&*()}{@#~?><>,|=_+¬-]/", $name)){
-            $_SESSION['name_err'] = "Tattoo name must not contain any special characters";
+            $_SESSION['name_err'] = "Tattoo name must not contain any special characters.";
             array_push($errors, $_SESSION['name_err']);
         }
 
         elseif(mb_strlen($name) > 50){
-            $_SESSION['description_err'] = "Tattoo name must not exceed 50 characters. ";
+            $_SESSION['description_err'] = "Tattoo name must not exceed 50 characters.";
             array_push($errors, $_SESSION['description_err']);
         }
 
         if(empty($price)){
-            $_SESSION['price_err'] = "Tattoo price is required. ";
+            $_SESSION['price_err'] = "Tattoo price is required.";
             array_push($errors, $_SESSION['price_err']);
         }
 
         elseif(!is_numeric($price)){
-            $_SESSION['price_err'] = "Tattoo price must be a numeric value. ";
+            $_SESSION['price_err'] = "Tattoo price must be a numeric value.";
             array_push($errors, $_SESSION['price_err']);
         }
 
@@ -105,7 +105,7 @@ if(isset($_POST['catalog_tattoo'])){
         }
 
         if(mb_strlen($description) > 300){
-            $_SESSION['description_err'] = "Tattoo description must not exceed 300 characters. ";
+            $_SESSION['description_err'] = "Tattoo description must not exceed 300 characters.";
             array_push($errors, $_SESSION['description_err']);
         }
 
@@ -115,7 +115,7 @@ if(isset($_POST['catalog_tattoo'])){
         }
 
         elseif(!in_array($color_scheme, array("Monochrome", "Multicolor"))){
-            $_SESSION['color_scheme_err'] = "Tattoo color scheme must be either Monochrome or Multicolor. ";
+            $_SESSION['color_scheme_err'] = "Tattoo color scheme must be either Monochrome or Multicolor.";
             array_push($errors, $_SESSION['color_scheme_err']);
         }
 
@@ -125,7 +125,7 @@ if(isset($_POST['catalog_tattoo'])){
         }
 
         elseif(!in_array($complexity, array("Simple", "Complex"))){
-            $_SESSION['complexity_level_err'] = "Tattoo complexity level must be either Simple or Complex. ";
+            $_SESSION['complexity_level_err'] = "Tattoo complexity level must be either Simple or Complex.";
             array_push($errors, $_SESSION['complexity_level_err']);
         }
 
@@ -185,7 +185,7 @@ if(isset($_POST['catalog_tattoo'])){
 
                     $statement = $api->prepare($query);
                     if($statement===false){
-                        throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                        throw new Exception('prepare() error: ' . $api->errno() . ' - ' . $$api->error());
                     }
             
                     $mysqli_checks = $api->bind_params($statement, "ssdiissss", array($tattoo_id, $name, $price, $width, $height, $target_file, $description, $color_scheme, $complexity));
@@ -231,7 +231,6 @@ if(isset($_POST['update_tattoo'])){
     $color_scheme = $api->sanitize_data($_POST['color_scheme'], "string");
     $complexity = $api->sanitize_data($_POST['complexity_level'], "string");
     
-    
     $upload_file = boolval(!empty($_FILES['image']['name']) && !empty($_FILES['image']['type']));
     if($upload_file){
         // file upload
@@ -255,22 +254,22 @@ if(isset($_POST['update_tattoo'])){
     }
 
     elseif(preg_match("/['^£$%&*()}{@#~?><>,|=_+¬-]/", $name)){
-        $_SESSION['name_err'] = "Tattoo name must not contain any special characters";
+        $_SESSION['name_err'] = "Tattoo name must not contain any special characters.";
         array_push($errors, $_SESSION['name_err']);
     }
 
     elseif(mb_strlen($name) > 50){
-        $_SESSION['description_err'] = "Tattoo name must not exceed 50 characters. ";
-        array_push($errors, $_SESSION['description_err']);
+        $_SESSION['name_err'] = "Tattoo name must not exceed 50 characters.";
+        array_push($errors, $_SESSION['name_err']);
     }
 
     if(empty($price)){
-        $_SESSION['price_err'] = "Tattoo price is required. ";
+        $_SESSION['price_err'] = "Tattoo price is required.";
         array_push($errors, $_SESSION['price_err']);
     }
 
     elseif(!is_numeric($price)){
-        $_SESSION['price_err'] = "Tattoo price must be a numeric value. ";
+        $_SESSION['price_err'] = "Tattoo price must be a numeric value.";
         array_push($errors, $_SESSION['price_err']);
     }
 
@@ -325,7 +324,7 @@ if(isset($_POST['update_tattoo'])){
     }
 
     elseif(mb_strlen($description) > 300){
-        $_SESSION['description_err'] = "Tattoo description must not exceed 300 characters. ";
+        $_SESSION['description_err'] = "Tattoo description must not exceed 300 characters.";
         array_push($errors, $_SESSION['description_err']);
     }
 
@@ -335,7 +334,7 @@ if(isset($_POST['update_tattoo'])){
     }
 
     elseif(!in_array($color_scheme, array("Monochrome", "Multicolor"))){
-        $_SESSION['color_scheme_err'] = "Tattoo color scheme must be either Monochrome or Multicolor. ";
+        $_SESSION['color_scheme_err'] = "Tattoo color scheme must be either Monochrome or Multicolor.";
         array_push($errors, $_SESSION['color_scheme_err']);
     }
 
@@ -345,7 +344,7 @@ if(isset($_POST['update_tattoo'])){
     }
 
     elseif(!in_array($complexity, array("Simple", "Complex"))){
-        $_SESSION['complexity_level_err'] = "Tattoo complexity level must be either Simple or Complex. ";
+        $_SESSION['complexity_level_err'] = "Tattoo complexity level must be either Simple or Complex.";
         array_push($errors, $_SESSION['complexity_level_err']);
     }
 
@@ -396,7 +395,7 @@ if(isset($_POST['update_tattoo'])){
                 if(move_uploaded_file($file_tmp_name, $target_file)){
                     $statement = $api->prepare("UPDATE tattoo SET tattoo_name=?, tattoo_price=?, tattoo_width=?, tattoo_height=?, tattoo_image=?, tattoo_description=?, color_scheme=?, complexity_level=? WHERE tattoo_id=?");
                     if($statement===false){
-                        throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                        throw new Exception('prepare() error: ' . $api->errno() . ' - ' . $$api->error());
                     }
             
                     $mysqli_checks = $api->bind_params($statement, "sdiisssss", array($name, $price, $width, $height, $target_file, $description, $color_scheme, $complexity, $id));
@@ -409,7 +408,7 @@ if(isset($_POST['update_tattoo'])){
             } else {
                 $statement = $api->prepare("UPDATE tattoo SET tattoo_name=?, tattoo_price=?, tattoo_width=?, tattoo_height=?, tattoo_description=?, color_scheme=?, complexity_level=? WHERE tattoo_id=?");
                 if($statement===false){
-                    throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                    throw new Exception('prepare() error: ' . $api->errno() . ' - ' . $$api->error());
                 }
         
                 $mysqli_checks = $api->bind_params($statement, "sdiissss", array($name, $price, $width, $height, $description, $color_scheme, $complexity, $id));
@@ -444,7 +443,7 @@ if(isset($_POST['delete_tattoo'])){
     try {
         $statement = $api->prepare("DELETE FROM tattoo WHERE tattoo_id=?");
         if($statement===false){
-            throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+            throw new Exception('prepare() error: ' . $api->errno() . ' - ' . $$api->error());
         }
 
         $mysqli_checks = $api->bind_params($statement, "s", $id);
@@ -542,7 +541,7 @@ if(isset($_POST['update_item'])){
             // retrieve order item data
             $statement = $api->prepare("SELECT client_id, order_item.order_id, tattoo_id, paid, item_status FROM (order_item JOIN workorder ON order_item.order_id=workorder.order_id) WHERE item_id=?");
             if($statement===false){
-                throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                throw new Exception('prepare() error: ' . $api->errno() . ' - ' . $$api->error());
             }
 
             $mysqli_checks = $api->bind_params($statement, "s", $item_id);
@@ -564,17 +563,12 @@ if(isset($_POST['update_item'])){
 
                     $api->free_result($statement);
                     $mysqli_checks = $api->close($statement);
-                    if($mysqli_checks===false){
-                    throw new Exception('The prepared statement could not be closed.');
-                    } else {
-                        $res = null;
-                        $statement = null;
-                    }
+                    ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $res = $statement = null;
 
                     // find existing order item
                     $statement = $api->prepare("SELECT item_id, tattoo_quantity FROM (order_item INNER JOIN tattoo ON order_item.tattoo_id=tattoo.tattoo_id) WHERE item_id!=? AND order_id=? AND paid=? AND item_status=? AND order_item.tattoo_width=? AND order_item.tattoo_height=? LIMIT 1");
                     if($statement===false){
-                        throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                        throw new Exception('prepare() error: ' . $api->errno() . ' - ' . $$api->error());
                     }
 
                     $mysqli_checks = $api->bind_params($statement, "ssssii", array($item_id, $item['order_id'], $item['paid'], $item['item_status'], $width, $height));
@@ -597,16 +591,12 @@ if(isset($_POST['update_item'])){
         
                             $api->free_result($statement);
                             $mysqli_checks = $api->close($statement);
-                            if($mysqli_checks===false){
-                            throw new Exception('The prepared statement could not be closed.');
-                            } else {
-                                $statement = null;
-                            }
+                            ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
         
                             // updating existing order item
                             $statement = $api->prepare("UPDATE order_item SET tattoo_quantity=? WHERE order_id=? AND item_id=?");
                             if($statement===false){
-                                throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                                throw new Exception('prepare() error: ' . $api->errno() . ' - ' . $$api->error());
                             }
         
                             $quantity += $row['tattoo_quantity'];
@@ -621,16 +611,12 @@ if(isset($_POST['update_item'])){
                             }
         
                             $mysqli_checks = $api->close($statement);
-                            if($mysqli_checks===false){
-                                throw new Exception('The prepared statement could not be closed.');
-                            } else {
-                                $statement = null;
-                            }
+                            ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
         
                             // merging down order item
                             $statement = $api->prepare("DELETE FROM order_item WHERE order_id=? AND item_id=?");
                             if($statement===false){
-                                throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                                throw new Exception('prepare() error: ' . $api->errno() . ' - ' . $$api->error());
                             }
         
                             $mysqli_checks = $api->bind_params($statement, "ss", array($item['order_id'], $item_id));
@@ -644,24 +630,16 @@ if(isset($_POST['update_item'])){
                             }
         
                             $mysqli_checks = $api->close($statement);
-                            if($mysqli_checks===false){
-                                throw new Exception('The prepared statement could not be closed.');
-                            } else {
-                                $statement = null;
-                            }
+                            ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
                         } else {
                             // no existing similar order item found
                             $api->free_result($statement);
                             $mysqli_checks = $api->close($statement);
-                            if($mysqli_checks===false){
-                            throw new Exception('The prepared statement could not be closed.');
-                            } else {
-                                $statement = null;
-                            }
+                            ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
         
                             $statement = $api->prepare("UPDATE order_item SET tattoo_width=?, tattoo_height=?, tattoo_quantity=? WHERE order_id=? AND item_id=?");
                             if($statement===false){
-                                throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                                throw new Exception('prepare() error: ' . $api->errno() . ' - ' . $$api->error());
                             }
                     
                             $mysqli_checks = $api->bind_params($statement, "iiiss", array($width, $height, $quantity, $item['order_id'], $item_id));
@@ -675,11 +653,7 @@ if(isset($_POST['update_item'])){
                             }
                     
                             $mysqli_checks = $api->close($statement);
-                            if($mysqli_checks===false){
-                                throw new Exception('The prepared statement could not be closed.');
-                            } else {
-                                $statement = null;
-                            }
+                            ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
                         }
                     }
 
@@ -691,12 +665,7 @@ if(isset($_POST['update_item'])){
                 } else {
                     $api->free_result($statement);
                     $mysqli_checks = $api->close($statement);
-                    if($mysqli_checks===false){
-                    throw new Exception('The prepared statement could not be closed.');
-                    } else {
-                        $res = null;
-                        $statement = null;
-                    }
+                    ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $res = $statement = null;
                     
                     throw new Exception('Retrieving order item with the given ID failed.');
                 }
@@ -721,7 +690,7 @@ if(isset($_POST['delete_item'])){
         // retrieve order item data
         $statement = $api->prepare("SELECT client_id, order_item.order_id FROM (order_item JOIN workorder ON order_item.order_id=workorder.order_id) WHERE item_id=?");
         if($statement===false){
-            throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+            throw new Exception('prepare() error: ' . $api->errno() . ' - ' . $$api->error());
         }
 
         $mysqli_checks = $api->bind_params($statement, "s", $item_id);
@@ -743,16 +712,11 @@ if(isset($_POST['delete_item'])){
 
                 $api->free_result($statement);
                 $mysqli_checks = $api->close($statement);
-                if($mysqli_checks===false){
-                throw new Exception('The prepared statement could not be closed.');
-                } else {
-                    $res = null;
-                    $statement = null;
-                }
+                ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $res = $statement = null;
     
                 $statement = $api->prepare("DELETE FROM order_item WHERE order_id=? AND item_id=?");
                 if($statement===false){
-                    throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                    throw new Exception('prepare() error: ' . $api->errno() . ' - ' . $$api->error());
                 }
         
                 $mysqli_checks = $api->bind_params($statement, "ss", array($item['order_id'], $item_id));
@@ -766,11 +730,7 @@ if(isset($_POST['delete_item'])){
                 }
         
                 $mysqli_checks = $api->close($statement);
-                if($mysqli_checks===false){
-                    throw new Exception('The prepared statement could not be closed.');
-                } else {
-                    $statement = null;
-                }
+                ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
 
                 // update amount due total for current order
                 $mysqli_checks = $api->update_total($item['order_id'], $item['client_id']);
@@ -780,12 +740,7 @@ if(isset($_POST['delete_item'])){
             } else {
                 $api->free_result($statement);
                 $mysqli_checks = $api->close($statement);
-                if($mysqli_checks===false){
-                throw new Exception('The prepared statement could not be closed.');
-                } else {
-                    $res = null;
-                    $statement = null;
-                }
+                ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $res = $statement = null;
                 
                 throw new Exception('Retrieving order item with the given ID failed.');
             }
@@ -843,20 +798,16 @@ if(isset($_POST['update_referral'])){
 
         $api->free_result($statement);
         $mysqli_checks = $api->close($statement);
-        if($mysqli_checks===false){
-        throw new Exception('The prepared statement could not be closed.');
-        } else {
-            $statement = null;
-        }
+        ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
 
         // first name validation
         if(empty($first_name)){
-            $_SESSION['first_name_err'] = "Referral first name is required. ";
+            $_SESSION['first_name_err'] = "Referral first name is required.";
             array_push($errors, $_SESSION['first_name_err']);
         }
 
         elseif(mb_strlen($first_name) < 2){
-            $_SESSION['first_name_err'] = "Referral first name must be at least 2 characters long. ";
+            $_SESSION['first_name_err'] = "Referral first name must be at least 2 characters long.";
             array_push($errors, $_SESSION['first_name_err']);
         }
 
@@ -867,17 +818,17 @@ if(isset($_POST['update_referral'])){
 
         // last name validation
         if(empty($last_name)){
-            $_SESSION['last_name_err'] = "Referral last name is required. ";
+            $_SESSION['last_name_err'] = "Referral last name is required.";
             array_push($errors, $_SESSION['last_name_err']);
         }
 
         elseif(mb_strlen($last_name) < 2){
-            $_SESSION['last_name_err'] = "Referral last must be at least 2 characters long. ";
+            $_SESSION['last_name_err'] = "Referral last must be at least 2 characters long.";
             array_push($errors, $_SESSION['last_name_err']);
         }
 
         elseif(ctype_space($last_name) || preg_match("/['^£$%&*()}{@#~?><>,|=_+¬-]/", $last_name)){
-            $_SESSION['last_name_err'] = "Referral last must not contain any spaces or special characters";
+            $_SESSION['last_name_err'] = "Referral last must not contain any spaces or special characters.";
             array_push($errors, $_SESSION['last_name_err']);
         }
 
@@ -907,21 +858,17 @@ if(isset($_POST['update_referral'])){
 
             $api->free_result($statement);
             $mysqli_checks = $api->close($statement);
-            if($mysqli_checks===false){
-                throw new Exception('The prepared statement could not be closed.');
-            } else {
-                $statement = null;
-            }
+            ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
         }
 
         // email validation
         if(empty($email)){
-            $_SESSION['email_err'] = "Referral email is required. ";
+            $_SESSION['email_err'] = "Referral email is required.";
             array_push($errors, $_SESSION['email_err']);
         }
 
         elseif(!$api->validate_data($email, 'email')){
-            $_SESSION['email_err'] = "Invalid email. ";
+            $_SESSION['email_err'] = "Invalid email.";
             array_push($errors, $_SESSION['email_err']);
         }
 
@@ -948,7 +895,7 @@ if(isset($_POST['update_referral'])){
 
         // contact number validation
         if(empty($contact_number)){
-            $_SESSION['contact_number_err'] = "Referral contact number is required. ";
+            $_SESSION['contact_number_err'] = "Referral contact number is required.";
             array_push($errors, $_SESSION['contact_number_err']);
         }
 
@@ -958,12 +905,12 @@ if(isset($_POST['update_referral'])){
         }
 
         elseif(mb_strlen($contact_number) < 7){
-            $_SESSION['contact_number_err'] = "Referral contact number must be at least 7 numbers long. ";
+            $_SESSION['contact_number_err'] = "Referral contact number must be at least 7 numbers long.";
             array_push($errors, $_SESSION['contact_number_err']);
         }
 
         elseif(mb_strlen($contact_number) > 11){
-            $_SESSION['contact_number_err'] = "Referral contact number must not exceed 11 numbers long. ";
+            $_SESSION['contact_number_err'] = "Referral contact number must not exceed 11 numbers long.";
             array_push($errors, $_SESSION['contact_number_err']);
         }
 
@@ -976,7 +923,7 @@ if(isset($_POST['update_referral'])){
 
             $statement = $api->prepare($query);
             if($statement===false){
-                throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                throw new Exception('prepare() error: ' . $api->errno() . ' - ' . $$api->error());
             }
 
             $mysqli_checks = $api->bind_params($statement, "sssssissss",  array($first_name, $mi, $last_name, $contact_number, $email, $age, $confirmation_status, $referral_id, $referral_data['client_id'], $referral_data['order_id']));
@@ -1036,11 +983,7 @@ if(isset($_POST['remove_referral'])){
 
         $api->free_result($statement);
         $mysqli_checks = $api->close($statement);
-        if($mysqli_checks===false){
-        throw new Exception('The prepared statement could not be closed.');
-        } else {
-            $statement = null;
-        }
+        ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
 
         $query = $api->delete();
         $query = $api->from($query);
@@ -1049,7 +992,7 @@ if(isset($_POST['remove_referral'])){
 
         $statement = $api->prepare($query);
         if($statement===false){
-            throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+            throw new Exception('prepare() error: ' . $api->errno() . ' - ' . $$api->error());
         }
 
         $mysqli_checks = $api->bind_params($statement, "sss",  array($referral_id, $referral_data['client_id'], $referral_data['order_id']));
@@ -1110,7 +1053,7 @@ if(isset($_POST['update_reservation'])){
     }
 
     if(!is_numeric($amount_addon)){
-        $_SESSION['amount_addon_err'] = "Reservation addon amount must be a numeric value. ";
+        $_SESSION['amount_addon_err'] = "Reservation addon amount must be a numeric value.";
         array_push($errors, $_SESSION['amount_addon_err']);
     }
 
@@ -1120,7 +1063,7 @@ if(isset($_POST['update_reservation'])){
         try {
             $statement = $api->prepare("UPDATE reservation SET service_type=?, reservation_address=?, scheduled_date=?, scheduled_time=?, amount_addon=? WHERE reservation_id=? AND item_id=?");
             if($statement===false){
-                throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                throw new Exception('prepare() error: ' . $api->errno() . ' - ' . $$api->error());
             }
     
             $mysqli_checks = $api->bind_params($statement, "ssssdss", array($service_type, $address, $date, $time, $amount_addon, $reservation_id, $item_id));
@@ -1174,7 +1117,7 @@ if(isset($_POST['start_worksession'])){
 
             $statement = $api->prepare($query);
             if($statement===false){
-                throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                throw new Exception('prepare() error: ' . $api->errno() . ' - ' . $$api->error());
             }
     
             $mysqli_checks = $api->bind_params($statement, "sssssss", array($session_id, $reservation_id, $date, "In Session", $time, "00:00:00", $address));
@@ -1219,7 +1162,7 @@ if(isset($_POST['cancel_reservation'])){
 
         $statement = $api->prepare($query);
         if($statement===false){
-            throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+            throw new Exception('prepare() error: ' . $api->errno() . ' - ' . $$api->error());
         }
 
         $mysqli_checks = $api->bind_params($statement, "s", $item_id);
@@ -1240,18 +1183,13 @@ if(isset($_POST['cancel_reservation'])){
                 $item = $api->fetch_assoc($res);
 
                 $api->free_result($res);
-                $res = null;
                 $mysqli_checks = $api->close($statement);
-                if($mysqli_checks===false){
-                    throw new Exception('The prepared statement could not be closed.');
-                } else {
-                    $statement = null;
-                }
+                ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $res = $statement = null;
 
                 // deleting reservation
                 $statement = $api->prepare("DELETE FROM reservation WHERE reservation_id=? AND item_id=?");
                 if($statement===false){
-                    throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                    throw new Exception('prepare() error: ' . $api->errno() . ' - ' . $$api->error());
                 }
 
                 $mysqli_checks = $api->bind_params($statement, "ss", array($reservation_id, $item_id));
@@ -1265,16 +1203,12 @@ if(isset($_POST['cancel_reservation'])){
                 }
 
                 $mysqli_checks = $api->close($statement);
-                if($mysqli_checks===false){
-                    throw new Exception('The prepared statement could not be closed.');
-                } else {
-                    $statement = null;
-                }
+                ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
 
                 // updating order item quantity
                 $statement = $api->prepare("SELECT item_id, tattoo_quantity FROM order_item WHERE order_id=? AND tattoo_width=? AND tattoo_height=? AND paid=? AND item_id!=? AND item_status!=? LIMIT ?");
                 if($statement===false){
-                    throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                    throw new Exception('prepare() error: ' . $api->errno() . ' - ' . $$api->error());
                 }
 
                 $mysqli_checks = $api->bind_params($statement, "siisssi", array($item['order_id'], $item['tattoo_width'], $item['tattoo_height'], $item['paid'], $item_id, "Reserved", 1));
@@ -1295,18 +1229,13 @@ if(isset($_POST['cancel_reservation'])){
                         $row = $api->fetch_assoc($res);
         
                         $api->free_result($res);
-                        $res = null;
                         $mysqli_checks = $api->close($statement);
-                        if($mysqli_checks===false){
-                            throw new Exception('The prepared statement could not be closed.');
-                        } else {
-                            $statement = null;
-                        }
+                        ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $res = $statement = null;
 
                         $row['tattoo_quantity'] += $quantity;
                         $statement = $api->prepare("UPDATE order_item SET tattoo_quantity=? WHERE item_id=?");
                         if($statement===false){
-                            throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                            throw new Exception('prepare() error: ' . $api->errno() . ' - ' . $$api->error());
                         }
 
                         $mysqli_checks = $api->bind_params($statement, "is", array($row['tattoo_quantity'], $row['item_id']));
@@ -1320,15 +1249,11 @@ if(isset($_POST['cancel_reservation'])){
                         }
 
                         $mysqli_checks = $api->close($statement);
-                        if($mysqli_checks===false){
-                            throw new Exception('The prepared statement could not be closed.');
-                        } else {
-                            $statement = null;
-                        }
+                        ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
 
                         $statement = $api->prepare("DELETE FROM order_item WHERE item_id=?");
                         if($statement===false){
-                            throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                            throw new Exception('prepare() error: ' . $api->errno() . ' - ' . $$api->error());
                         }
 
                         $mysqli_checks = $api->bind_params($statement, "s", $item_id);
@@ -1342,15 +1267,11 @@ if(isset($_POST['cancel_reservation'])){
                         }
 
                         $mysqli_checks = $api->close($statement);
-                        if($mysqli_checks===false){
-                            throw new Exception('The prepared statement could not be closed.');
-                        } else {
-                            $statement = null;
-                        }
+                        ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
                     } else {
                         $statement = $api->prepare("UPDATE order_item SET item_status=? WHERE item_id=?");
                         if($statement===false){
-                            throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                            throw new Exception('prepare() error: ' . $api->errno() . ' - ' . $$api->error());
                         }
 
                         $mysqli_checks = $api->bind_params($statement, "ss", array("Standing", $item_id));
@@ -1364,11 +1285,7 @@ if(isset($_POST['cancel_reservation'])){
                         }
 
                         $mysqli_checks = $api->close($statement);
-                        if($mysqli_checks===false){
-                            throw new Exception('The prepared statement could not be closed.');
-                        } else {
-                            $statement = null;
-                        }
+                        ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
                     }
                 }
             } else {
@@ -1407,7 +1324,7 @@ if(isset($_POST['finish_worksession'])){
 
         $statement = $api->prepare($retrieve_item);
         if($statement===false){
-            throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+            throw new Exception('prepare() error: ' . $api->errno() . ' - ' . $$api->error());
         }
 
         $mysqli_checks = $api->bind_params($statement, "s", $item_id);
@@ -1430,17 +1347,12 @@ if(isset($_POST['finish_worksession'])){
 
                 $api->free_result($res);
                 $mysqli_checks = $api->close($statement);
-                if($mysqli_checks===false){
-                    throw new Exception('The prepared statement could not be closed.');
-                } else {
-                    $res = null;
-                    $statement = null;
-                }
+                ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $res = $statement = null;
 
                 // Finding similar item
                 $statement = $api->prepare("SELECT item_id, tattoo_quantity FROM (order_item INNER JOIN tattoo ON order_item.tattoo_id=tattoo.tattoo_id) WHERE item_id!=? AND order_item.order_id=? AND paid=? AND item_status=? AND order_item.tattoo_width=? AND order_item.tattoo_height=? LIMIT ?");
                 if($statement===false){
-                    throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                    throw new Exception('prepare() error: ' . $api->errno() . ' - ' . $$api->error());
                 }
 
                 $mysqli_checks = $api->bind_params($statement, "ssssiii", array($item_id, $item['order_id'], $item['paid'], "Applied", $item['tattoo_width'], $item['tattoo_height'], 1));
@@ -1464,16 +1376,12 @@ if(isset($_POST['finish_worksession'])){
 
                     $api->free_result($res);
                     $mysqli_checks = $api->close($statement);
-                    if($mysqli_checks===false){
-                        throw new Exception('The prepared statement could not be closed.');
-                    } else {
-                        $statement = null;
-                    }
+                    ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
                 
                     // merging down applied item
                     $statement = $api->prepare("DELETE FROM order_item WHERE item_id=? AND order_id=?");
                     if($statement===false){
-                        throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                        throw new Exception('prepare() error: ' . $api->errno() . ' - ' . $$api->error());
                     }
 
                     $mysqli_checks = $api->bind_params($statement, "ss", array($item_id, $item['order_id']));
@@ -1487,16 +1395,12 @@ if(isset($_POST['finish_worksession'])){
                     }
 
                     $mysqli_checks = $api->close($statement);
-                    if($mysqli_checks===false){
-                        throw new Exception('The prepared statement could not be closed.');
-                    } else {
-                        $statement = null;
-                    }
+                    ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
 
                     // updating found Applied item
                     $statement = $api->prepare("UPDATE order_item SET tattoo_quantity=? WHERE item_id=? AND order_id=?");
                     if($statement===false){
-                        throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                        throw new Exception('prepare() error: ' . $api->errno() . ' - ' . $$api->error());
                     }
 
                     $row['tattoo_quantity'] += $item['tattoo_quantity'];
@@ -1511,26 +1415,18 @@ if(isset($_POST['finish_worksession'])){
                     }
 
                     $mysqli_checks = $api->close($statement);
-                    if($mysqli_checks===false){
-                        throw new Exception('The prepared statement could not be closed.');
-                    } else {
-                        $statement = null;
-                    }
+                    ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
                 } else {
                     // No similar item found
                     $api->free_result($res);
 
                     $mysqli_checks = $api->close($statement);
-                    if($mysqli_checks===false){
-                        throw new Exception('The prepared statement could not be closed.');
-                    } else {
-                        $statement = null;
-                    }
+                    ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
 
                     // updating item status
                     $statement = $api->prepare("UPDATE order_item SET item_status=? WHERE item_id=? AND order_id=?");
                     if($statement===false){
-                        throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                        throw new Exception('prepare() error: ' . $api->errno() . ' - ' . $$api->error());
                     }
 
                     $mysqli_checks = $api->bind_params($statement, "sss", array("Applied", $item_id, $item['order_id']));
@@ -1544,11 +1440,7 @@ if(isset($_POST['finish_worksession'])){
                     }
 
                     $mysqli_checks = $api->close($statement);
-                    if($mysqli_checks===false){
-                        throw new Exception('The prepared statement could not be closed.');
-                    } else {
-                        $statement = null;
-                    }
+                    ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
                 }
 
                 // finishing session
@@ -1556,7 +1448,7 @@ if(isset($_POST['finish_worksession'])){
 
                 $statement = $api->prepare("UPDATE worksession SET session_status=?, session_end_time=? WHERE session_id=? AND reservation_id=?");
                 if($statement===false){
-                    throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                    throw new Exception('prepare() error: ' . $api->errno() . ' - ' . $$api->error());
                 }
         
                 $mysqli_checks = $api->bind_params($statement, "ssss", array("Finished", $end_time, $session_id, $reservation_id));
@@ -1610,12 +1502,12 @@ if(isset($_POST['log_payment'])){
             // validations
             // first name validation
             if(empty($first_name)){
-                $_SESSION['first_name_err'] = "First name is required. ";
+                $_SESSION['first_name_err'] = "First name is required.";
                 array_push($errors, $_SESSION['first_name_err']);
             }
             
             elseif(mb_strlen($first_name) < 2){
-                $_SESSION['first_name_err'] = "First name must be at least 2 characters long. ";
+                $_SESSION['first_name_err'] = "First name must be at least 2 characters long.";
                 array_push($errors, $_SESSION['first_name_err']);
             }
             
@@ -1626,89 +1518,89 @@ if(isset($_POST['log_payment'])){
 
             // last name validation
             if(empty($last_name)){
-                $_SESSION['last_name_err'] = "Last name is required. ";
+                $_SESSION['last_name_err'] = "Last name is required.";
                 array_push($errors, $_SESSION['last_name_err']);
             }
             
             elseif(mb_strlen($last_name) < 2){
-                $_SESSION['last_name_err'] = "Last name must be at least 2 characters long. ";
+                $_SESSION['last_name_err'] = "Last name must be at least 2 characters long.";
                 array_push($errors, $_SESSION['last_name_err']);
             }
             
             elseif(ctype_space($last_name) || preg_match("/['^£$%&*()}{@#~?><>,|=_+¬-]/", $last_name)){
-                $_SESSION['last_name_err'] = "Last name must not contain any spaces or special characters";
+                $_SESSION['last_name_err'] = "Last name must not contain any spaces or special characters.";
                 array_push($errors, $_SESSION['last_name_err']);
             }
 
             // billing address validations
             if(empty($street_address)){
-                $_SESSION['street_address_err'] = "Street address is required. ";
+                $_SESSION['street_address_err'] = "Street address is required.";
                 array_push($errors, $_SESSION['street_address_err']);
             }
 
             elseif(mb_strlen($street_address) > 255){
-                $_SESSION['street_address_err'] = "Street address must not exceed 255 characters. ";
+                $_SESSION['street_address_err'] = "Street address must not exceed 255 characters.";
                 array_push($errors, $_SESSION['street_address_err']);
             }
 
             if(empty($city)){
-                $_SESSION['city_err'] = "City name is required. ";
+                $_SESSION['city_err'] = "City name is required.";
                 array_push($errors, $_SESSION['city_err']);
             }
 
             elseif(mb_strlen($city) > 35){
-                $_SESSION['city_err'] = "City name must not exceed 35 characters. ";
+                $_SESSION['city_err'] = "City name must not exceed 35 characters.";
                 array_push($errors, $_SESSION['city_err']);
             }
 
             if(empty($province)){
-                $_SESSION['province_err'] = "Province name is required. ";
+                $_SESSION['province_err'] = "Province name is required.";
                 array_push($errors, $_SESSION['province_err']);
             }
 
             elseif(mb_strlen($province) > 35){
-                $_SESSION['province_err'] = "Provice name must not exceed 35 characters. ";
+                $_SESSION['province_err'] = "Provice name must not exceed 35 characters.";
                 array_push($errors, $_SESSION['province_err']);
             }
 
             if(empty($zip)){
-                $_SESSION['zip_err'] = "ZIP code is required. ";
+                $_SESSION['zip_err'] = "ZIP code is required.";
                 array_push($errors, $_SESSION['zip_err']);
             }
 
             elseif(mb_strlen($zip) > 4){
-                $_SESSION['zip_err'] = "ZIP code 4 must not exceed characters. ";
+                $_SESSION['zip_err'] = "ZIP code 4 must not exceed characters.";
                 array_push($errors, $_SESSION['zip_err']);
             }
 
             elseif(!$api->validate_data($zip, 'int')){
-                $_SESSION['zip_err'] = "ZIP code must be an integer. ";
+                $_SESSION['zip_err'] = "ZIP code must be an integer.";
                 array_push($errors, $_SESSION['zip_err']);
             }
 
             // payment validations
             if(empty($amount_paid)){
-                $_SESSION['amount_paid_err'] = "Payment amount is required. ";
+                $_SESSION['amount_paid_err'] = "Payment amount is required.";
                 array_push($errors, $_SESSION['amount_paid_err']);
             }
 
             elseif(!is_numeric($amount_paid)){
-                $_SESSION['amount_paid_err'] = "Payment amount must be a numeric value. ";
+                $_SESSION['amount_paid_err'] = "Payment amount must be a numeric value.";
                 array_push($errors, $_SESSION['amount_paid_err']);
             }
 
             elseif($amount_paid < 0){
-                $_SESSION['amount_paid_err'] = "Payment amount must not be negative. ";
+                $_SESSION['amount_paid_err'] = "Payment amount must not be negative.";
                 array_push($errors, $_SESSION['amount_paid_err']);
             }
 
             if(empty($payment_method)){
-                $_SESSION['payment_method_err'] = "Payment method is required. ";
+                $_SESSION['payment_method_err'] = "Payment method is required.";
                 array_push($errors, $_SESSION['payment_method_err']);
             }
 
             elseif(!in_array($payment_method, array("Cash", "Check"))){
-                $_SESSION['payment_method_err'] = "Payment method msut be either Cash or Check. ";
+                $_SESSION['payment_method_err'] = "Payment method msut be either Cash or Check.";
                 array_push($errors, $_SESSION['payment_method_err']);
             }
 
@@ -1719,7 +1611,7 @@ if(isset($_POST['log_payment'])){
                 // checking for discount
                 $statement = $api->prepare("SELECT incentive FROM workorder WHERE order_id=? AND client_id=? AND status=? ORDER BY order_date ASC LIMIT 1");
                 if($statement===false){
-                    throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                    throw new Exception('prepare() error: ' . $api->errno() . ' - ' . $$api->error());
                 }
 
                 $mysqli_checks = $api->bind_params($statement, "sss", array($order_id, $client_id, "Ongoing"));
@@ -1741,12 +1633,7 @@ if(isset($_POST['log_payment'])){
 
                 $api->free_result($statement);
                 $mysqli_checks = $api->close($statement);
-                if($mysqli_checks===false){
-                    throw new Exception('The prepared statement could not be closed.');
-                } else {
-                    $res = null;
-                    $statement = null;
-                }
+                ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $res = $statement = null;
 
                 if(isset($discount) && !empty($discount) && strcasecmp($discount, "15% discount") == 0){
                     $total = (double) 0.00;
@@ -1782,7 +1669,7 @@ if(isset($_POST['log_payment'])){
                     if(empty($errors)){
                         $statement = $api->prepare("SELECT order_item.tattoo_id, tattoo_price, order_item.tattoo_width, order_item.tattoo_height, paid, item_status, amount_addon FROM ((order_item INNER JOIN tattoo ON order_item.tattoo_id=tattoo.tattoo_id) LEFT JOIN reservation ON order_item.item_id=reservation.item_id) WHERE order_id=? AND order_item.item_id=? LIMIT 1");
                         if($statement===false){
-                            throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                            throw new Exception('prepare() error: ' . $api->errno() . ' - ' . $$api->error());
                         }
 
                         $mysqli_checks = $api->bind_params($statement, "ss", array($order_id, $item));
@@ -1805,11 +1692,7 @@ if(isset($_POST['log_payment'])){
 
                             $api->free_result($statement);
                             $mysqli_checks = $api->close($statement);
-                            if($mysqli_checks===false){
-                            throw new Exception('The prepared statement could not be closed.');
-                            } else {
-                                $statement = null;
-                            }
+                            ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
 
                             $tattoo_id = $api->sanitize_data($row['tattoo_id'], "string");
                             $width = $api->sanitize_data($row['tattoo_width'], "int");
@@ -1834,7 +1717,7 @@ if(isset($_POST['log_payment'])){
                                     // Finding similar item
                                     $statement = $api->prepare("SELECT order_item.item_id, tattoo_quantity FROM (order_item INNER JOIN tattoo ON order_item.tattoo_id=tattoo.tattoo_id) WHERE order_id=? AND item_id!=? AND order_item.tattoo_id=? AND paid=? AND item_status=? AND order_item.tattoo_width=? AND order_item.tattoo_height=? LIMIT 1");
                                     if($statement===false){
-                                        throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                                        throw new Exception('prepare() error: ' . $api->errno() . ' - ' . $$api->error());
                                     }
 
                                     $mysqli_checks = $api->bind_params($statement, "sssssii", array($order_id, $item, $tattoo_id, "Partially Paid", $item_status, $width, $height));
@@ -1858,18 +1741,13 @@ if(isset($_POST['log_payment'])){
                                         $api->free_result($res);
     
                                         $mysqli_checks = $api->close($statement);
-                                        if($mysqli_checks===false){
-                                            throw new Exception('The prepared statement could not be closed.');
-                                        } else {
-                                            $res = null;
-                                            $statement = null;
-                                        }
+                                        ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $res = $statement = null;
     
                                         if($checkout_quantity == $quantity){
                                             // merging down checkout item
                                             $statement = $api->prepare("DELETE FROM order_item WHERE order_id=? AND item_id=?");
                                             if($statement===false){
-                                                throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                                                throw new Exception('prepare() error: ' . $api->errno() . ' - ' . $$api->error());
                                             }
     
                                             $mysqli_checks = $api->bind_params($statement, "ss", array($order_id, $item));
@@ -1883,16 +1761,12 @@ if(isset($_POST['log_payment'])){
                                             }
     
                                             $mysqli_checks = $api->close($statement);
-                                            if($mysqli_checks===false){
-                                                throw new Exception('The prepared statement could not be closed.');
-                                            } else {
-                                                $statement = null;
-                                            }
+                                            ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
                                         } else {
                                             $quantity -= $checkout_quantity;
                                             $statement = $api->prepare("UPDATE order_item SET tattoo_quantity=? WHERE order_id=? AND item_id=?");
                                             if($statement===false){
-                                                throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                                                throw new Exception('prepare() error: ' . $api->errno() . ' - ' . $$api->error());
                                             }
     
                                             $mysqli_checks = $api->bind_params($statement, "iss", array($quantity, $order_id, $item));
@@ -1906,17 +1780,13 @@ if(isset($_POST['log_payment'])){
                                             }
     
                                             $mysqli_checks = $api->close($statement);
-                                            if($mysqli_checks===false){
-                                                throw new Exception('The prepared statement could not be closed.');
-                                            } else {
-                                                $statement = null;
-                                            }
+                                            ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
                                         }
     
                                         // updating found Standing Partially Paid item
                                         $statement = $api->prepare("UPDATE order_item SET tattoo_quantity=? WHERE order_id=? AND item_id=?");
                                         if($statement===false){
-                                            throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                                            throw new Exception('prepare() error: ' . $api->errno() . ' - ' . $$api->error());
                                         }
     
                                         $successor['tattoo_quantity'] += $checkout_quantity;
@@ -1931,27 +1801,19 @@ if(isset($_POST['log_payment'])){
                                         }
     
                                         $mysqli_checks = $api->close($statement);
-                                        if($mysqli_checks===false){
-                                            throw new Exception('The prepared statement could not be closed.');
-                                        } else {
-                                            $statement = null;
-                                        }
+                                        ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
                                     } else {
                                         // No similar item found
                                         $api->free_result($res);
     
                                         $mysqli_checks = $api->close($statement);
-                                        if($mysqli_checks===false){
-                                            throw new Exception('The prepared statement could not be closed.');
-                                        } else {
-                                            $statement = null;
-                                        }
-    
+                                        ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+
                                         if($checkout_quantity == $quantity){
                                             // updating item payment status
                                             $statement = $api->prepare("UPDATE order_item SET paid=? WHERE order_id=? AND item_id=?");
                                             if($statement===false){
-                                                throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                                                throw new Exception('prepare() error: ' . $api->errno() . ' - ' . $$api->error());
                                             }
     
                                             $mysqli_checks = $api->bind_params($statement, "sss", array("Partially Paid", $order_id, $item));
@@ -1965,18 +1827,14 @@ if(isset($_POST['log_payment'])){
                                             }
     
                                             $mysqli_checks = $api->close($statement);
-                                            if($mysqli_checks===false){
-                                                throw new Exception('The prepared statement could not be closed.');
-                                            } else {
-                                                $statement = null;
-                                            }
+                                            ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
                                         } else {
                                             $item_id = bin2hex(openssl_random_pseudo_bytes(11, $cstrong));
                                             $quantity -= $checkout_quantity;
     
                                             $statement = $api->prepare("INSERT INTO order_item (item_id, order_id, tattoo_id, tattoo_quantity, tattoo_width, tattoo_height, paid, item_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
                                             if($statement===false){
-                                                throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                                                throw new Exception('prepare() error: ' . $api->errno() . ' - ' . $$api->error());
                                             }
     
                                             $mysqli_checks = $api->bind_params($statement, "sssiiiss", array($item_id, $order_id, $tattoo_id, $checkout_quantity, $width, $height, "Partially Paid", "Standing"));
@@ -1990,15 +1848,11 @@ if(isset($_POST['log_payment'])){
                                             }
     
                                             $mysqli_checks = $api->close($statement);
-                                            if($mysqli_checks===false){
-                                                throw new Exception('The prepared statement could not be closed.');
-                                            } else {
-                                                $statement = null;
-                                            }
+                                            ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
     
                                             $statement = $api->prepare("UPDATE order_item SET tattoo_quantity=? WHERE order_id=? AND item_id=?");
                                             if($statement===false){
-                                                throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                                                throw new Exception('prepare() error: ' . $api->errno() . ' - ' . $$api->error());
                                             }
     
                                             $mysqli_checks = $api->bind_params($statement, "iss", array($quantity, $order_id, $item));
@@ -2012,11 +1866,7 @@ if(isset($_POST['log_payment'])){
                                             }
     
                                             $mysqli_checks = $api->close($statement);
-                                            if($mysqli_checks===false){
-                                                throw new Exception('The prepared statement could not be closed.');
-                                            } else {
-                                                $statement = null;
-                                            }
+                                            ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
                                         }
                                     }
                                 }
@@ -2026,7 +1876,7 @@ if(isset($_POST['log_payment'])){
                                     // updating item payment status
                                     $statement = $api->prepare("UPDATE order_item SET paid=? WHERE item_id=?");
                                     if($statement===false){
-                                        throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                                        throw new Exception('prepare() error: ' . $api->errno() . ' - ' . $$api->error());
                                     }
     
                                     $mysqli_checks = $api->bind_params($statement, "ss", array("Fully Paid", $item));
@@ -2040,11 +1890,7 @@ if(isset($_POST['log_payment'])){
                                     }
     
                                     $mysqli_checks = $api->close($statement);
-                                    if($mysqli_checks===false){
-                                        throw new Exception('The prepared statement could not be closed.');
-                                    } else {
-                                        $statement = null;
-                                    }
+                                    ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
                                 }
     
                                 // Case - Applied
@@ -2052,7 +1898,7 @@ if(isset($_POST['log_payment'])){
                                     // Finding similar item
                                     $statement = $api->prepare("SELECT order_item.item_id, tattoo_quantity FROM (order_item INNER JOIN tattoo ON order_item.tattoo_id=tattoo.tattoo_id) WHERE order_id=? AND item_id!=? AND order_item.tattoo_id=? AND paid=? AND item_status=? AND order_item.tattoo_width=? AND order_item.tattoo_height=? LIMIT 1");
                                     if($statement===false){
-                                        throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                                        throw new Exception('prepare() error: ' . $api->errno() . ' - ' . $$api->error());
                                     }
     
                                     $mysqli_checks = $api->bind_params($statement, "sssssii", array($order_id, $item, $tattoo_id, "Fully Paid", $item_status, $width, $height));
@@ -2076,17 +1922,13 @@ if(isset($_POST['log_payment'])){
                                         $api->free_result($res);
     
                                         $mysqli_checks = $api->close($statement);
-                                        if($mysqli_checks===false){
-                                            throw new Exception('The prepared statement could not be closed.');
-                                        } else {
-                                            $statement = null;
-                                        }
+                                        ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
     
                                         if($checkout_quantity == $quantity){
                                             // updating reservation foreign key
                                             $statement = $api->prepare("UPDATE reservation SET item_id=? WHERE item_id=?");
                                             if($statement===false){
-                                                throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                                                throw new Exception('prepare() error: ' . $api->errno() . ' - ' . $$api->error());
                                             }
     
                                             $mysqli_checks = $api->bind_params($statement, "ss", array($successor['item_id'], $item));
@@ -2100,16 +1942,12 @@ if(isset($_POST['log_payment'])){
                                             }
     
                                             $mysqli_checks = $api->close($statement);
-                                            if($mysqli_checks===false){
-                                                throw new Exception('The prepared statement could not be closed.');
-                                            } else {
-                                                $statement = null;
-                                            }
+                                            ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
     
                                             // merging down checkout item
                                             $statement = $api->prepare("DELETE FROM order_item WHERE order_id=? AND item_id=?");
                                             if($statement===false){
-                                                throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                                                throw new Exception('prepare() error: ' . $api->errno() . ' - ' . $$api->error());
                                             }
     
                                             $mysqli_checks = $api->bind_params($statement, "ss", array($order_id, $item));
@@ -2123,16 +1961,12 @@ if(isset($_POST['log_payment'])){
                                             }
     
                                             $mysqli_checks = $api->close($statement);
-                                            if($mysqli_checks===false){
-                                                throw new Exception('The prepared statement could not be closed.');
-                                            } else {
-                                                $statement = null;
-                                            }
+                                            ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
                                         } else {
                                             $quantity -= $checkout_quantity;
                                             $statement = $api->prepare("UPDATE order_item SET tattoo_quantity=? WHERE order_id=? AND item_id=?");
                                             if($statement===false){
-                                                throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                                                throw new Exception('prepare() error: ' . $api->errno() . ' - ' . $$api->error());
                                             }
     
                                             $mysqli_checks = $api->bind_params($statement, "iss", array($item_quantity, $order_id, $item));
@@ -2146,17 +1980,13 @@ if(isset($_POST['log_payment'])){
                                             }
     
                                             $mysqli_checks = $api->close($statement);
-                                            if($mysqli_checks===false){
-                                                throw new Exception('The prepared statement could not be closed.');
-                                            } else {
-                                                $statement = null;
-                                            }
+                                            ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
                                         }
     
                                         // updating found Applied Fully Paid item
                                         $statement = $api->prepare("UPDATE order_item SET tattoo_quantity=? WHERE order_id=? AND item_id=?");
                                         if($statement===false){
-                                            throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                                            throw new Exception('prepare() error: ' . $api->errno() . ' - ' . $$api->error());
                                         }
     
                                         $successor['tattoo_quantity'] += $checkout_quantity;
@@ -2171,27 +2001,19 @@ if(isset($_POST['log_payment'])){
                                         }
     
                                         $mysqli_checks = $api->close($statement);
-                                        if($mysqli_checks===false){
-                                            throw new Exception('The prepared statement could not be closed.');
-                                        } else {
-                                            $statement = null;
-                                        }
+                                        ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
                                     } else {
                                         // No similar item found
                                         $api->free_result($res);
     
                                         $mysqli_checks = $api->close($statement);
-                                        if($mysqli_checks===false){
-                                            throw new Exception('The prepared statement could not be closed.');
-                                        } else {
-                                            $statement = null;
-                                        }
+                                        ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
     
                                         if($checkout_quantity == $quantity){
                                             // updating item payment status
                                             $statement = $api->prepare("UPDATE order_item SET paid=? WHERE order_id=? AND item_id=?");
                                             if($statement===false){
-                                                throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                                                throw new Exception('prepare() error: ' . $api->errno() . ' - ' . $$api->error());
                                             }
     
                                             $mysqli_checks = $api->bind_params($statement, "sss", array("Fully Paid", $order_id, $item));
@@ -2205,18 +2027,14 @@ if(isset($_POST['log_payment'])){
                                             }
     
                                             $mysqli_checks = $api->close($statement);
-                                            if($mysqli_checks===false){
-                                                throw new Exception('The prepared statement could not be closed.');
-                                            } else {
-                                                $statement = null;
-                                            }
+                                            ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
                                         } else {
                                             $item_id = bin2hex(openssl_random_pseudo_bytes(11, $cstrong));
                                             $quantity -= $checkout_quantity;
     
                                             $statement = $api->prepare("INSERT INTO order_item (item_id, order_id, tattoo_id, tattoo_quantity, tattoo_width, tattoo_height, paid, item_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
                                             if($statement===false){
-                                                throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                                                throw new Exception('prepare() error: ' . $api->errno() . ' - ' . $$api->error());
                                             }
     
                                             $mysqli_checks = $api->bind_params($statement, "sssiiiss", array($item_id, $order_id, $tattoo_id, $checkout_quantity, $width, $height, "Fully Paid", "Applied"));
@@ -2230,15 +2048,11 @@ if(isset($_POST['log_payment'])){
                                             }
     
                                             $mysqli_checks = $api->close($statement);
-                                            if($mysqli_checks===false){
-                                                throw new Exception('The prepared statement could not be closed.');
-                                            } else {
-                                                $statement = null;
-                                            }
+                                            ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
     
                                             $statement = $api->prepare("UPDATE order_item SET tattoo_quantity=? WHERE order_id=? AND item_id=?");
                                             if($statement===false){
-                                                throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                                                throw new Exception('prepare() error: ' . $api->errno() . ' - ' . $$api->error());
                                             }
     
                                             $mysqli_checks = $api->bind_params($statement, "iss", array($quantity, $order_id, $item));
@@ -2252,11 +2066,7 @@ if(isset($_POST['log_payment'])){
                                             }
     
                                             $mysqli_checks = $api->close($statement);
-                                            if($mysqli_checks===false){
-                                                throw new Exception('The prepared statement could not be closed.');
-                                            } else {
-                                                $statement = null;
-                                            }
+                                            ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
                                         }
                                     }
                                 }
@@ -2284,7 +2094,7 @@ if(isset($_POST['log_payment'])){
 
                 $statement = $api->prepare("INSERT INTO payment (payment_id, order_id, amount_paid, payment_method, payment_change, client_fname, client_lname, street_address, city, province, zip) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
                 if($statement===false){
-                    throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                    throw new Exception('prepare() error: ' . $api->errno() . ' - ' . $$api->error());
                 }
 
                 $mysqli_checks = $api->bind_params($statement, "ssdsdssssss", array($payment_id, $order_id, $amount_paid, $payment_method, $change, $first_name, $last_name, $street_address, $city, $province, $zip));
@@ -2298,11 +2108,7 @@ if(isset($_POST['log_payment'])){
                 }
 
                 $mysqli_checks = $api->close($statement);
-                if($mysqli_checks===false){
-                    throw new Exception('The prepared statement could not be closed.');
-                } else {
-                    $statement = null;
-                }
+                ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
             }
         } catch (Exception $e) {
             $_SESSION['res'] = $e->getMessage();

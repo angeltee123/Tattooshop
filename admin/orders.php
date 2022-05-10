@@ -10,29 +10,19 @@
   // }
 
   try {
-    $left = $api->join("INNER", "client", "user", "client.client_id", "user.client_id");
-    $join = $api->join("INNER", $left, "workorder", "client.client_id", "workorder.client_id");
-
-    $query = $api->select();
-    $query = $api->params($query, array("workorder.client_id", "client_fname", "client_lname", "user_avatar", "order_id", "order_date", "amount_due_total", "incentive"));
-    $query = $api->from($query);
-    $query = $api->table($query, $join);
-    $query = $api->where($query, "status", "?");
-    $query = $api->order($query, "order_date", "ASC");
-
-    $statement = $api->prepare($query);
+    $statement = $api->prepare("SELECT workorder.client_id, client_fname, client_lname, user_avatar, order_id, order_date, amount_due_total, incentive FROM ((client INNER JOIN user ON client.client_id=user.client_id) INNER JOIN workorder ON client.client_id=workorder.client_id) WHERE status=? ORDER BY order_date ASC");
     if($statement===false){
-        throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+      throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
     }
 
     $mysqli_checks = $api->bind_params($statement, "s", "Ongoing");
     if($mysqli_checks===false){
-        throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
+      throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
     }
 
     $mysqli_checks = $api->execute($statement);
     if($mysqli_checks===false){
-        throw new Exception('Execute error: The prepared statement could not be executed.');
+      throw new Exception('Execute error: The prepared statement could not be executed.');
     }
 
     $orders = $api->get_result($statement);
@@ -42,15 +32,11 @@
 
     $api->free_result($statement);
     $mysqli_checks = $api->close($statement);
-    if($mysqli_checks===false){
-      throw new Exception('The prepared statement could not be closed.');
-    } else {
-      $statement = null;
-    }
+    ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
   } catch (Exception $e) {
-    exit();
     $_SESSION['res'] = $e->getMessage();
     Header("Location: ./index.php");
+    exit();
   }
 ?>
 <!DOCTYPE html>
@@ -91,7 +77,14 @@
     }
 
     .Orders__order__collapsible__header {
+      display: block;
       margin: 0 0.35rem 0 1.25rem !important;
+    }
+
+    .Orders__order__collapsible__date {
+      font-size: 1rem;
+      color: #6c757d;
+      margin: 0;
     }
 
     .Orders__order {
@@ -106,26 +99,14 @@
       border: 0 !important;
     }
 
-    @media (min-width: 914px){
-      .Orders__order__collapsible__header {
-        display: block;
-      }
-
-      .Orders__order__collapsible__date {
-        font-size: 1rem !important;
-        color: #6c757d !important;
-        margin: 0 !important;
-      }
-    }
-
     @media (max-width: 914px){
       .Orders__order__collapsible__header {
-        display: none;
+        display: none !important;
       }
 
       .Orders__order__collapsible__date {
         font-size: 1.25rem !important;
-        color: #6c757d !important;
+        color: #000000 !important;
         margin: 0 0 0 0.5rem !important;
       }
     }

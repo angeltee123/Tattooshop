@@ -27,7 +27,7 @@
       $api->free_result($statement);
       $mysqli_checks = $api->close($statement);
       if($mysqli_checks===false){
-      throw new Exception('The prepared statement could not be closed.');
+        throw new Exception('The prepared statement could not be closed.');
       }
     } catch (Exception $e) {
       Header("Location: ./index.php");
@@ -61,6 +61,14 @@
       width: 60%;
     }
 
+    .Catalogue__cards__modal {
+      flex-flow: row nowrap;
+    }
+
+    .Catalogue__cards__modal__preview-body__form {
+      margin: 0 0 0 5rem;
+    }
+
     .Catalogue__cards__modal__preview-body__form__color {
       height: 27.5px;
       width: 27.5px;
@@ -83,6 +91,80 @@
 
     .Catalogue__cards__modal__preview-body__form__color:hover + .Catalogue__cards__modal__preview-body__form__color--tooltip {
       opacity: 1;
+    }
+
+    .Catalogue__cards__modal__preview-body__description {
+      margin: 3rem 0;
+    }
+
+    .Catalogue__cards__modal__preview-body__fields {
+      margin-top: 3rem;
+      margin-bottom: 3rem;
+    }
+
+    .Catalogue__cards__modal__preview-body__scheme {
+      display: flex;
+    }
+
+    @media (max-width: 1496px){
+      .Catalogue__cards__modal {
+        flex-flow: column nowrap !important;
+      }
+
+      .Catalogue__cards__modal__preview-body {
+        flex: 0 !important;
+        margin: 3.5rem 0 !important;
+      }
+
+      .Catalogue__cards__modal__preview-image {
+        width: 400px !important;
+        height: 400px !important;
+        border-radius: 360px !important;
+      }
+
+      .Catalogue__cards__modal__preview-body__form {
+        margin: 0 auto !important;
+      }
+
+      .Catalogue__cards__modal__preview-body__description {
+        margin: 1rem 0 !important;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        max-height: 4.5rem;
+      }
+
+      .Catalogue__cards__modal__preview-body__price {
+        font-size: 1.25rem !important;
+      }
+
+      .Catalogue__cards__modal__preview-body__scheme {
+        display: none !important;
+      }
+
+      .Catalogue__cards__modal__preview-body__fields {
+        margin-top: 2rem !important;
+        margin-bottom: 2.25rem !important;
+      }
+    }
+
+    @media (max-width: 654px){
+      .Catalogue__cards__modal__preview-image {
+        width: 300px !important;
+        height: 300px !important;
+        border-radius: 360px !important;
+      }
+
+      .Catalogue__cards__modal__preview-body__fields {
+        flex-flow: column nowrap !important;
+        margin-top: 2.25rem !important;
+        margin-bottom: 2.25rem !important;
+      }
+
+      .Catalogue__cards__modal__preview-body__fields > .col {
+        margin-top: 0.5rem !important;
+        margin-bottom: 0.5rem !important;
+      }
     }
   </style>
   <title>Explore | NJC Tattoo</title>
@@ -125,17 +207,17 @@
                   <input type="hidden" class="d-none" name="tattoo_id" value="<?php echo $id ?>" required/>
                   <input type="hidden" class="d-none" name="tattoo_name" value="<?php echo $id ?>" required/>
                   <div>
-                    <h1 class="display-4 fw-bold my-0"><?php echo $name ?></h1>
-                    <h4 class="text-secondary">₱<?php echo $price ?></h4>
+                    <h1 class="Catalogue__cards__modal__preview-body__name display-4 fw-bold my-0"><?php echo $name ?></h1>
+                    <h4 class="Catalogue__cards__modal__preview-body__price text-secondary">₱<?php echo $price ?></h4>
                   </div>
-                  <div class="my-5 text-justify">
-                    <p class="text-wrap"><?php echo $description ?></p>
+                  <div class="Catalogue__cards__modal__preview-body__description text-justify">
+                    <p class="fs-6 text-wrap"><?php echo $description ?></p>
                   </div>
-                  <div class="my-3 row">
+                  <div class="Catalogue__cards__modal__preview-body__scheme row">
                     <div class="col">
                       <h4>Color</h4>
                       <div class="d-flex flex-row align-items-center">
-                        <div class="Catalogue__cards__modal__preview-body__form__color" style="background-color: <?php echo strcasecmp($color_scheme, "Monochrome") == 0 ? "#000000" : "linear-gradient(to bottom right, #FF00FF, blue)"; ?>"></div>
+                        <div class="Catalogue__cards__modal__preview-body__form__color" style="background: <?php echo strcasecmp($color_scheme, "Monochrome") == 0 ? "#000000" : "linear-gradient(to bottom right, #FF00FF, blue)"; ?>"></div>
                         <p class="Catalogue__cards__modal__preview-body__form__color--tooltip"><?php echo strcasecmp($color_scheme, "Monochrome") == 0 ? "Monochrome" : "Multicolor"; ?></p>
                       </div>
                     </div>
@@ -144,7 +226,7 @@
                       <p><?php echo $complexity ?></p>
                     </div>
                   </div>
-                  <div class="my-5 row">
+                  <div class="Catalogue__cards__modal__preview-body__fields row">
                     <div class="col">
                       <div class="form-floating">
                         <input type="number" class="form-control" name="quantity" min="1" value="1" placeholder="Quantity" required/>
