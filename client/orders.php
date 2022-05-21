@@ -155,44 +155,15 @@
 <html lang="en">
 <head>
   <?php require_once '../common/meta.php'; ?>
-  <!-- native style -->
   <link href="../style/orders.css" rel="stylesheet">
-  <style>
-    .Orders__order-item {
-      border-bottom: 1px solid #dee2e6 !important;
-    }
-
-    .Orders__controls__select-all {
-      color: #000;
-      text-decoration: none;
-      margin: 0 0.25rem 0 0 !important;
-    }
-
-    .Orders__controls__select-all:hover {
-      color: #000;
-      text-decoration: underline;
-    }
-
-    .Orders__controls__control-group > div {
-      display: inline-block;
-    }
-
-    .Orders__referral-form__col {
-      margin: 1.5rem 0;
-    }
-
-    @media (max-width: 768px){
-      .Orders__referral-form__col {
-        margin: 0.5rem 0 !important;
-      }
-    }
-  </style>
+  <!-- native style -->
+  <link href="./style/orders.css" rel="stylesheet">
   <title>Orders | NJC Tattoo</title>
 </head>
 <body class="w-100">
   <?php require_once '../common/header.php'; ?>
   <div class="Orders content">
-    <form method="POST" action="../scripts/php/queries.php">
+    <form id="Orders__form" method="POST" action="../scripts/php/queries.php">
       <div class="Orders__header">
         <h2 class="fw-bold display-3">Orders</h2>
         <p class="d-inline fs-5 text-muted">Manage your ongoing tattoo orders and referrals here. <?php if(!empty($_SESSION['order']['order_id'])){ echo "Tick the checkboxes of the items you want to modify or remove."; } ?></p>
@@ -217,7 +188,7 @@
               </div>
               <?php if($editable_rows > 0){ ?>
                 <div>
-                  <button type="submit" class="Orders__controls__control btn btn-outline-primary ms-1" name="update_items" data-bs-toggle="tooltip" data-bs-placement="top" title="Update Items"><span class="Orders__controls__control__icon material-icons">edit</span><span class="Orders__controls__control__text">Update Items</span></button>
+                  <button type="submit" class="Orders__controls__control btn btn-outline-primary ms-1" id="update_items" name="update_items" data-bs-toggle="tooltip" data-bs-placement="top" title="Update Items"><span class="Orders__controls__control__icon material-icons">edit</span><span class="Orders__controls__control__text">Update Items</span></button>
                 </div>
                 <div>
                   <button type="submit" class="Orders__controls__control btn btn-outline-danger ms-1" name="remove_items" data-bs-toggle="tooltip" data-bs-placement="top" title="Remove Items"><span class="Orders__controls__control__icon material-icons">remove_circle</span><span class="Orders__controls__control__text">Remove Items</span></button>
@@ -231,7 +202,7 @@
               </div>
               <?php if($api->num_rows($referrals) > 0){ ?>
                 <div>
-                  <button type="submit" class="Orders__controls__control btn btn-outline-secondary ms-1" name="update_referrals" data-bs-toggle="tooltip" data-bs-placement="top" title="Update Referrals"><span class="Orders__controls__control__icon material-icons">person</span><span class="Orders__controls__control__text">Update Referrals</span></button>
+                  <button type="submit" class="Orders__controls__control btn btn-outline-secondary ms-1" id="update_referrals" name="update_referrals" data-bs-toggle="tooltip" data-bs-placement="top" title="Update Referrals"><span class="Orders__controls__control__icon material-icons">person</span><span class="Orders__controls__control__text">Update Referrals</span></button>
                 </div>
                 <div>
                   <button type="submit" class="Orders__controls__control btn btn-outline-danger ms-1" name="remove_referrals" data-bs-toggle="tooltip" data-bs-placement="top" title="Remove Referrals"><span class="Orders__controls__control__icon material-icons">person_remove</span><span class="Orders__controls__control__text">Remove Referrals</span></button>
@@ -379,7 +350,7 @@
                   <label for="quantity" class="form-label fw-semibold">Quantity</label>
                   <?php if((strcasecmp($status, "Standing") == 0 && strcasecmp($paid, "Unpaid") == 0)){ ?>
                     <input type="number" class="form-control" name="quantity[]" min="1" value="<?php echo $quantity; ?>"/>
-                    <label class="error-message quantity_err d-none"><span class="material-icons-outlined fs-6 me-1">info</span></label>
+                    <label class="error-message quantity_err d-none"><span class="material-icons-outlined fs-6 me-1">info</span><span></span></label>
                   <?php } else { ?>
                     <p><?php echo $quantity; ?></p>
                   <?php } ?>
@@ -388,8 +359,8 @@
                   <!-- width -->
                   <label for="width" class="form-label fw-semibold">Width</label>
                   <?php if((strcasecmp($status, "Standing") == 0 && strcasecmp($paid, "Unpaid") == 0)){ ?>
-                    <input type="number" class="form-control" name="width[]" min="1" value="<?php echo $width; ?>"/>
-                    <label class="error-message width_err d-none"><span class="material-icons-outlined fs-6 me-1">info</span></label>
+                    <input type="number" class="form-control" name="width[]" min="1" max="24" value="<?php echo $width; ?>"/>
+                    <label class="error-message width_err d-none"><span class="material-icons-outlined fs-6 me-1">info</span><span></span></label>
                   <?php } else { ?>
                     <p><?php echo $width; ?></p>
                   <?php } ?>
@@ -398,8 +369,8 @@
                   <!-- height --->
                   <label for="height" class="form-label fw-semibold">Height</label>
                   <?php if((strcasecmp($status, "Standing") == 0 && strcasecmp($paid, "Unpaid") == 0)){ ?>
-                    <input type="number" class="form-control" name="height[]" min="1" value="<?php echo $height; ?>"/>
-                    <label class="error-message height_err d-none"><span class="material-icons-outlined fs-6 me-1">info</span></label>
+                    <input type="number" class="form-control" name="height[]" min="1" max="36" value="<?php echo $height; ?>"/>
+                    <label class="error-message height_err d-none"><span class="material-icons-outlined fs-6 me-1">info</span><span></span></label>
                   <?php } else { ?>
                     <p><?php echo $height; ?></p>
                   <?php } ?>
@@ -414,44 +385,44 @@
         </div>
         <div class="d-none" id="Orders__referrals">
           <div class="collapse border-bottom mt-3 p-7" id="Orders__referral-form">
-            <div class="row align-items-end">
+            <div class="row align-items-start">
               <h2 class="mb-4">Referral Info</h2>
               <div class="Orders__referral-form__col col">
                 <label class="form-label text-muted" for="first_name">First Name</label>
-                <input type="text" class="form-control" name="first_name" minlength="2" maxlength="50">
-                <label id="first_name_err" class="error-message <?php echo isset($_SESSION['first_name_err']) ? "d-flex" : "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><?php if(isset($_SESSION['first_name_err'])){ echo $_SESSION['first_name_err']; } ?></label>
+                <input type="text" class="form-control<?php if(isset($_SESSION['first_name_err'])) echo " is-invalid"; ?>" name="first_name" id="first_name" minlength="2" maxlength="50">
+                <label id="first_name_err" class="error-message <?php echo isset($_SESSION['first_name_err']) ? "d-flex" : "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><span><?php if(isset($_SESSION['first_name_err'])){ echo $_SESSION['first_name_err']; } ?></span></label>
               </div>
-              <div class="Orders__referral-form__col col-md-2">
-                <label class="form-label text-muted" for="mi">Middle Initial</label>
-                <input type="text" class="form-control" name="mi" minlength="1" maxlength="1">
-                <label id="mi_err" class="error-message <?php echo isset($_SESSION['mi_err']) ? "d-flex" : "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><?php if(isset($_SESSION['mi_err'])){ echo $_SESSION['mi_err']; } ?></label>
+              <div class="Orders__referral-form__col col-md-3">
+                <label class="form-label text-muted" for="mi">Middle Initial (Optional)</label>
+                <input type="text" class="form-control<?php if(isset($_SESSION['mi_err'])) echo " is-invalid"; ?>" name="mi" id="mi" minlength="1" maxlength="2">
+                <label id="mi_err" class="error-message <?php echo isset($_SESSION['mi_err']) ? "d-flex" : "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><span><?php if(isset($_SESSION['mi_err'])){ echo $_SESSION['mi_err']; } ?></span></label>
               </div>
               <div class="Orders__referral-form__col col">
                 <label class="form-label text-muted" for="last_name">Last Name</label>
-                <input type="text" class="form-control" name="last_name" minlength="2" maxlength="50">
-                <label id="first_name_err" class="error-message <?php echo isset($_SESSION['last_name_err']) ? "d-flex" : "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><?php if(isset($_SESSION['last_name_err'])){ echo $_SESSION['last_name_err']; } ?></label>
+                <input type="text" class="form-control<?php if(isset($_SESSION['last_name_err']))echo " is-invalid"; ?>" name="last_name" id="last_name" minlength="2" maxlength="50">
+                <label id="last_name_err" class="error-message <?php echo isset($_SESSION['last_name_err']) ? "d-flex" : "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><span><?php if(isset($_SESSION['last_name_err'])){ echo $_SESSION['last_name_err']; } ?></span></label>
               </div>
             </div>
-            <div class="row align-items-end">
-              <div class="Orders__referral-form__col col-md-1">
-                <label class="form-label text-muted" for="street_address">Age</label>
-                <input type="number" class="form-control" name="age" min="17" max="90">
-                <label id="age_err" class="error-message <?php echo isset($_SESSION['age_err']) ? "d-flex" : "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><?php if(isset($_SESSION['age_err'])){ echo $_SESSION['age_err']; } ?></label>
+            <div class="row align-items-start">
+              <div class="Orders__referral-form__col col-md-2">
+                <label class="form-label text-muted" for="age">Age</label>
+                <input type="number" class="form-control<?php if(isset($_SESSION['age_err'])) echo " is-invalid"; ?>" name="age" id="age" min="18" max="90">
+                <label id="age_err" class="error-message <?php echo isset($_SESSION['age_err']) ? "d-flex" : "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><span><?php if(isset($_SESSION['age_err'])){ echo $_SESSION['age_err']; } ?></span></label>
               </div>
               <div class="Orders__referral-form__col col">
-                <label class="form-label text-muted" for="city">Email Address</label>
-                <input type="email" class="form-control" name="email" maxlength="62">
-                <label id="email_err" class="error-message <?php echo isset($_SESSION['email_err']) ? "d-flex" : "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><?php if(isset($_SESSION['email_err'])){ echo $_SESSION['email_err']; } ?></label>
+                <label class="form-label text-muted" for="email">Email Address</label>
+                <input type="email" class="form-control<?php if(isset($_SESSION['email_err'])) echo " is-invalid"; ?>" name="email" id="email" maxlength="62">
+                <label id="email_err" class="error-message <?php echo isset($_SESSION['email_err']) ? "d-flex" : "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><span><?php if(isset($_SESSION['email_err'])){ echo $_SESSION['email_err']; } ?></span></label>
               </div>
               <div class="Orders__referral-form__col col">
-                <label class="form-label text-muted" for="city">Contact Number</label>
-                <input type="text" inputmode="numeric" class="form-control" name="contact_number" minlength="7" maxlength="11">
-                <label id="contact_number_err" class="error-message <?php echo isset($_SESSION['contact_number_err']) ? "d-flex" : "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><?php if(isset($_SESSION['contact_number_err'])){ echo $_SESSION['contact_number_err']; } ?></label>
+                <label class="form-label text-muted" for="contact_number">Contact Number</label>
+                <input type="text" inputmode="numeric" class="form-control<?php if(isset($_SESSION['contact_number_err'])) echo " is-invalid"; ?>" name="contact_number" id="contact_number" minlength="7" maxlength="11">
+                <label id="contact_number_err" class="error-message <?php echo isset($_SESSION['contact_number_err']) ? "d-flex" : "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><span><?php if(isset($_SESSION['contact_number_err'])){ echo $_SESSION['contact_number_err']; } ?></span></label>
               </div>
             </div>
             <div class="mt-5 mb-3">
               <label class="error-message <?php echo isset($_SESSION['referral_err']) ? "d-flex" : "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><?php if(isset($_SESSION['referral_err'])){ echo $_SESSION['referral_err']; } ?></label>
-              <button type="submit" class="w-auto btn btn-primary rounded-pill px-3 py-2" name="refer">Make Referral</button>
+              <button type="submit" class="w-auto btn btn-primary rounded-pill px-3 py-2" name="refer" id="refer">Make Referral</button>
             </div>
           </div>
           <?php
@@ -468,11 +439,11 @@
           ?>
             <div class="Orders__referral">
               <div class="Orders__referral__input-group">
-                <div class="ms-3 me-2">
+                <div class="align-self-center ms-3 me-2">
                   <input type="hidden" class="d-none" name="referral_index[]" value="<?php echo $referral_id; ?>" />
                   <input type="checkbox" class="Orders__referral__checkbox form-check-input p-2 border-dark" name="referral[]" value="<?php echo $referral_id; ?>"/>
                 </div>
-                <div class="mx-3">
+                <div class="align-self-center mx-3">
                   <label for="tattoo_width">Status</label>
                   <p class="my-0 fw-semibold <?php echo strcasecmp($status, "Confirmed") == 0 ? "text-success" : "text-secondary"; ?>"><?php echo $status; ?></p>
                 </div>
@@ -480,45 +451,45 @@
                   <div class="form-floating">
                     <input type="text" class="form-control" value="<?php echo $first_name; ?>" maxlength="50" placeholder="First Name" name="referral_fname[]" required />
                     <label for="tattoo_width">First Name</label>
-                    <label class="error-message referral_fname_err d-none"><span class="material-icons-outlined fs-6 me-1">info</span></label>
                   </div>
+                  <label class="error-message referral_fname_err d-none"><span class="material-icons-outlined fs-6 me-1">info</span><span></span></label>
                 </div>
                 <div class="mx-2">
                   <div class="form-floating">
-                    <input type="text" class="form-control" style="width: 50px;" value="<?php echo $mi; ?>" minlength="1" maxlength="1" placeholder="MI" name="referral_mi[]" required />
+                    <input type="text" class="form-control" style="min-width: 75px;" value="<?php echo $mi; ?>" minlength="1" maxlength="1" placeholder="MI" name="referral_mi[]" />
                     <label for="tattoo_width">M.I.</label>
-                    <label class="error-message referral_mi_err d-none"><span class="material-icons-outlined fs-6 me-1">info</span></label>
                   </div>
+                  <label class="error-message referral_mi_err d-none"><span class="material-icons-outlined fs-6 me-1">info</span><span></span></label>
                 </div>
                 <div class="flex-fill mx-2">
                   <div class="form-floating">
                     <input type="text" class="form-control" value="<?php echo $last_name; ?>" maxlength="50" placeholder="Last Name" name="referral_lname[]" required />
                     <label for="tattoo_width">Last Name</label>
-                    <label class="error-message referral_lname_err d-none"><span class="material-icons-outlined fs-6 me-1">info</span></label>
                   </div>
+                  <label class="error-message referral_lname_err d-none"><span class="material-icons-outlined fs-6 me-1">info</span><span></span></label>
                 </div>
               </div>
               <div class="Orders__referral__input-group">
                 <div class="mx-2">
                   <div class="form-floating">
-                    <input type="number" class="form-control" style="width: 60px;" value="<?php echo $age; ?>" name="referral_age[]" min="17" max="90" required />
+                    <input type="number" class="form-control" style="min-width: 90px;" value="<?php echo $age; ?>" name="referral_age[]" min="18" max="90" required />
                     <label for="tattoo_width">Age</label>
-                    <label class="error-message referral_age_err d-none"><span class="material-icons-outlined fs-6 me-1">info</span></label>
                   </div>
+                  <label class="error-message referral_age_err d-none"><span class="material-icons-outlined fs-6 me-1">info</span><span></span></label>
                 </div>
                 <div class="flex-fill mx-2">
                   <div class="form-floating">
                     <input type="text" class="form-control" value="<?php echo $contact_no; ?>" minlength="7" maxlength="11" placeholder="Contact Number" name="referral_contact_no[]">
                     <label for="tattoo_width">Contact Number</label>
-                    <label class="error-message referral_contact_number_err d-none"><span class="material-icons-outlined fs-6 me-1">info</span></label>
                   </div>
+                  <label class="error-message referral_contact_err d-none"><span class="material-icons-outlined fs-6 me-1">info</span><span></span></label>
                 </div>
                 <div class="flex-fill mx-2">
                   <div class="form-floating">
                     <input type="email" class="form-control" value="<?php echo $email; ?>" maxlength="62" placeholder="Email" name="referral_email[]" required />
                     <label for="tattoo_width">Email</label>
-                    <label class="error-message referral_email_err d-none"><span class="material-icons-outlined fs-6 me-1">info</span></label>
                   </div>
+                  <label class="error-message referral_email_err d-none"><span class="material-icons-outlined fs-6 me-1">info</span><span></span></label>
                 </div>
               </div>
             </div>
@@ -583,6 +554,9 @@
     var referrals = document.getElementById('Orders__referrals');
     var referral_btn_group = document.getElementById('Orders__controls--referrals');
 
+    // page form
+    var page_form = document.getElementById('Orders__form');
+
     // switching between tabs
     referrals_tab.addEventListener('click', function(){
       orders_tab.className = "Orders__controls--tab border-0 text-muted";
@@ -607,65 +581,34 @@
     });
   </script>
   <?php if($editable_rows > 0){ ?>
-    <script>
-      // tooltips
-      var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-      var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl){
-        return new bootstrap.Tooltip(tooltipTriggerEl)
-      });
-
-      // orders tab controls
-      var all_orders_selected = false;
-      var select_all_items = document.getElementById('Orders__controls__select-all-orders');
-      var item_checkboxes = document.getElementsByClassName('Orders__order-item__checkbox');
-      
-      select_all_items.addEventListener('click', function(){
-        all_orders_selected = !all_orders_selected;
-        all_orders_selected ? this.innerText = "Deselect" : this.innerText = "Select All";
-
-        for(var i=0, count=item_checkboxes.length; i < count; i++){
-          item_checkboxes[i].checked = all_orders_selected;
-        }
-      });
-
-      orders_tab.addEventListener('click', function(){
-        select_all_items.classList.replace('d-none', 'd-inline-block');
-      });
-
-      referrals_tab.addEventListener('click', function(){
-        select_all_items.classList.replace('d-inline-block', 'd-none');
-      });
-    </script>
+    <script src="../api/api.js"></script>
+    <script src="../scripts/js/orders.js"></script>
   <?php } if($api->num_rows($referrals) > 0){ ?>
-    <script>
-      // referrals tab controls
-      var all_referrals_selected = false;
-      var select_all_referrals = document.getElementById('Orders__controls__select-all-referrals');
-      var referral_checkboxes = document.getElementsByClassName('Orders__referral__checkbox');
-
-      select_all_referrals.addEventListener('click', function(){
-        all_referrals_selected = !all_referrals_selected;
-        all_referrals_selected ? this.innerText = "Deselect" : this.innerText = "Select All";
-
-        for(var i=0, count=referral_checkboxes.length; i < count; i++){
-          referral_checkboxes[i].checked = all_referrals_selected;
-        }
-      });
-
-      orders_tab.addEventListener('click', function(){
-        select_all_referrals.classList.replace('d-inline-block', 'd-none');
-      });
-
-      referrals_tab.addEventListener('click', function(){
-        select_all_referrals.classList.replace('d-none', 'd-inline-block');
-      });
-    </script>
+    <script src="../scripts/js/referrals.js"></script>
   <?php } ?>
 <?php } ?>
 </html>
 <?php
   if(isset($_SESSION['res'])){
     unset($_SESSION['res']);
+  }
+  if(isset($_SESSION['first_name_err'])){
+    unset($_SESSION['first_name_err']);
+  }
+  if(isset($_SESSION['mi_err'])){
+    unset($_SESSION['mi_err']);
+  }
+  if(isset($_SESSION['last_name_err'])){
+    unset($_SESSION['last_name_err']);
+  }
+  if(isset($_SESSION['age_err'])){
+    unset($_SESSION['age_err']);
+  }
+  if(isset($_SESSION['email_err'])){
+    unset($_SESSION['email_err']);
+  }
+  if(isset($_SESSION['contact_number_err'])){
+    unset($_SESSION['contact_number_err']);
   }
   if(isset($_SESSION['referral_err'])){
     unset($_SESSION['referral_err']);

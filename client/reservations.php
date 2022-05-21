@@ -159,7 +159,7 @@
               </button>
             </div>
             <div class="Reservations__item__collapsible__body collapse mt-3 p-7 rounded shadow-sm" id="item_<?php echo $item_id; ?>">
-              <form action="../scripts/php/queries.php" method="POST">
+              <form class="Reservations__item__form" action="../scripts/php/queries.php" method="POST">
                 <div class="Reservations__item__collapsible__body--stacking">
                   <div class="Reservations__item__collapsible__body__preview order-first">
                     <!-- tattoo image -->
@@ -176,7 +176,7 @@
                       <!-- status -->
                       <div class="col">
                         <label for="status" class="form-label fw-semibold">Status</label>
-                        <div class="fw-semibold"><p class="d-inline <?php if(strcasecmp($status, "Confirmed") == 0){ echo "text-success"; } else { echo "text-secondary"; } ?>"><?php echo $status; ?></p>, <p class="d-inline <?php if(strcasecmp($paid, "Fully Paid") == 0){ echo "text-success"; } else { echo "text-secondary"; } ?>"><?php echo $paid; ?></p></div>
+                        <div class="fw-semibold"><p class="Reservation__item__status d-inline <?php echo (strcasecmp($status, "Confirmed") == 0) ? "text-success" : "text-secondary"; ?>"><?php echo $status; ?></p>, <p class="d-inline <?php echo (strcasecmp($paid, "Fully Paid") == 0) ? "text-success" : "text-secondary"; ?>"><?php echo $paid; ?></p></div>
                         <input type="hidden" readonly class="d-none" value="<?php echo $reservation_id; ?>" name="reservation_id" />
                       </div>
                       <!-- addon amount -->
@@ -224,6 +224,7 @@
                           <p><?php echo $api->sanitize_data(date("g:i A", strtotime($scheduled_time)), 'string'); ?></p>
                         <?php } ?>
                         <input type="<?php echo strcasecmp($status, "Confirmed") == 0 ? "hidden" : "time"; ?>" readonly class="<?php if(strcasecmp($status, "Pending") == 0){ echo "reservations "; } ?>form-control" value="<?php echo $scheduled_time; ?>" name="scheduled_time" />
+                        <label class="error-message scheduled_time_err d-none"><span class="material-icons-outlined fs-6 me-1">info</span><span></span></label>
                       </div>
                       <!-- date -->
                       <div class="col">
@@ -232,6 +233,7 @@
                           <p><?php echo $api->sanitize_data($date[0], 'string') . " " . $api->sanitize_data($date[1], 'int') . ", " . $api->sanitize_data($date[2], 'int'); ?></p>
                         <?php } ?>
                         <input type="<?php echo strcasecmp($status, "Confirmed") == 0 ? "hidden" : "date"; ?>" readonly class="<?php if(strcasecmp($status, "Pending") == 0){ echo "reservations "; } ?>form-control" value="<?php echo $scheduled_date; ?>" name="scheduled_date" />
+                        <label class="error-message scheduled_date_err d-none"><span class="material-icons-outlined fs-6 me-1">info</span><span></span></label>
                       </div>
                     </div>
                   </div>
@@ -245,6 +247,7 @@
                         <p><?php echo $address; ?></p>
                       <?php } ?>
                       <input type="<?php echo strcasecmp($status, "Confirmed") == 0 ? "hidden" : "text"; ?>" readonly class="<?php echo strcasecmp($status, "Pending") == 0 ? "reservations form-control" : "d-none"; ?>" value="<?php echo $address; ?>" name="reservation_address" />
+                      <label class="error-message reservation_address_err d-none"><span class="material-icons-outlined fs-6 me-1">info</span><span></span></label>
                     </div>
                   </div>
                   <div class="row <?php echo strcasecmp($status, 'Confirmed') == 0 ? "mt-5" : "my-5"; ?>">
@@ -254,7 +257,7 @@
                       <?php if(strcasecmp($status, "Confirmed") == 0){ ?>
                         <p><?php echo $description; ?></p>
                       <?php } else { ?>
-                        <textarea readonly class="<?php if(strcasecmp($status, "Pending") == 0){ echo "reservations "; } ?>form-control p-3 text-wrap" name="reservation_demands" rows="5" placeholder="Reservation Demands"><?php echo $description; ?></textarea>
+                        <textarea readonly class="<?php if(strcasecmp($status, "Pending") == 0) echo "reservations "; ?>form-control p-3 text-wrap" name="reservation_demands" rows="5" placeholder="Reservation Demands"><?php echo $description; ?></textarea>
                         <p class="my-2 d-none text-danger"></p>
                       <?php } ?>
                     </div>
@@ -287,91 +290,7 @@
 </body>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 <?php if($api->num_rows($reservations) > 0){ ?>
-  <script>
-    // editing reservations
-    var edit_reservations = document.getElementById('edit_reservations');
-    var edit_reservations_label = document.getElementById('edit_reservations_label');
-
-    // reservation fields
-    var update_buttons = document.getElementsByName('update_reservation');
-    var reservation_row_fields = document.querySelectorAll(".reservations.form-control");
-    var reservation_selects = document.querySelectorAll(".reservations.form-select");
-
-    // collapsible toggling
-    var show_reservations = false;
-    var toggle_reservations = document.getElementById('toggle_reservations');
-
-    // collapsibles
-    var reservations = document.getElementsByClassName('Reservations__item');
-    var reservations_collapsibles = document.getElementsByClassName('Reservations__item__collapsible__body');
-    
-    // collapsibles stateful styling
-    for(var i=0, count=reservations.length; i < count; i++){
-      reservations[i].addEventListener('shown.bs.collapse', function (){
-        this.classList.add('mb-5');
-      });
-
-      reservations[i].addEventListener('hidden.bs.collapse', function (){
-        this.classList.remove('mb-5');
-      });
-    }
-
-    // toggle collapsibles
-    toggle_reservations.addEventListener('click', function(){
-      show_reservations = !show_reservations;
-      show_reservations === true ? toggle_reservations.innerText = "Hide All Reservations" : toggle_reservations.innerText = "Show All Reservations";
-      
-      for(var i=0, count=reservations_collapsibles.length; i < count; i++){
-        if(show_reservations === true){
-          if(!(reservations_collapsibles[i].classList.contains('show'))){
-            let collapse = new bootstrap.Collapse(reservations_collapsibles[i], { show: true, hide: false });
-          }
-        } else {
-          if((reservations_collapsibles[i].classList.contains('show'))){
-            let collapse = new bootstrap.Collapse(reservations_collapsibles[i], { show: false, hide: true });
-          }
-        }
-      }
-    });
-
-    // toggling reservation editing
-    edit_reservations.addEventListener('click', function(){
-        this.checked ? edit_reservations_label.innerText = "Stop Editing" : edit_reservations_label.innerText = "Edit";
-        
-        for(var i=0, count=reservation_row_fields.length; i < count; i++){
-          reservation_row_fields[i].readOnly = this.checked ? false : true;
-        }
-
-        for(var i=0, count=reservation_selects.length; i < count; i++){
-          if(this.checked){
-            reservation_selects[i].classList.remove('no-select');
-            reservation_selects[i].classList.remove('form-select-plaintext');
-
-            for(var j = 0; j < reservation_selects[i].options.length; j++){
-              reservation_selects[i].options[j].disabled = false;
-            }
-          } else {
-            reservation_selects[i].classList.add('no-select');
-            reservation_selects[i].classList.add('form-select-plaintext');
-
-            for(var j = 0; j < reservation_selects[i].options.length; j++){
-              if(!reservation_selects[i].options[j].selected){
-                reservation_selects[i].options[j].disabled = true;
-              }
-            }
-          }
-        }
-
-        for(var j=0, count=update_buttons.length; j < count; j++){
-          if(this.checked){
-            update_buttons[j].classList.remove('d-none');
-            update_buttons[j].classList.add('d-inline');
-          } else {
-            update_buttons[j].classList.add('d-none');
-            update_buttons[j].classList.remove('d-inline');
-          }
-        }
-    });
-  </script>
+  <script src="../api/api.js"></script>
+  <script src="../scripts/js/reservations.js"></script>
 <?php } ?>
 </html>
