@@ -107,7 +107,7 @@
     margin: 0;
     display: flex;
     justify-content: start;
-    align-items: center;
+    align-items: start;
 }
 
 /* Order reactive styling */

@@ -329,7 +329,7 @@ class API {
                                         throw new Exception('prepare() error: ' . $this->conn->errno . ' - ' . $this->conn->error);
                                     }
                                 
-                                    $mysqli_checks = $this->bind_params($statement, "ss", array($client_id, "Ongoing"));
+                                    $mysqli_checks = $this->bind_params($statement, "ss", array($_SESSION['user']['client_id'], "Ongoing"));
                                     if($mysqli_checks===false){
                                         throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
                                     }

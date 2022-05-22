@@ -10,64 +10,58 @@ $api = new api();
 if(isset($_POST['signup'])){
     $errors = array();
 
-    $first_name = $api->sanitize_data(ucfirst($_POST['first_name']), 'string');
-    $last_name = $api->sanitize_data(ucfirst($_POST['last_name']), 'string');
-    $email = $api->sanitize_data($_POST['email'], 'email');
-    $birthdate = $api->sanitize_data($_POST['birthdate'], 'string');
-    $password = $_POST['password'];
-    $confirm_password = trim($_POST['confirm_password']);
-
-    // first name validation
-    if(empty($first_name)){
-        $_SESSION['first_name_err'] = "First name is required. ";
-        array_push($errors, $_SESSION['first_name_err']);
-    }
-    
-    elseif(mb_strlen($first_name) < 2){
-        $_SESSION['first_name_err'] = "First name must be at least 2 characters long.";
-        array_push($errors, $_SESSION['first_name_err']);
-    }
-    
-    elseif(ctype_space($first_name) || preg_match("/['^£$%&*()}{@#~?><>,|=_+¬-]/", $first_name)){
-        $_SESSION['first_name_err'] = "First name must not contain any spaces or special characters.";
-        array_push($errors, $_SESSION['first_name_err']);
-    }
-
-    // last name validation
-    if(empty($last_name)){
-        $_SESSION['last_name_err'] = "Last name is required.";
-        array_push($errors, $_SESSION['last_name_err']);
-    }
-    
-    elseif(mb_strlen($last_name) < 2){
-        $_SESSION['last_name_err'] = "Last name must be at least 2 characters long.";
-        array_push($errors, $_SESSION['last_name_err']);
-    }
-    
-    elseif(ctype_space($last_name) || preg_match("/['^£$%&*()}{@#~?><>,|=_+¬-]/", $last_name)){
-        $_SESSION['last_name_err'] = "Last name must not contain any spaces or special characters.";
-        array_push($errors, $_SESSION['last_name_err']);
-    }
-
-    // email validation
-    if(empty($email)){
-        $_SESSION['email_err'] = "Email is required.";
-        array_push($errors, $_SESSION['email_err']);
-    }
-
-    elseif(!$api->validate_data($email, 'email')){
-        $_SESSION['email_err'] = "Invalid email.";
-        array_push($errors, $_SESSION['email_err']);
-    }
-
     try {
-        $query = $api->select();
-        $query = $api->params($query, "*");
-        $query = $api->from($query);
-        $query = $api->table($query, "user");
-        $query = $api->where($query, "user_email", "?");
+        $first_name = $api->sanitize_data(ucfirst($_POST['first_name']), 'string');
+        $last_name = $api->sanitize_data(ucfirst($_POST['last_name']), 'string');
+        $email = $api->sanitize_data($_POST['email'], 'email');
+        $birthdate = $api->sanitize_data($_POST['birthdate'], 'string');
+        $password = $_POST['password'];
+        $confirm_password = trim($_POST['confirm_password']);
 
-        $unique_email = $api->prepare($query);
+        // first name validation
+        if(empty($first_name)){
+            $_SESSION['first_name_err'] = "First name is required. ";
+            array_push($errors, $_SESSION['first_name_err']);
+        }
+        
+        elseif(mb_strlen($first_name) < 2){
+            $_SESSION['first_name_err'] = "First name must be at least 2 characters long.";
+            array_push($errors, $_SESSION['first_name_err']);
+        }
+        
+        elseif(preg_match("/['^£$%&*()}{@#~?><>,|=_+¬-]/", $first_name) || preg_match('/[0-9]+/', $first_name)){
+            $_SESSION['first_name_err'] = "First name must not contain any numbers or special characters.";
+            array_push($errors, $_SESSION['first_name_err']);
+        }
+
+        // last name validation
+        if(empty($last_name)){
+            $_SESSION['last_name_err'] = "Last name is required.";
+            array_push($errors, $_SESSION['last_name_err']);
+        }
+        
+        elseif(mb_strlen($last_name) < 2){
+            $_SESSION['last_name_err'] = "Last name must be at least 2 characters long.";
+            array_push($errors, $_SESSION['last_name_err']);
+        }
+        
+        elseif(ctype_space($last_name) || preg_match("/['^£$%&*()}{@#~?><>,|=_+¬-]/", $last_name)){
+            $_SESSION['last_name_err'] = "Last name must not contain any spaces or special characters.";
+            array_push($errors, $_SESSION['last_name_err']);
+        }
+
+        // email validation
+        if(empty($email)){
+            $_SESSION['email_err'] = "Email is required.";
+            array_push($errors, $_SESSION['email_err']);
+        }
+
+        elseif(!$api->validate_data($email, 'email')){
+            $_SESSION['email_err'] = "Invalid email.";
+            array_push($errors, $_SESSION['email_err']);
+        }
+
+        $unique_email = $api->prepare("SELECT * FROM user WHERE user_email=?");
         if($unique_email===false){
             throw new Exception('prepare() error: The statement could not be prepared.');
         }
@@ -93,85 +87,79 @@ if(isset($_POST['signup'])){
         if($mysqli_checks===false){
             throw new Exception('The prepared statement could not be closed.');
         }
-    } catch (Exception $e) {
-        $_SESSION['res'] = $e->getMessage();
-        Header("Location: ../../client/register.php");
-        exit();
-    }
-
-    // birthdate validation
-    $checks = (bool) strtotime($birthdate);
-    if($checks){
-        $ymd = explode('-', $birthdate);
-        $checks = checkdate($ymd[1], $ymd[2], $ymd[0]);
-        if($checks){
-            $d = DateTime::createFromFormat("Y-m-d", $birthdate);
-
-            $checks = ($d && $d->format("Y-m-d") === $birthdate) ? true : false;
-        }
-    }
-
-    if(!$checks){
-        $_SESSION['birthdate_err'] = "Invalid birthdate.";
-        array_push($errors, $_SESSION['birthdate_err']);
-    }
-
-    $tz = new DateTimeZone('Asia/Manila');
-    $age = DateTime::createFromFormat('Y-m-d', $birthdate, $tz)->diff(new DateTime('now', $tz))->y;
-    if($age < 18){
-        $_SESSION['birthdate_err'] = "User must be at least 18 years old.";
-        array_push($errors, $_SESSION['birthdate_err']);
-    }
-
-    if($age > 90){
-        $_SESSION['birthdate_err'] = "User must not exceed 90 years old.";
-        array_push($errors, $_SESSION['birthdate_err']);
-    }
     
-    // password validation
-    if(empty($password)){
-        $_SESSION['password_err'] = "Password is required.";
-        array_push($errors, $_SESSION['password_err']);
-    }
+        // birthdate validation
+        $checks = (bool) strtotime($birthdate);
+        if($checks){
+            $ymd = explode('-', $birthdate);
+            $checks = checkdate($ymd[1], $ymd[2], $ymd[0]);
+            if($checks){
+                $d = DateTime::createFromFormat("Y-m-d", $birthdate);
 
-    elseif(ctype_space($password)){
-        $_SESSION['password_err'] = "Password must not contain any spaces.";
-        array_push($errors, $_SESSION['password_err']);
-    }
+                $checks = ($d && $d->format("Y-m-d") === $birthdate) ? true : false;
+            }
+        }
 
-    elseif(!preg_match("/['^£$%&*()}{@#~?><>,|=_+¬-]/", $password)){
-        $_SESSION['password_err'] = "Password must contain at least one special character.";
-        array_push($errors, $_SESSION['password_err']);
-    }
+        if(!$checks){
+            $_SESSION['birthdate_err'] = "Invalid birthdate.";
+            array_push($errors, $_SESSION['birthdate_err']);
+        }
 
-    elseif(!preg_match('/[A-Z]/', $password)){
-        $_SESSION['password_err'] = "Password must contain at least one capital letter.";
-        array_push($errors, $_SESSION['password_err']);
-    }
+        $tz = new DateTimeZone('Asia/Manila');
+        $age = DateTime::createFromFormat('Y-m-d', $birthdate, $tz)->diff(new DateTime('now', $tz))->y;
+        if($age < 18){
+            $_SESSION['birthdate_err'] = "User must be at least 18 years old.";
+            array_push($errors, $_SESSION['birthdate_err']);
+        }
 
-    elseif(!preg_match('/[0-9]+/', $password)){
-        $_SESSION['password_err'] = "Password must contain at least one numeric character.";
-        array_push($errors, $_SESSION['password_err']);
-    }
+        if($age > 90){
+            $_SESSION['birthdate_err'] = "User must not exceed 90 years old.";
+            array_push($errors, $_SESSION['birthdate_err']);
+        }
+    
+        // password validation
+        if(empty($password)){
+            $_SESSION['password_err'] = "Password is required.";
+            array_push($errors, $_SESSION['password_err']);
+        }
 
-    if(empty($confirm_password)){
-        $_SESSION['confirm_password_err'] = "Confirm password field must not be empty.";
-        array_push($errors, $_SESSION['confirm_password_err']);
-    }
+        elseif(ctype_space($password)){
+            $_SESSION['password_err'] = "Password must not contain any spaces.";
+            array_push($errors, $_SESSION['password_err']);
+        }
 
-    elseif(strcasecmp($password, $confirm_password) != 0){
-        $_SESSION['confirm_password_err'] = "Passwords must match.";
-        array_push($errors, $_SESSION['confirm_password_err']);
-    }
+        elseif(!preg_match("/['^£$%&*()}{@#~?><>,|=_+¬-]/", $password)){
+            $_SESSION['password_err'] = "Password must contain at least one special character.";
+            array_push($errors, $_SESSION['password_err']);
+        }
 
-    // Server insertion upon successful validation
-    if(count($errors)== 0){
-        $cstrong = true;
-        $password = password_hash($password, PASSWORD_BCRYPT);
-        $id = bin2hex(openssl_random_pseudo_bytes(11, $cstrong));
-        $uid = bin2hex(openssl_random_pseudo_bytes(11, $cstrong));
+        elseif(!preg_match('/[A-Z]/', $password)){
+            $_SESSION['password_err'] = "Password must contain at least one capital letter.";
+            array_push($errors, $_SESSION['password_err']);
+        }
 
-        try {
+        elseif(!preg_match('/[0-9]+/', $password)){
+            $_SESSION['password_err'] = "Password must contain at least one numeric character.";
+            array_push($errors, $_SESSION['password_err']);
+        }
+
+        if(empty($confirm_password)){
+            $_SESSION['confirm_password_err'] = "Confirm password field must not be empty.";
+            array_push($errors, $_SESSION['confirm_password_err']);
+        }
+
+        elseif(strcasecmp($password, $confirm_password) != 0){
+            $_SESSION['confirm_password_err'] = "Passwords must match.";
+            array_push($errors, $_SESSION['confirm_password_err']);
+        }
+
+        // Server insertion upon successful validation
+        if(count($errors)== 0){
+            $cstrong = true;
+            $password = password_hash($password, PASSWORD_BCRYPT);
+            $id = bin2hex(openssl_random_pseudo_bytes(11, $cstrong));
+            $uid = bin2hex(openssl_random_pseudo_bytes(11, $cstrong));
+
             // Insert into client table
             $query = $api->insert();
             $query = $api->table($query, "client");
@@ -230,11 +218,11 @@ if(isset($_POST['signup'])){
             if($mysqli_checks===false){
                 throw new Exception('The prepared statement could not be closed.');
             }
-        } catch (Exception $e) {
-            $_SESSION['res'] = $e->getMessage();
-            Header("Location: ../../client/register.php");
-            exit();
         }
+    } catch (Exception $e) {
+        $_SESSION['res'] = $e->getMessage();
+        Header("Location: ../../client/register.php");
+        exit();
     }
     
     Header("Location: ../../client/register.php");
@@ -246,7 +234,7 @@ if(isset($_POST['login'])){
     $password = trim($_POST['password']);
 
     $mysqli_checks = $api->login($email, $password);
-    ($mysqli_checks==!true) ? Header("Location: ../../client/login.php") : Header("Location: ../../client/index.php");
+    ($mysqli_checks==!true) ? Header("Location: ../../client/index.php") : Header("Location: ../../client/explore.php");
 }
 
 // Update Profile
@@ -285,8 +273,8 @@ if(isset($_POST['update_profile'])){
         array_push($errors, $_SESSION['first_name_err']);
     }
 
-    elseif(preg_match("/['^£$%&*()}{@#~?><>,|=_+¬-]/", $first_name)){
-        $_SESSION['first_name_err'] = "First name must not contain any special characters.";
+    elseif(preg_match("/['^£$%&*()}{@#~?><>,|=_+¬-]/", $first_name) || preg_match('/[0-9]+/', $first_name)){
+        $_SESSION['first_name_err'] = "First name must not contain any numbers or special characters.";
         array_push($errors, $_SESSION['first_name_err']);
     }
 
@@ -301,8 +289,8 @@ if(isset($_POST['update_profile'])){
         array_push($errors, $_SESSION['last_name_err']);
     }
 
-    elseif(preg_match("/['^£$%&*()}{@#~?><>,|=_+¬-]/", $last_name)){
-        $_SESSION['last_name_err'] = "Last name must not contain any special characters.";
+    elseif(preg_match("/['^£$%&*()}{@#~?><>,|=_+¬-]/", $last_name) || preg_match('/[0-9]+/', $last_name)){
+        $_SESSION['last_name_err'] = "Last name must not contain any numbers or special characters.";
         array_push($errors, $_SESSION['last_name_err']);
     }
 
@@ -312,13 +300,13 @@ if(isset($_POST['update_profile'])){
     }
 
     // middle initial validation
-    if(preg_match("/['^£$%&*()}{@#~?><>,|=_+¬-]/", $mi)){
-        $_SESSION['mi_err'] = "Middle initial must not contain any special characters.";
+    if(mb_strlen($mi) > 2){
+        $_SESSION['mi_err'] = "Referral middle initial must not exceed 2 characters.";
         array_push($errors, $_SESSION['mi_err']);
     }
 
-    elseif(mb_strlen($mi) > 2){
-        $_SESSION['mi_err'] = "Middle initial must not exceed 2 characters.";
+    elseif(ctype_space($mi) || preg_match("/['^£$%&*()}{@#~?><>,|=_+¬-]/", $mi) || preg_match('/[0-9]+/', $mi)){
+        $_SESSION['mi_err'] = "Referral middle initial must not contain any numbers, spaces or special characters.";
         array_push($errors, $_SESSION['mi_err']);
     }
 
@@ -433,11 +421,7 @@ if(isset($_POST['update_profile'])){
             }
     
             $mysqli_checks = $api->close($statement);
-            if($mysqli_checks===false){
-                throw new Exception('The prepared statement could not be closed.');
-            } else {
-                $statement = null;
-            }
+            ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
 
             // check if image has been changed
             if($upload_file){
@@ -620,7 +604,7 @@ if(isset($_POST['update_password'])){
 // User Logout
 if(isset($_POST['logout'])){
     $api->logout();
-    Header("Location: ../../client/login.php");
+    Header("Location: ../../client/index.php");
 }
 
 /******** ORDERING TATTOOS ********/
@@ -876,9 +860,20 @@ if(isset($_POST['refer']) && isset($_SESSION['order']['order_id']) && !empty($_S
             array_push($errors, $_SESSION['first_name_err']);
         }
 
-        elseif(ctype_space($first_name) || preg_match("/['^£$%&*()}{@#~?><>,|=_+¬-]/", $first_name)){
+        elseif(preg_match("/['^£$%&*()}{@#~?><>,|=_+¬-]/", $first_name) || preg_match('/[0-9]+/', $first_name)){
             $_SESSION['first_name_err'] = "Referral first name must not contain any spaces or special characters.";
             array_push($errors, $_SESSION['first_name_err']);
+        }
+
+        // middle initial validation
+        if(mb_strlen($mi) > 2){
+            $_SESSION['mi_err'] = "Referral middle initial must not exceed 2 characters.";
+            array_push($errors, $_SESSION['mi_err']);
+        }
+
+        elseif(ctype_space($mi) || preg_match("/['^£$%&*()}{@#~?><>,|=_+¬-]/", $mi) || preg_match('/[0-9]+/', $mi)){
+            $_SESSION['mi_err'] = "Referral middle initial must not contain any numbers, spaces or special characters.";
+            array_push($errors, $_SESSION['mi_err']);
         }
 
         // last name validation
@@ -892,8 +887,8 @@ if(isset($_POST['refer']) && isset($_SESSION['order']['order_id']) && !empty($_S
             array_push($errors, $_SESSION['last_name_err']);
         }
 
-        elseif(ctype_space($last_name) || preg_match("/['^£$%&*()}{@#~?><>,|=_+¬-]/", $last_name)){
-            $_SESSION['last_name_err'] = "Referral last must not contain any spaces or special characters.";
+        elseif(preg_match("/['^£$%&*()}{@#~?><>,|=_+¬-]/", $last_name) || preg_match('/[0-9]+/', $last_name)){
+            $_SESSION['last_name_err'] = "Referral last must not contain any numbers or special characters.";
             array_push($errors, $_SESSION['last_name_err']);
         }
 
@@ -921,11 +916,7 @@ if(isset($_POST['refer']) && isset($_SESSION['order']['order_id']) && !empty($_S
 
         $api->free_result($statement);
         $mysqli_checks = $api->close($statement);
-        if($mysqli_checks===false){
-            throw new Exception('The prepared statement could not be closed.');
-        } else {
-            $statement = null;
-        }
+        ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
 
         // email validation
         if(empty($email)){
@@ -936,6 +927,33 @@ if(isset($_POST['refer']) && isset($_SESSION['order']['order_id']) && !empty($_S
         elseif(!$api->validate_data($email, 'email')){
             $_SESSION['email_err'] = "Invalid email.";
             array_push($errors, $_SESSION['email_err']);
+        }
+
+        $unique_email = $api->prepare("SELECT * FROM user WHERE user_email=?");
+        if($unique_email===false){
+            throw new Exception('prepare() error: The statement could not be prepared.');
+        }
+
+        $mysqli_checks = $api->bind_params($unique_email, "s", $email);
+        if($mysqli_checks===false){
+            throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
+        }
+
+        $mysqli_checks = $api->execute($unique_email);
+        if($mysqli_checks===false){
+            throw new Exception('Execute error: The prepared statement could not be executed.');
+        }
+
+        $api->store_result($unique_email);
+        if($api->num_rows($unique_email) >= 1){ 
+            $_SESSION['email_err'] = "Referral email already in use.";
+            array_push($errors, $_SESSION['email_err']);
+        }
+
+        $api->free_result($unique_email);
+        $mysqli_checks = $api->close($unique_email);
+        if($mysqli_checks===false){
+            throw new Exception('The prepared statement could not be closed.');
         }
 
         // age validation
@@ -954,8 +972,8 @@ if(isset($_POST['refer']) && isset($_SESSION['order']['order_id']) && !empty($_S
             array_push($errors, $_SESSION['age_err']);
         }
 
-        elseif($age < 17){
-            $_SESSION['age_err'] = "Referral age must be at least 17 years old.";
+        elseif($age < 18){
+            $_SESSION['age_err'] = "Referral age must be at least 18 years old.";
             array_push($errors, $_SESSION['age_err']);
         }
 
@@ -1133,8 +1151,8 @@ if(isset($_POST['update_referrals']) && isset($_SESSION['order']['order_id']) &&
                     array_push($errors, $_SESSION['first_name_err']);
                 }
 
-                elseif(ctype_space($first_name) || preg_match("/['^£$%&*()}{@#~?><>,|=_+¬-]/", $first_name)){
-                    $_SESSION['first_name_err'] = "Referral first name must not contain any spaces or special characters.";
+                elseif(preg_match("/['^£$%&*()}{@#~?><>,|=_+¬-]/", $first_name) || preg_match('/[0-9]+/', $first_name)){
+                    $_SESSION['first_name_err'] = "Referral first name must not contain any numbers or special characters.";
                     array_push($errors, $_SESSION['first_name_err']);
                 }
 
@@ -1145,12 +1163,12 @@ if(isset($_POST['update_referrals']) && isset($_SESSION['order']['order_id']) &&
                 }
 
                 elseif(mb_strlen($last_name) < 2){
-                    $_SESSION['last_name_err'] = "Referral last must be at least 2 characters long.";
+                    $_SESSION['last_name_err'] = "Referral last name must be at least 2 characters long.";
                     array_push($errors, $_SESSION['last_name_err']);
                 }
 
-                elseif(ctype_space($last_name) || preg_match("/['^£$%&*()}{@#~?><>,|=_+¬-]/", $last_name)){
-                    $_SESSION['last_name_err'] = "Referral last must not contain any spaces or special characters.";
+                elseif(preg_match("/['^£$%&*()}{@#~?><>,|=_+¬-]/", $last_name) || preg_match('/[0-9]+/', $last_name)){
+                    $_SESSION['last_name_err'] = "Referral last name must not contain any numbers or special characters.";
                     array_push($errors, $_SESSION['last_name_err']);
                 }
 
@@ -2101,8 +2119,8 @@ if(isset($_POST['checkout']) && isset($_SESSION['order']['order_id']) && !empty(
                 array_push($errors, $_SESSION['first_name_err']);
             }
             
-            elseif(ctype_space($first_name) || preg_match("/['^£$%&*()}{@#~?><>,|=_+¬-]/", $first_name)){
-                $_SESSION['first_name_err'] = "First name must not contain any spaces or special characters.";
+            elseif(preg_match("/['^£$%&*()}{@#~?><>,|=_+¬-]/", $first_name) || preg_match('/[0-9]+/', $first_name)){
+                $_SESSION['first_name_err'] = "First name must not contain any numbers or special characters.";
                 array_push($errors, $_SESSION['first_name_err']);
             }
 
@@ -2117,8 +2135,8 @@ if(isset($_POST['checkout']) && isset($_SESSION['order']['order_id']) && !empty(
                 array_push($errors, $_SESSION['last_name_err']);
             }
             
-            elseif(ctype_space($last_name) || preg_match("/['^£$%&*()}{@#~?><>,|=_+¬-]/", $last_name)){
-                $_SESSION['last_name_err'] = "Last name must not contain any spaces or special characters.";
+            elseif(preg_match("/['^£$%&*()}{@#~?><>,|=_+¬-]/", $last_name) || preg_match('/[0-9]+/', $last_name)){
+                $_SESSION['last_name_err'] = "Last name must not contain any numbers or special characters.";
                 array_push($errors, $_SESSION['last_name_err']);
             }
 

@@ -1,5 +1,6 @@
 // Pre-prepared RegEx expressions
 const letters = /^[a-zA-Z]+$\p{L}/;
+const capital_letters = /[A-Z]+[^A-Z]*|[^A-Z]+$/;
 const numbers = /\d+/;
 const special_characters = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
 const email_format = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;

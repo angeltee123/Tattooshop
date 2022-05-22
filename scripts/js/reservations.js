@@ -104,7 +104,7 @@ for(let x = 0, count = reservation_forms.length; x < count; x++){
       let hours = parseInt(field.value.substring(0, 2));
       let minutes = parseInt(field.value.split(":").pop());
       let message = reservation_time_err[index].lastChild;
-      if(numbers.test(field.value) == false || hours < 0 || hours > 24 || minutes < 0 || minutes > 60){
+      if(numbers.test(field.value) == false || time.test(field.value) == false || hours < 0 || hours > 24 || minutes < 0 || minutes > 60){
         field.classList.remove('is-valid');
         field.classList.add('is-invalid');
 
