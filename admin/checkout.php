@@ -42,11 +42,7 @@
       throw new Exception('get_result() error: Getting result set from statement failed.');
     }
 
-    if($api->num_rows($res) > 0){
-      $order = $api->fetch_assoc($res);
-    } else {
-      throw new Exception('No workorder under the given IDs found.');
-    }
+    ($api->num_rows($res) > 0) ? $order = $api->fetch_assoc($res) : throw new Exception('No workorder under the given IDs found.');
 
     $api->free_result($statement);
     $mysqli_checks = $api->close($statement);
@@ -89,7 +85,6 @@
 <head>
   <?php require_once '../common/meta.php'; ?>
   <link href="../style/checkout.css" rel="stylesheet" scoped>
-  <!-- native style -->
   <title>Payment Logging | NJC Tattoo</title>
 </head>
 <body>

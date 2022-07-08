@@ -234,7 +234,11 @@ if(isset($_POST['login'])){
     $password = trim($_POST['password']);
 
     $mysqli_checks = $api->login($email, $password);
-    ($mysqli_checks==!true) ? Header("Location: ../../client/index.php") : Header("Location: ../../client/explore.php");
+    if($mysqli_checks==!true){
+        Header("Location: ../../client/index.php");
+    } else {
+        (strcasecmp($_SESSION['user']['user_type'], 'User') == 0) ? Header("Location: ../../client/explore.php") : Header("Location: ../../admin/index.php");
+    }
 }
 
 // Update Profile
