@@ -129,6 +129,11 @@ class API {
         return $checks;
     }
 
+    // generate random hex color code
+    function generate_color() {
+        return '#' . str_pad(dechex(mt_rand(0, 0xFFFFFF)), 6, '0', STR_PAD_LEFT);
+    }
+
     // error reporting
     public function error(){
         return $this->conn->error;
