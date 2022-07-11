@@ -1,7 +1,7 @@
 <?php
 session_name("sess_id");
 session_start();
-require_once '../api/api.php';
+require_once '../../../api/api.php';
 $api = new api();
 
 /******** TATTOO CATALOGUE MANAGEMENT ********/
@@ -207,7 +207,7 @@ if(isset($_POST['catalog_tattoo'])){
                 }
             } catch (Exception $e) {
                 $_SESSION['res'] = $e->getMessage();
-                Header("Location: ./catalogue.php");
+                Header("Location: ./../../../../catalogue.php");
                 exit();
             }
         }
@@ -215,7 +215,7 @@ if(isset($_POST['catalog_tattoo'])){
         $_SESSION['tattoo_image_err'] = "File to upload is required.";
     }
 
-    Header("Location: ./catalogue.php");
+    Header("Location: ./../../catalogue.php");
 }
 
 // Update Tattoo Catalog Entry
@@ -428,12 +428,12 @@ if(isset($_POST['update_tattoo'])){
             }
         } catch (Exception $e) {
             $_SESSION['res'] = $e->getMessage();
-            Header("Location: ./catalogue.php#".$name);
+            Header("Location: ./../../catalogue.php#".$name);
             exit();
         }
     }
  
-    Header("Location: ./catalogue.php");
+    Header("Location: ./../../catalogue.php");
 }
 
 // Delete Tattoo Catalog Entry
@@ -462,11 +462,11 @@ if(isset($_POST['delete_tattoo'])){
         }        
     } catch (Exception $e) {
         $_SESSION['res'] = $e->getMessage();
-        Header("Location: ./catalogue.php");
+        Header("Location: ./../../catalogue.php");
         exit();
     }
 
-    Header("Location: ./catalogue.php");
+    Header("Location: ./../../catalogue.php");
 }
 
 /******** ORDER MANAGEMENT ********/
@@ -672,14 +672,14 @@ if(isset($_POST['update_item'])){
             }
         } catch (Exception $e) {
             $_SESSION['res'] = $e->getMessage();
-            Header("Location: ./orders.php");
+            Header("Location: ./../../orders.php");
             exit();
         }
     } else {
         $_SESSION['res'] = $errors;
     }
 
-    Header("Location: ./orders.php");
+    Header("Location: ./../../orders.php");
 }
 
 // Remove Client Order
@@ -747,11 +747,11 @@ if(isset($_POST['delete_item'])){
         }
     } catch (Exception $e) {
         $_SESSION['res'] = $e->getMessage();
-        Header("Location: ./orders.php");
+        Header("Location: ./../../orders.php");
         exit();
     }
 
-    Header("Location: ./orders.php");
+    Header("Location: ./../../orders.php");
 }
 
 /******** REFERRAL MANAGEMENT ********/
@@ -947,7 +947,7 @@ if(isset($_POST['update_referral'])){
         exit();
     }
 
-    Header("Location: ./orders.php");
+    Header("Location: ./../../orders.php");
 }
 
 // Remove Client Referral
@@ -1015,7 +1015,7 @@ if(isset($_POST['remove_referral'])){
         exit();
     }
 
-    Header("Location: ./orders.php");
+    Header("Location: ./../../orders.php");
 }
 
 /******** BOOKING MANAGEMENT ********/
@@ -1082,14 +1082,14 @@ if(isset($_POST['update_reservation'])){
             }
         } catch (Exception $e) {
             $_SESSION['res'] = $e->getMessage();
-            Header("Location: ./reservations.php");
+            Header("Location: ./../../reservations.php");
             exit();
         }
     } else {
         $_SESSION['res'] = $errors;
     }
 
-    Header("Location: ./reservations.php");
+    Header("Location: ./../../reservations.php");
 }
 
 // Start Tattoo Worksession
@@ -1136,12 +1136,12 @@ if(isset($_POST['start_worksession'])){
             }
         } catch (Exception $e) {
             $_SESSION['res'] = $e->getMessage();
-            Header("Location: ./reservations.php");
+            Header("Location: ./../../reservations.php");
             exit();
         }
     }
 
-    Header("Location: ./reservations.php");
+    Header("Location: ./../../reservations.php");
 }
 
 // Cancel Client Reservation
@@ -1300,11 +1300,11 @@ if(isset($_POST['cancel_reservation'])){
         }
     } catch (Exception $e) {
         $_SESSION['res'] = $e->getMessage();
-        Header("Location: ./reservations.php");
+        Header("Location: ./../../reservations.php");
         exit();
     }
 
-    Header("Location: ./reservations.php");
+    Header("Location: ./../../reservations.php");
 }
 
 // Finish Tattoo Worksession
@@ -1487,11 +1487,11 @@ if(isset($_POST['finish_worksession'])){
         }
     } catch (Exception $e) {
         $_SESSION['res'] = $e->getMessage();
-        Header("Location: ./reservations.php");
+        Header("Location: ./../../reservations.php");
         exit();
     }
 
-    Header("Location: ./reservations.php");
+    Header("Location: ./../../reservations.php");
 }
 
 /******** PAYMENT LOGGING ********/
@@ -2128,21 +2128,21 @@ if(isset($_POST['log_payment'])){
             }
         } catch (Exception $e) {
             $_SESSION['res'] = $e->getMessage();
-            Header("Location: ./orders.php");
+            Header("Location: ./../../orders.php");
             exit();
         }
     } else {
         $_SESSION['res'] = "No items selected.";
     }
 
-    Header("Location: ./orders.php");
+    Header("Location: ./../../orders.php");
 }
 
 /******** ILLEGAL ACCESS CATCHING ********/
 
 // Navigation Guard
 if(empty($_POST)){
-    Header("Location: ./index.php");
+    Header("Location: ./../../index.php");
     die();
 }
 ?>

@@ -116,7 +116,7 @@
                 <a href="./catalogue.php" class="stretched-link"><span class="material-icons md-48 display-5">close</span></a>
               </div>
               <div class="Catalogue__cards__modal__preview-body__form">
-                <form class="Catalogue__cards__modal__form" action="queries.php" method="POST" enctype="multipart/form-data">
+                <form class="Catalogue__cards__modal__form" action="./scripts/php/queries.php" method="POST" enctype="multipart/form-data">
                   <input type="hidden" class="d-none" name="tattoo_id" value="<?php echo $id; ?>" required/>
                   <div class="my-3">
                     <input type="text" class="form-control form-control-lg ps-3 fs-display-5 fw-bold" name="tattoo_name" maxlength="50" value="<?php echo $name; ?>" placeholder="Name" required/>
