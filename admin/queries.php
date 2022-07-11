@@ -1378,6 +1378,22 @@ if(isset($_POST['finish_worksession'])){
                     $mysqli_checks = $api->close($statement);
                     ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
                 
+                    // update reservation item
+                    $statement = $api->prepare("UPDATE reservation SET item_id=? WHERE reservation_id=? AND item_id=?");
+                    if($statement===false){
+                        throw new Exception('prepare() error: ' . $api->errno() . ' - ' . $$api->error());
+                    }
+
+                    $mysqli_checks = $api->bind_params($statement, "sss", array($row['item_id'], $reservation_id, $item_id));
+                    if($mysqli_checks===false){
+                        throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
+                    }
+
+                    $mysqli_checks = $api->execute($statement);
+                    if($mysqli_checks===false){
+                        throw new Exception('Execute error: The prepared statement could not be executed.');
+                    }
+
                     // merging down applied item
                     $statement = $api->prepare("DELETE FROM order_item WHERE item_id=? AND order_id=?");
                     if($statement===false){
@@ -1404,7 +1420,7 @@ if(isset($_POST['finish_worksession'])){
                     }
 
                     $row['tattoo_quantity'] += $item['tattoo_quantity'];
-                    $mysqli_checks = $api->bind_params($statement, "iss", array($row['tattoo_quantity'], $row['item_id']), $item['order_id']);
+                    $mysqli_checks = $api->bind_params($statement, "iss", array($row['tattoo_quantity'], $row['item_id'], $item['order_id']));
                     if($mysqli_checks===false){
                         throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
                     }

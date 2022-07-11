@@ -49,7 +49,7 @@ for(let x = 0, count = modal_forms.length; x < count; x++){
     
     // validate order quantity
     let value = parseFloat(quantity_fields[index].value);
-    let message = quantity_err[index].children[1];
+    let message = quantity_err[index].lastChild;
     if(!Number.isInteger(value) || value < parseInt(quantity_fields[index].min)){
       quantity_fields[index].classList.remove('is-valid');
       quantity_fields[index].classList.add('is-invalid');
@@ -66,7 +66,7 @@ for(let x = 0, count = modal_forms.length; x < count; x++){
 
     // validate tattoo width
     value = parseFloat(width_fields[index].value);
-    message = width_err[x].children[1];
+    message = width_err[x].lastChild;
     if(!Number.isInteger(value) || value < parseInt(width_fields[index].min) || value > parseInt(width_fields[index].max)){
       width_fields[index].classList.remove('is-valid');
       width_fields[index].classList.add('is-invalid');
@@ -85,7 +85,7 @@ for(let x = 0, count = modal_forms.length; x < count; x++){
 
     // validate tattoo height
     value = parseFloat(height_fields[index].value);
-    message = height_err[x].children[1];
+    message = height_err[x].lastChild;
     if(!Number.isInteger(value) || value < parseInt(height_fields[index].min) || value > parseInt(height_fields[index].max)){
       height_fields[index].classList.remove('is-valid');
       height_fields[index].classList.add('is-invalid');

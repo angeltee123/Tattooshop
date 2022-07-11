@@ -194,7 +194,7 @@
           <div class="Orders__order__items d-block">
             <?php
               try {    
-                $retrieve_items = $api->prepare("SELECT order_item.item_id, tattoo_name, tattoo_image, tattoo_price, tattoo_quantity, order_item.tattoo_width, order_item.tattoo_height, paid, item_status, amount_addon FROM ((order_item INNER JOIN tattoo ON order_item.tattoo_id=tattoo.tattoo_id) LEFT JOIN reservation ON order_item.item_id=reservation.item_id) WHERE order_id=? ORDER BY paid ASC, item_status DESC");
+                $retrieve_items = $api->prepare("SELECT DISTINCT(order_item.item_id), tattoo_name, tattoo_image, tattoo_price, tattoo_quantity, order_item.tattoo_width, order_item.tattoo_height, paid, item_status, amount_addon FROM ((order_item INNER JOIN tattoo ON order_item.tattoo_id=tattoo.tattoo_id) LEFT JOIN reservation ON order_item.item_id=reservation.item_id) WHERE order_id=? ORDER BY paid ASC, item_status DESC");
                 if($retrieve_items===false){
                   throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
                 }
@@ -238,7 +238,7 @@
                   $item_status = $api->sanitize_data($item['item_status'], "string");
                   $addon = number_format($api->sanitize_data($item['amount_addon'], "float"), 2, '.', '');
             ?>
-            <<?php if((strcasecmp($item_status, "Standing") == 0 && strcasecmp($paid, "Unpaid") == 0)){ ?>form action="./queries.php" method="POST"<?php } else { ?>div<?php } ?> class="Orders__order-item">
+            <<?php if((strcasecmp($item_status, "Standing") == 0 && strcasecmp($paid, "Unpaid") == 0)){ ?>form action="./scripts/php/queries.php" method="POST"<?php } else { ?>div<?php } ?> class="Orders__order-item">
               <div class="Orders__order-item__preview">
                 <div class="Orders__order-item__tattoo-preview shadow-sm" style="background-image: url(<?php echo $tattoo_image; ?>)"></div>
               </div>
@@ -335,7 +335,7 @@
                     </div>
                     <div class="modal-footer">
                       <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                      <form action="./queries.php" method="POST">
+                      <form action="./scripts/php/queries.php" method="POST">
                         <input type="hidden" class="d-none" name="item_id" value="<?php echo $item_id; ?>">
                         <button type="submit" class="btn btn-outline-danger" name="delete_item">Yes, remove it</button>
                       </form>
@@ -397,7 +397,7 @@
                 $age = $api->sanitize_data($referral['referral_age'], "int");
                 $confirmation_status = $api->sanitize_data($referral['confirmation_status'], "string");
             ?>
-            <form method="POST" action="./queries.php" class="d-flex justify-content-start align-items-center border-top">
+            <form method="POST" action="./scripts/php/queries.php" class="d-flex justify-content-start align-items-center border-top">
               <div class="Orders__referral">
                 <div class="Orders__referral__input-group">
                   <div class="<?php echo (in_array($confirmation_status, array("Confirmed", "Declined"))) ? "col" : "flex-fill mx-2"; ?>">
