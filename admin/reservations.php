@@ -135,7 +135,7 @@
             $description = $api->sanitize_data($worksession['reservation_description'], "string");
       ?>
       <div class="Reservations__item my-2">
-        <form action="./queries.php" method="POST">
+        <form action="./scripts/php/queries.php" method="POST">
           <div class="Reservations__item__collapsible collapsible">
             <button type="button" class="Reservations__item__collapsible--toggler col" data-bs-toggle="collapse" data-bs-target="#item_<?php echo $item_id; ?>" aria-expanded="false" aria-controls="item_<?php echo $item_id; ?>">
               <div class="Reservations__item__collapsible__avatar avatar" style="background-image: url(<?php echo $user_avatar; ?>)"></div>
@@ -265,7 +265,7 @@
             $description = $api->sanitize_data($reservation['reservation_description'], "string");
       ?>
       <div class="Reservations__item my-2">
-        <form action="./queries.php" method="POST">
+        <form class="Reservations__item__form" action="./scripts/php/queries.php" method="POST">
           <div class="Reservations__item__collapsible collapsible">
             <button type="button" class="Reservations__item__collapsible--toggler col" data-bs-toggle="collapse" data-bs-target="#item_<?php echo $item_id; ?>" aria-expanded="false" aria-controls="item_<?php echo $item_id; ?>">
               <div class="Reservations__item__collapsible__avatar avatar" style="background-image: url(<?php echo $user_avatar; ?>)"></div>
@@ -281,7 +281,7 @@
             <div class="d-flex w-auto mx-3 pe-5">
               <button type="submit" class="Reservations__controls__control btn btn-outline-primary order-first me-2" name="update_reservation" data-bs-toggle="tooltip" data-bs-placement="top" title="Update Reservation"><span class="Reservations__controls__control__icon material-icons">edit</span><span class="Reservations__controls__control__text">Update</span></button>
               <?php if(strcasecmp($status, "Confirmed") == 0){ ?>
-                <button type="submit" class="Reservations__controls__control btn btn-primary order-1 me-2" name="start_worksession" data-bs-toggle="tooltip" data-bs-placement="top" title="Update Reservation"><span class="Reservations__controls__control__icon material-icons">bookmark_add</span><span class="Reservations__controls__control__text">Start Worksession</span></button>
+                <button type="submit" class="Reservations__controls__control btn btn-primary order-1 me-2" name="start_worksession" data-bs-toggle="tooltip" data-bs-placement="top" title="Start Worksession"><span class="Reservations__controls__control__icon material-icons">bookmark_add</span><span class="Reservations__controls__control__text">Start Worksession</span></button>
               <?php } ?>
               <input type="hidden" readonly class="d-none" value="<?php echo $client_id; ?>" name="client_id" />
               <button type="submit" class="Reservations__controls__control btn btn-outline-danger order-last" name="cancel_reservation" data-bs-toggle="tooltip" data-bs-placement="top" title="Cancel Reservation"><span class="Reservations__controls__control__icon material-icons">bookmark_remove</span><span class="Reservations__controls__control__text">Cancel</span></button>
@@ -345,19 +345,21 @@
                   <div class="col">
                     <label for="service_type" class="form-label fw-semibold">Service Type</label>
                     <select name="service_type" class="form-select form-select-md mb-3">
-                        <option value="Walk-in" <?php if(strcasecmp($service_type, 'Walk-in') == 0){ echo "selected"; } ?>>Walk-in</option>
-                        <option value="Home Service" <?php if(strcasecmp($service_type, 'Walk-in') != 0){ echo "selected"; } ?>>Home Service</option>
+                      <option value="Walk-in" <?php if(strcasecmp($service_type, 'Walk-in') == 0){ echo "selected"; } ?>>Walk-in</option>
+                      <option value="Home Service" <?php if(strcasecmp($service_type, 'Walk-in') != 0){ echo "selected"; } ?>>Home Service</option>
                     </select>
                   </div>
                   <!-- time -->
                   <div class="col">
                     <label for="scheduled_time" class="form-label fw-semibold">Scheduled Time</label>
                     <input type="time" class="form-control" value="<?php echo $scheduled_time; ?>" name="scheduled_time" />
+                    <label class="error-message scheduled_time_err d-none"><span class="material-icons-outlined fs-6 me-1">info</span><span></span></label>
                   </div>
                   <!-- date -->
                   <div class="col">
                     <label for="scheduled_date" class="form-label fw-semibold">Scheduled Date</label>
                     <input type="date" class="form-control" value="<?php echo $scheduled_date; ?>" name="scheduled_date" />
+                    <label class="error-message scheduled_date_err d-none"><span class="material-icons-outlined fs-6 me-1">info</span><span></span></label>
                   </div>
                 </div>
               </div>
@@ -368,6 +370,7 @@
                 <div class="col">
                   <label for="reservation_address" class="form-label fw-semibold">Address</label>
                   <input type="text" class="form-control" value="<?php echo $address; ?>" name="reservation_address" />
+                  <label class="error-message reservation_address_err d-none"><span class="material-icons-outlined fs-6 me-1">info</span><span></span></label>
                 </div>
               </div>
               <div class="row mt-5">
@@ -388,6 +391,7 @@
   </div>  
 </body>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+<script src="../api/api.js"></script>
 <script>
   // tabs
   var sessions_tab = document.getElementById('Reservations__controls--tab--sessions');
@@ -414,51 +418,6 @@
   });
 </script>
 <?php if($item_count > 0){ ?>
-  <script>
-    // tooltips
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl){
-      return new bootstrap.Tooltip(tooltipTriggerEl);
-    });
-
-    // collapsible toggling
-    var show_all_items = false;
-    var toggle_items = document.getElementById('toggle_items');
-
-    // collapsible
-    var items = document.getElementsByClassName('Reservations__item');
-    var item_collapsibles = document.getElementsByClassName('Reservations__item__collapsible__body');
-
-    // collapsibles stateful styling
-    for(var i=0, count=items.length; i < count; i++){
-      let item = items[i];
-
-      item_collapsibles[i].addEventListener('shown.bs.collapse', function (){
-        item.classList.add('mb-5');
-      })
-
-      item_collapsibles[i].addEventListener('hidden.bs.collapse', function (){
-        item.classList.remove('mb-5');
-      });
-    }
-
-    // toggling all collapsibles
-    toggle_items.addEventListener('click', function(){
-      show_all_items = !show_all_items;
-      show_all_items === true ? toggle_items.innerText = "Hide All" : toggle_items.innerText = "Show All";
-      
-      for(var i=0, count=item_collapsibles.length; i < count; i++){
-        if(show_all_items === true){
-          if(!(item_collapsibles[i].classList.contains('show'))){
-            let collapse = new bootstrap.Collapse(item_collapsibles[i], { show: true, hide: false });
-          }
-        } else {
-          if((item_collapsibles[i].classList.contains('show'))){
-            let collapse = new bootstrap.Collapse(item_collapsibles[i], { show: false, hide: true });
-          }
-        }
-      }
-    });
-  </script>
+  <script src="./scripts/js/reservations.js"></script>
 <?php } ?>
 </html>

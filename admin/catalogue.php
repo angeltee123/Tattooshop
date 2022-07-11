@@ -100,7 +100,7 @@
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <form action="./queries.php" method="POST">
+                <form action="./scripts/php/queries.php" method="POST">
                   <input type="hidden" class="d-none" name="tattoo_id" value="<?php echo $id; ?>">
                   <button type="submit" class="btn btn-outline-danger" name="delete_tattoo">Yes, delete it</button>
                 </form>
@@ -116,20 +116,20 @@
                 <a href="./catalogue.php" class="stretched-link"><span class="material-icons md-48 display-5">close</span></a>
               </div>
               <div class="Catalogue__cards__modal__preview-body__form">
-                <form action="queries.php" method="POST" enctype="multipart/form-data">
+                <form class="Catalogue__cards__modal__form" action="queries.php" method="POST" enctype="multipart/form-data">
                   <input type="hidden" class="d-none" name="tattoo_id" value="<?php echo $id; ?>" required/>
                   <div class="my-3">
                     <input type="text" class="form-control form-control-lg ps-3 fs-display-5 fw-bold" name="tattoo_name" maxlength="50" value="<?php echo $name; ?>" placeholder="Name" required/>
-                    <label class="error-message name_err <?php echo isset($_SESSION['name_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><?php if(isset($_SESSION['name_err'])) { echo $_SESSION['name_err']; } ?></label>
+                    <label class="error-message name_err <?php echo isset($_SESSION['name_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><span><?php if(isset($_SESSION['name_err'])) { echo $_SESSION['name_err']; } ?></span></label>
                   </div>
-                  <div class="input-group my-3">
+                  <div class="input-group mt-3">
                     <span class="input-group-text">₱</span>
                     <input type="number" class="form-control form-control-lg" min="1" name="tattoo_price" value="<?php echo $price; ?>" placeholder="Price" required/>
-                    <label class="error-message price_err <?php echo isset($_SESSION['price_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><?php if(isset($_SESSION['price_err'])) { echo $_SESSION['price_err']; } ?></label>
                   </div>
+                  <label class="error-message mb-3 price_err <?php echo isset($_SESSION['price_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><span><?php if(isset($_SESSION['price_err'])) { echo $_SESSION['price_err']; } ?></span></label>
                   <div class="my-3">
                     <textarea class="form-control p-3 text-wrap text-justify" name="tattoo_description" rows="5" placeholder="Tattoo Description" required><?php echo $description; ?></textarea>
-                    <label class="error-message description_err <?php echo isset($_SESSION['description_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><?php if(isset($_SESSION['description_err'])) { echo $_SESSION['description_err']; } ?></label>
+                    <label class="error-message description_err <?php echo isset($_SESSION['description_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><span><?php if(isset($_SESSION['description_err'])) { echo $_SESSION['description_err']; } ?></span></label>
                   </div>
                   <div class="row my-3">
                     <div class="col">
@@ -140,7 +140,7 @@
                         </select>
                         <label for="color_scheme">Color Scheme</label>
                       </div>
-                      <label class="error-message color_scheme_err <?php echo isset($_SESSION['color_scheme_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><?php if(isset($_SESSION['color_scheme_err'])) { echo $_SESSION['color_scheme_err']; } ?></label>
+                      <label class="error-message color_scheme_err <?php echo isset($_SESSION['color_scheme_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><span><?php if(isset($_SESSION['color_scheme_err'])) { echo $_SESSION['color_scheme_err']; } ?></span></label>
                     </div>
                     <div class="col">
                       <div class="form-floating">
@@ -150,7 +150,7 @@
                         </select>
                         <label for="complexity_level">Complexity</label>
                       </div>
-                      <label class="error-message complexity_level_err <?php echo isset($_SESSION['complexity_level_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><?php if(isset($_SESSION['complexity_level_err'])) { echo $_SESSION['complexity_level_err']; } ?></label>
+                      <label class="error-message complexity_level_err <?php echo isset($_SESSION['complexity_level_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><span><?php if(isset($_SESSION['complexity_level_err'])) { echo $_SESSION['complexity_level_err']; } ?></span></label>
                     </div>
                   </div>
                   <div class="row my-3">
@@ -159,20 +159,20 @@
                         <input type="number" class="form-control" name="tattoo_width" min="1" max="24" value="<?php echo $width; ?>" placeholder="Width" required/>
                         <label for="tattoo_width">Width (in inches)</label>
                       </div>
-                      <label class="error-message width_err <?php echo isset($_SESSION['width_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><?php if(isset($_SESSION['width_err'])) { echo $_SESSION['width_err']; } ?></label>
+                      <label class="error-message width_err <?php echo isset($_SESSION['width_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><span><?php if(isset($_SESSION['width_err'])) { echo $_SESSION['width_err']; } ?></span></label>
                     </div>
                     <div class="col">
                       <div class="form-floating">
                         <input type="number" class="form-control" name="tattoo_height" min="1" max="36" value="<?php echo $height; ?>" placeholder="Height" required/>
                         <label for="tattoo_height">Height (in inches)</label>
                       </div>
-                      <label class="error-message height_err <?php echo isset($_SESSION['height_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><?php if(isset($_SESSION['height_err'])) { echo $_SESSION['height_err']; } ?></label>
+                      <label class="error-message height_err <?php echo isset($_SESSION['height_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><span><?php if(isset($_SESSION['height_err'])) { echo $_SESSION['height_err']; } ?></span></label>
                     </div>
                   </div>
                   <div class="my-3">
                     <label for="image" class="form-label text-muted">Tattoo Image</label>
                     <input type="file" class="form-control form-control-lg" accept="image/*" name="image" id="image_<?php echo $id; ?>" onchange="loadpreview_<?php echo $id; ?>(event)"/>
-                    <label class="error-message image_err <?php echo isset($_SESSION['tattoo_image_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><?php if(isset($_SESSION['tattoo_image_err'])) { echo $_SESSION['tattoo_image_err']; } ?></label>
+                    <label class="error-message image_err <?php echo isset($_SESSION['tattoo_image_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><span><?php if(isset($_SESSION['tattoo_image_err'])) { echo $_SESSION['tattoo_image_err']; } ?></span></label>
                     <?php echo "<script>var loadpreview_" . $id . " = function(event){ var image_" . $id . " = document.getElementById('image_". $id ."'); var preview_" . $id . " = document.getElementById('preview_". $id ."'); if(image_". $id .".value.length != 0){ preview_" . $id . ".style.backgroundImage = 'url(' + URL.createObjectURL(event.target.files[0]) + ')'; preview_" . $id . ".onload = () => { URL.revokeObjectURL(preview_" . $id . ".style.backgroundImage); }} else { preview_" . $id . ".style.backgroundImage = 'url(". $image .")'; }};</script>"; ?>
                   </div>
                   <button type="submit" class="btn btn-primary btn-lg" name="update_tattoo">Save Changes</button>
@@ -193,39 +193,8 @@
   </div>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
-<script>
-  // search bar
-  var search = document.getElementById('search');
-
-  // new tattoo card
-  var new_tattoo = document.getElementById('new_tattoo');
-
-  // catalogue
-  var catalogue = document.getElementById('Catalogue');
-  var cards = document.getElementsByClassName('Catalogue__cards__card');
-
-  // searching for tattoo
-  search.addEventListener('input', function (){
-    if(search.value.length == 0){
-      catalogue.classList.replace('justify-content-center', 'justify-content-between');
-
-      for(var i = 0, count = cards.length; i < count; i++){
-        cards[i].classList.replace('d-none', 'd-block');
-      }
-    } else {
-      catalogue.classList.replace('justify-content-between', 'justify-content-center');
-
-      for(var i = 0, count = cards.length; i < count; i++){
-        item_name = cards[i].href.toLowerCase();
-        if(item_name.indexOf(search.value.toLowerCase().replaceAll(' ', '%20')) > -1 && cards[i] !== new_tattoo){
-          cards[i].classList.replace('d-none', 'd-block');
-        } else {
-          cards[i].classList.replace('d-block', 'd-none');
-        }
-      }
-    }
-  });
-</script>
+<script src="../api/api.js"></script>
+<script src="./scripts/js/catalogue.js"></script>
 </html>
 <?php
   if(isset($_SESSION['name_err'])){
