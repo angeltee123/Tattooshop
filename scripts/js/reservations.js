@@ -89,7 +89,7 @@ edit_reservations.addEventListener('click', function(){
     }
 
     for(var j=0, count=update_buttons.length; j < count; j++){
-      this.checked ? update_buttons[j].classList.replace('d-none', 'd-inline') : update_buttons[j].classList.replace('d-inline', 'd-none');
+      this.checked ? update_buttons[j].classList.replace('d-none', 'd-flex') : update_buttons[j].classList.replace('d-flex', 'd-none');
     }
 });
 

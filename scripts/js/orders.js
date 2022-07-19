@@ -4,7 +4,7 @@ var refer = document.getElementById('refer');
 
 // orders tab controls
 var all_orders_selected = false;
-var select_all_items = document.getElementById('Orders__controls__select-all-orders');
+var select_all_items = document.getElementById('controls__select-all-orders');
 var item_checkboxes =document.getElementsByClassName('Orders__order-item__checkbox');
 
 // item fields

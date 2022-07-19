@@ -3,7 +3,7 @@ var update_referrals = document.getElementById('update_referrals');
 
 // referrals tab controls
 var all_referrals_selected = false;
-var select_all_referrals = document.getElementById('Orders__controls__select-all-referrals');
+var select_all_referrals = document.getElementById('controls__select-all-referrals');
 var referral_checkboxes = document.getElementsByClassName('Orders__referral__checkbox');
 
 // referrals fields
