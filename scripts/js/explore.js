@@ -31,7 +31,7 @@ search.addEventListener('input', function (){
     catalogue.classList.replace('justify-content-between', 'justify-content-center');
 
     for(var i = 0, count = cards.length; i < count; i++){
-      item_name = cards[i].href.toLowerCase();
+      item_name = cards[i].href.toLowerCase().split("#").pop();
       if(item_name.indexOf(search.value.toLowerCase().replaceAll(' ', '%20')) > -1){
         cards[i].classList.replace('d-none', 'd-block');
       } else {
