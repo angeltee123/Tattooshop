@@ -96,7 +96,7 @@
   <?php require_once '../common/header.php'; ?>
   <div class="Checkout content">
     <form id="Checkout__form" action="../scripts/php/queries.php" method="POST">
-      <div class="Checkout__header">
+      <div class="page-header">
         <h2 class="fw-bold display-3">Checkout</h2>
         <p class="d-inline fs-5 text-muted">Pay for your ongoing tattoo orders here. Tick the checkboxes of the items you wish to include in your payment.</p>
       </div>
@@ -128,38 +128,38 @@
           <div class="Checkout__list__item__preview__image shadow-sm" style="background-image: url(<?php echo $tattoo_image; ?>)"></div>
         </div>
         <div class="Checkout__list__item__details">
-          <div class="row my-5">
+          <div class="row mt-5">
             <!-- tattoo name -->
-            <div class="col">
+            <div class="col-12 col-sm my-2">
               <label class="form-label fw-semibold">Item</label>
               <p><?php echo $width . "x" . $height . " " . $tattoo_name; ?></p>
             </div>
             <!-- item status -->
-            <div class="col">
+            <div class="col-12 col-sm my-2">
               <label for="status" class="form-label fw-semibold">Item Status</label>
               <p><?php echo $status; ?></p>
             </div>
             <!-- payment status -->
-            <div class="col">
+            <div class="col-12 col-sm my-2">
               <label class="form-label fw-semibold">Payment Status</label>
               <p><?php echo $paid; ?></p>
             </div>
           </div>
-          <div class="row my-5">
+          <div class="row mb-5 mt-0 mt-sm-5">
             <!-- quantity -->
-            <div class="col">
+            <div class="col-12 col-sm my-2">
               <label for="quantity" class="form-label fw-semibold">Quantity</label>
               <input type="hidden" class="d-none" name="quantity[]" min="<?php echo $quantity; ?>" max="<?php echo $quantity; ?>" value="<?php echo $quantity; ?>"/>
               <input type="number" class="form-control" name="checkout_quantity[]" min="1" max="<?php echo $quantity; ?>" value="<?php echo $quantity; ?>"/>
               <label class="error-message quantity_err d-none"><span class="material-icons-outlined fs-6 me-1">info</span><span></span></label>
             </div>
             <!-- price -->
-            <div class="col">
+            <div class="col-12 col-sm my-2">
               <label for="quantity" class="form-label fw-semibold">Price</label>
               <p class="prices">₱<?php echo $price; ?></p>
             </div>
             <!-- amount_addon -->
-            <div class="col">
+            <div class="col-12 col-sm my-2">
               <label for="status" class="form-label fw-semibold">Reservation Addon</label>
               <p class="addons"><?php echo ($addon == 0) ? "N/A" : "₱" . $addon; ?></p>
             </div>
@@ -174,7 +174,7 @@
       <?php } ?>
       <div class="Checkout__summary">
         <div class="row">
-          <div class="col">
+          <div class="col-12 col-sm-6 col-md">
             <!-- order id -->
             <label class="form-label fw-semibold">Order ID</label>
             <p class="w-auto"><?php echo $order_id; ?></p>
@@ -185,19 +185,19 @@
             $time = date("g:i A", strtotime($timestamp[1]));
             $date = explode(':', $date);
           ?>
-          <div class="col">
+          <div class="col-12 col-sm-6 col-md">
             <!-- order date -->
             <label class="form-label fw-semibold">Placed on</label>
             <p class="w-auto"><?php echo $api->sanitize_data($date[0], 'string') . " " . $api->sanitize_data($date[1], 'int') . ", " . $api->sanitize_data($date[2], 'int') . ", " . $api->sanitize_data($time, 'string') ?></p>
           </div>
         </div>
         <div class="row">
-          <div class="col">
+          <div class="col-12 col-sm-6 col-md">
             <!-- incentive -->
             <label class="form-label fw-semibold">Discounted?</label>
             <p class="<?php echo (strcasecmp($incentive, "15% Discount") == 0) ? "text-success" : "text-muted"; ?> fw-semibold" id="discount"><?php echo (strcasecmp($incentive, "15% Discount") == 0) ? "Yes" : "No"; ?></p>
           </div>
-          <div class="col">
+          <div class="col-12 col-sm-6 col-md">
             <!-- amount due total -->
             <label for="status" class="form-label fw-semibold">Amount Due Total</label>
             <p id="total">₱<?php echo number_format($api->sanitize_data($total, "float"), 2, '.', ''); ?></p>
@@ -207,45 +207,45 @@
       <hr class="mb-5" />
       <div class="Checkout__billing-form">
         <div class="row my-4">
-          <h4 class="mb-3">Client Name</h4>
-          <div class="col">
+          <h4 class="mb-0 mb-md-3">Client Name</h4>
+          <div class="col-12 col-sm">
             <label class="form-label text-muted" for="first_name">First Name</label>
             <input type="text" class="form-control" <?php if($item_count == 0){ echo "disabled"; }?> name="first_name" id="first_name" minlength="2" maxlength="50" value="<?php echo $first_name; ?>" required/>
             <label id="first_name_err" class="error-message <?php echo isset($_SESSION['first_name_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><span><?php if(isset($_SESSION['first_name_err'])) { echo $_SESSION['first_name_err']; } ?></span></label>
           </div>
-          <div class="col">
+          <div class="col-12 col-sm">
             <label class="form-label text-muted" for="last_name">Last Name</label>
             <input type="text" class="form-control" <?php if($item_count == 0){ echo "disabled"; }?> name="last_name" id="last_name" minlength="2" maxlength="50" value="<?php echo $last_name; ?>" required/>
             <label id="last_name_err" class="error-message <?php echo isset($_SESSION['last_name_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><span><?php if(isset($_SESSION['last_name_err'])) { echo $_SESSION['last_name_err']; } ?></span></label>
           </div>
         </div>
         <div class="row my-3">
-          <h4 class="mb-3">Billing Address</h4>
-          <div class="col">
+          <h4 class="mb-0 mb-md-3">Billing Address</h4>
+          <div class="col-12 col-sm">
             <label class="form-label text-muted" for="street_address">Street Address</label>
             <input type="text" class="form-control" <?php if($item_count == 0){ echo "disabled"; }?> name="street_address" id="street_address" maxlength="255" required/>
             <label id="street_address_err" class="error-message <?php echo isset($_SESSION['street_address_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><span><?php if(isset($_SESSION['street_address_err'])) { echo $_SESSION['street_address_err']; } ?></span></label>
           </div>
-          <div class="col">
+          <div class="col-12 col-sm">
             <label class="form-label text-muted" for="city">City</label>
             <input type="text" class="form-control" <?php if($item_count == 0){ echo "disabled"; }?> name="city" id="city" maxlength="35" required/>
             <label id="city_err" class="error-message <?php echo isset($_SESSION['city_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><span><?php if(isset($_SESSION['city_err'])) { echo $_SESSION['city_err']; } ?></span></label>
           </div>
         </div>
         <div class="row my-3">
-          <div class="col">
+          <div class="col-12 col-sm">
             <label class="form-label text-muted" for="province">Province</label>
             <input type="text" class="form-control" <?php if($item_count == 0){ echo "disabled"; }?> name="province" id="province" maxlength="35" required />
             <label id="province_err" class="error-message <?php echo isset($_SESSION['province_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><span><?php if(isset($_SESSION['province_err'])) { echo $_SESSION['province_err']; } ?></span></label>
           </div>
-          <div class="col">
+          <div class="col-12 col-sm">
             <label class="form-label text-muted" for="zip">Postal / Zip Code</label>
             <input type="text" class="form-control" <?php if($item_count == 0){ echo "disabled"; }?> name="zip" id="zip" minlength="4" maxlength="4"  value="6000" required/>
             <label id="zip_err" class="error-message <?php echo isset($_SESSION['zip_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><span><?php if(isset($_SESSION['zip_err'])) { echo $_SESSION['zip_err']; } ?></span></label>
           </div>
         </div>
         <div class="row my-4">
-          <div class="col">
+          <div class="col-12 col-sm">
             <h4 class="mb-3">Payment Amount</h4>
             <div class="input-group">
               <span class="input-group-text">₱</span>
@@ -253,35 +253,35 @@
             </div>
             <label id="amount_paid_err" class="error-message <?php echo isset($_SESSION['amount_paid_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><span><?php if(isset($_SESSION['amount_paid_err'])) { echo $_SESSION['amount_paid_err']; } ?></span></label>
           </div>
-          <div class="col">
-            <h4 class="mb-3">Payment Method</h4>
+          <div class="col-12 col-sm">
+            <h4 class="mb-3 mt-3 mt-md-0">Payment Method</h4>
             <div class="form-check form-check-inline mt-2">
               <input class="form-check-input" type="radio" <?php if($item_count == 0){ echo "disabled"; }?> name="payment_method" value="Debit" required/>
-              <label class="form-check-label" for="inlineRadio1">Debit Card</label>
+              <label class="form-check-label">Debit Card</label>
             </div>
             <div class="form-check form-check-inline mt-2">
               <input class="form-check-input" type="radio" <?php if($item_count == 0){ echo "disabled"; }?> name="payment_method" value="Credit" required/>
-              <label class="form-check-label" for="inlineRadio2">Credit Card</label>
+              <label class="form-check-label">Credit Card</label>
             </div>
             <div class="form-check form-check-inline mt-2">
               <input class="form-check-input lh-base" type="radio" <?php if($item_count == 0){ echo "disabled"; }?> name="payment_method" value="Prepaid" required/>
-              <label class="form-check-label" for="inlineRadio2">Prepaid Card</label>
+              <label class="form-check-label">Prepaid Card</label>
             </div>
             <label id="payment_method_err" class="error-message <?php echo isset($_SESSION['payment_method_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><span><?php if(isset($_SESSION['payment_method_err'])) { echo $_SESSION['payment_method_err']; } ?></span></label>
           </div>
         </div>
         <div class="row my-4">
-          <div class="col">
+          <div class="col-12 col-sm">
             <h4 class="mb-3">Card Number</h4>
             <input type="text" inputmode="numeric" class="form-control" <?php if($item_count == 0){ echo "disabled"; }?> name="card_number" id="card_number" minlength="11" maxlength="16" required/>
             <label id="card_number_err" class="error-message <?php echo isset($_SESSION['card_number_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><span><?php if(isset($_SESSION['card_number_err'])) { echo $_SESSION['card_number_err']; } ?></span></label>
           </div>
-          <div class="col">
+          <div class="col-12 col-sm">
             <h4 class="mb-3">PIN</h4>
             <input type="password" inputmode="numeric" class="form-control" <?php if($item_count == 0){ echo "disabled"; }?> name="pin" id="pin" minlength="6" maxlength="6" required/>
             <label id="pin_err" class="error-message <?php echo isset($_SESSION['pin_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><span><?php if(isset($_SESSION['pin_err'])) { echo $_SESSION['pin_err']; } ?></span></label>
           </div>
-          <div class="col">
+          <div class="col-12 col-sm">
             <h4 class="mb-3">Bank Name</h4>
             <input type="text" class="form-control" <?php if($item_count == 0){ echo "disabled"; }?> name="bank_name" id="bank_name" required/>
             <label id="bank_name_err" class="error-message <?php echo isset($_SESSION['bank_name_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><span><?php if(isset($_SESSION['bank_name_err'])) { echo $_SESSION['bank_name_err']; } ?></span></label>

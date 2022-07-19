@@ -3,36 +3,6 @@
     width: 80% !important;
 }
 
-.Reservations__header {
-    padding-bottom: 3.5rem;
-    border-bottom: 1px solid #dee2e6 !important;
-}
-
-/* Reservation controls */
-.Reservations__controls {
-    display: flex;
-    flex-flow: row wrap;
-    justify-content: space-between;
-    align-items: center;
-    margin: 1.5rem 0 1rem 0 !important;
-}
-
-.Reservations__controls__control {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 50rem !important;
-}
-
-.Reservations__controls__control > span {
-    line-height: 1.5 !important;
-}
-
-.Reservations__controls__control__text {
-    margin: 0 0 0 0.5rem !important;
-    display: block;
-}
-
 /* Reservation */
 .Reservations__item {
     transition: margin .35s;
@@ -76,8 +46,7 @@
   }
 
 .Reservations__item__collapsible__body--stacking .row {
-    margin-top: 3rem !important;
-    margin-bottom: 3rem !important;
+    margin-top: 1.5rem !important;
 }
 
 .Reservations__item__collapsible__body--stacking {
@@ -88,10 +57,10 @@
 }
 
 .Reservations__item__collapsible__body__tattoo-preview {
-    max-width: 400px;
-    max-height: 400px;
-    width: 400px;
-    height: 400px;
+    min-width: 265px;
+    min-height: 265px;
+    width: 20vw;
+    height: 20vw;
     background-position: center !important;
     background-size: cover !important;
     background-repeat: no-repeat !important;
@@ -104,44 +73,49 @@
     margin: 0 0 0 3.5rem;
 }
 
-.Reservations__item__collapsible__body__item-details {
+.Reservations__item__collapsible__body__item-details > div{
     margin: 3rem 0 0 0;
 }
 
-/* Reservations reactive styling */
-@media (max-width: 1086px){
+/* Reactive styles */
+
+/* sm breakpoint */
+@media (max-width: 576px){
+    .Reservations__item__collapsible__body__tattoo-preview {
+        min-width: 240px !important;
+        min-height: 240px !important;
+    }
+}
+
+/* xl breakpoint */
+@media (max-width: 1200px){
     .Reservations__item__collapsible__header {
-      display: none !important;
+        display: none !important;
     }
 
     .Reservations__item__collapsible__date {
-      font-size: 1.25rem !important;
-      color: #000000 !important;
-      margin: 0 0 0 0.5rem !important;
+        font-size: 1.25rem !important;
+        color: #000000 !important;
+        margin: 0 0 0 0.5rem !important;
     }
-  }
+}
 
-@media (max-width: 1362px){
+/* xxl breakpoint */
+@media (max-width: 1400px){
     .Reservations__item__collapsible__body--stacking {
         flex-flow: column nowrap !important;
     }
 
     .Reservations__item__collapsible__body__tattoo-preview {
-        width: 350px !important;
-        height: 350px !important;
+        width: 30vw !important;
+        height: 30vw !important;
     }
 
     .Reservations__item__collapsible__body--stacking__item-details {
-        margin: 3.5rem 0 0 0 !important;
+        margin: 3rem 0 0 0 !important;
     }
 
     .Reservations__item__collapsible__body__item-details {
         margin: 0 !important;
-    }
-}
-
-@media (max-width: 1396px){
-    .Reservations__controls__control__text {
-        display: none !important;
     }
 }

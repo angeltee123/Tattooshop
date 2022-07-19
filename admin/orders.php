@@ -116,15 +116,15 @@
 <body class="w-100">
   <?php require_once '../common/header.php'; ?>
   <div class="Orders content">
-    <div class="Orders__header">
+    <div class="page-header">
       <h2 class="fw-bold display-3">Orders</h2>
       <p class="d-inline fs-5 text-muted">Manage all your ongoing orders and client referrals here. <?php if(isset($workorder)){ echo "Tick the checkboxes of the items you want to modify or remove."; } ?></p>
     </div>
-    <div class="Orders__controls">
-      <div>
-        <button type="button" class="Orders__controls--tab border-0 border-bottom text-black" id="Orders__controls--tab--all-items">All items</button>
-        <button type="button" class="Orders__controls--tab border-0 text-muted" id="Orders__controls--tab--orders">Orders only</button>
-        <button type="button" class="Orders__controls--tab border-0 text-muted" id="Orders__controls--tab--referrals">Referrals only</button>
+    <div class="controls">
+      <div class="tabs">
+        <button type="button" class="controls--tab controls--tab--active" id="controls--tab--all-items">All items</button>
+        <button type="button" class="controls--tab" id="controls--tab--orders">Orders only</button>
+        <button type="button" class="controls--tab" id="controls--tab--referrals">Referrals only</button>
       </div>
       <div>
         <button type="button" class="pb-2 bg-none fs-5 border-0" id="toggle_orders">Show All Orders</button>
@@ -161,30 +161,30 @@
           <form method="POST" action="./checkout.php" class="w-auto mx-3 pe-5">
             <input type="hidden" readonly class="d-none" value="<?php echo $client_id; ?>" name="client_id" />
             <input type="hidden" readonly class="d-none" value="<?php echo $order_id; ?>" name="order_id" />
-            <button type="submit" class="Orders__controls__control btn btn-outline-dark me-1" name="order_checkout" data-bs-toggle="tooltip" data-bs-placement="top" title="Log Payment"><span class="Orders__controls__control__icon material-icons">shopping_cart_checkout</span><span class="Orders__controls__control__text">Log Payment</span></button>
+            <button type="submit" class="control btn btn-outline-dark me-1" name="order_checkout" data-bs-toggle="tooltip" data-bs-placement="top" title="Log Payment"><span class="control__icon material-icons">shopping_cart_checkout</span><span class="control__text">Log Payment</span></button>
           </form>
         </div>
         <div class="collapse mt-3 Orders__order__collapsible__body" id="order_<?php echo $order_id; ?>">
           <div class="Order__order__details">
             <div class="row">
-              <div class="col">
+              <div class="col-12 col-sm-6 col-md">
                 <!-- order id -->
                 <label class="form-label fw-semibold">Order ID</label>
                 <p class="w-auto"><?php echo $order_id; ?></p>
               </div>
-              <div class="col">
+              <div class="col-12 col-sm-6 col-md">
                 <!-- order date -->
                 <label class="form-label fw-semibold">Placed on</label>
                 <p class="w-auto"><?php echo $api->sanitize_data($date[0], 'string') . " " . $api->sanitize_data($date[1], 'int') . ", " . $api->sanitize_data($date[2], 'int') . ", " . $api->sanitize_data($time, 'string') ?></p>
               </div>
             </div>
             <div class="row">
-              <div class="col">
+              <div class="col-12 col-sm-6 col-md">
                 <!-- incentive -->
                 <label class="form-label fw-semibold">Incentive</label>
                 <p><?php echo $incentive; ?></p>
               </div>
-              <div class="col">
+              <div class="col-12 col-sm-6 col-md">
                 <!-- amount due total -->
                 <label for="status" class="form-label fw-semibold">Amount Due Total</label>
                 <p>₱<?php echo $total; ?></p>
@@ -243,14 +243,14 @@
                 <div class="Orders__order-item__tattoo-preview shadow-sm" style="background-image: url(<?php echo $tattoo_image; ?>)"></div>
               </div>
               <div class="Orders__order-item__details">
-                <div class="row my-5">
-                  <div class="col">
+                <div class="row mt-5 mt-lg-0">
+                  <div class="col-6 col-md my-2">
                     <!-- tattoo name -->
                     <label class="form-label fw-semibold">Item</label>
                     <p><?php echo $tattoo_name; ?></p>
                     <input type="hidden" readonly class="d-none" value="<?php echo $item_id; ?>" name="item_id" />
                   </div>
-                  <div class="col">
+                  <div class="col-6 col-md my-2">
                     <!-- item status -->
                     <label class="form-label fw-semibold">Item Status</label>
                     <p><?php echo $item_status; ?></p>
@@ -258,12 +258,12 @@
                       <input type="hidden" class="d-none" name="status[]" value="<?php echo $item_status; ?>" />
                     <?php } ?>
                   </div>
-                  <div class="col">
+                  <div class="col-6 col-md my-2">
                     <!-- amount_addon -->
                     <label class="form-label fw-semibold">Amount Addon</label>
                     <p><?php echo ($addon == 0) ? "N/A" : "₱" . $addon; ?></p>
                   </div>
-                  <div class="col">
+                  <div class="col-6 col-md my-2">
                     <!-- payment status -->
                     <label class="form-label fw-semibold">Payment Status</label>
                     <p><?php echo $paid; ?></p>
@@ -272,13 +272,13 @@
                     <?php } ?>
                   </div>
                 </div>
-                <div class="row my-5">
-                  <div class="col">
+                <div class="row mt-0 mt-md-4">
+                  <div class="col-6 col-md my-2">
                     <!-- price -->
                     <label class="form-label fw-semibold">Price</label>
                     <p>₱<?php echo $price; ?></p>
                   </div>
-                  <div class="col">
+                  <div class="col-6 col-md my-2">
                     <!-- quantity -->
                     <label for="quantity" class="form-label fw-semibold">Quantity</label>
                     <?php if((strcasecmp($item_status, "Standing") == 0 && strcasecmp($paid, "Unpaid") == 0)){ ?>
@@ -288,7 +288,7 @@
                       <p><?php echo $quantity; ?></p>
                     <?php } ?>
                   </div>
-                  <div class="col">
+                  <div class="col-6 col-md my-2">
                     <!-- width -->
                     <label for="width" class="form-label fw-semibold">Width</label>
                     <?php if((strcasecmp($item_status, "Standing") == 0 && strcasecmp($paid, "Unpaid") == 0)){ ?>
@@ -298,7 +298,7 @@
                       <p><?php echo $width; ?></p>
                     <?php } ?>
                   </div>
-                  <div class="col">
+                  <div class="col-6 col-md my-2">
                     <!-- height --->
                     <label for="height" class="form-label fw-semibold">Height</label>
                     <?php if((strcasecmp($item_status, "Standing") == 0 && strcasecmp($paid, "Unpaid") == 0)){ ?>
@@ -310,7 +310,7 @@
                   </div>
                 </div>
                 <?php if((strcasecmp($item_status, "Standing") == 0 && strcasecmp($paid, "Unpaid") == 0)){ ?>
-                  <div class="w-100">
+                  <div class="w-100 mt-4">
                     <div class="float-end">
                       <button type="submit" class="me-1 btn btn-outline-primary" name="update_item">Update</button>
                       <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#delete_<?php echo $item_id; ?>">Remove Item</button>
@@ -497,11 +497,11 @@
                 <div class="Orders__referral__input-group">
                   <?php if(strcasecmp($confirmation_status, "Pending") == 0){ ?>
                     <div class="d-inline-block">
-                      <button type="submit" class="Orders__controls__control btn btn-outline-primary me-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Update Referral" name="update_referral"><span class="Orders__controls__control__icon material-icons">edit</span</button>
+                      <button type="submit" class="control btn btn-outline-primary me-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Update Referral" name="update_referral"><span class="control__icon material-icons">edit</span</button>
                     </div>
                   <?php } ?>
                   <div class="d-inline-block">
-                    <button type="submit" class="Orders__controls__control btn btn-outline-danger me-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Remove Referral" name="remove_referral"><span class="Orders__controls__control__icon material-icons">person_remove</span></button>
+                    <button type="submit" class="control btn btn-outline-danger me-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Remove Referral" name="remove_referral"><span class="control__icon material-icons">person_remove</span></button>
                   </div>
                 </div>
               </div>
@@ -529,102 +529,8 @@
   </div>  
 </body>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
-<script>
-  // tooltips
-  var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-  var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl){
-    return new bootstrap.Tooltip(tooltipTriggerEl);
-  });
-
-  // collapsibles
-  var show_orders = false;
-  var toggle_orders = document.getElementById('toggle_orders');
-  var orders = document.getElementsByClassName('Orders__order');
-  var order_collapsibles = document.getElementsByClassName('Orders__order__collapsible__body');
-
-  // tab controls
-  var all_items_tab = document.getElementById('Orders__controls--tab--all-items');
-  var orders_tab = document.getElementById('Orders__controls--tab--orders');
-  var referrals_tab = document.getElementById('Orders__controls--tab--referrals');
-
-  // tab sections
-  var items = document.getElementsByClassName('Orders__order__items');
-  var referrals = document.getElementsByClassName('Orders__order__referrals');
-  
-  // collapsibles responsive stacking
-  for(var i=0, count=orders.length; i < count; i++){
-    let order = orders[i];
-
-    order_collapsibles[i].addEventListener('shown.bs.collapse', function (){
-      order.classList.replace('my-2', 'my-4');
-    });
-
-    order_collapsibles[i].addEventListener('hidden.bs.collapse', function (){
-      order.classList.replace('my-4', 'my-2');
-    });
-  }
-
-  // toggling all collapsibles
-  toggle_orders.addEventListener('click', function(){
-    show_orders = !show_orders;
-    show_orders === true ? toggle_orders.innerText = "Hide All Orders" : toggle_orders.innerText = "Show All Orders";
-    
-    for(var i=0, count=order_collapsibles.length; i < count; i++){
-      if(show_orders === true){
-        if(!(order_collapsibles[i].classList.contains('show'))){
-          let collapse = new bootstrap.Collapse(order_collapsibles[i], { show: true, hide: false });
-        }
-      } else {
-        if((order_collapsibles[i].classList.contains('show'))){
-          let collapse = new bootstrap.Collapse(order_collapsibles[i], { show: false, hide: true });
-        }
-      }
-    }
-  });
-
-  // switching between tabs
-  all_items_tab.addEventListener('click', function(){
-    this.className = "Orders__controls--tab border-0 border-bottom text-black";
-    orders_tab.className = "Orders__controls--tab border-0 text-muted";
-    referrals_tab.className = "Orders__controls--tab border-0 text-muted";
-
-    for(var i=0, count=items.length; i < count; i++){
-      items[i].classList.replace('d-none', 'd-block');
-    }
-
-    for(var i=0, count=referrals.length; i < count; i++){
-      referrals[i].classList.remove('d-none', 'd-block');
-    }
-  });
-
-  orders_tab.addEventListener('click', function(){
-    this.className = "Orders__controls--tab border-0 border-bottom text-black";
-    referrals_tab.className = "Orders__controls--tab border-0 text-muted";
-    all_items_tab.className = "Orders__controls--tab border-0 text-muted";
-
-    for(var i=0, count=items.length; i < count; i++){
-      items[i].classList.replace('d-none', 'd-block');
-    }
-
-    for(var i=0, count=referrals.length; i < count; i++){
-      referrals[i].classList.replace('d-block', 'd-none');
-    }
-  });
-
-  referrals_tab.addEventListener('click', function(){
-    this.className = "Orders__controls--tab border-0 border-bottom text-black";
-    orders_tab.className = "Orders__controls--tab border-0 text-muted";
-    all_items_tab.className = "Orders__controls--tab border-0 text-muted";
-
-    for(var i=0, count=items.length; i < count; i++){
-      items[i].classList.replace('d-block', 'd-none');
-    }
-
-    for(var i=0, count=referrals.length; i < count; i++){
-      referrals[i].classList.remove('d-none', 'd-block');
-    }
-  });
-</script>
+<script src="../api/api.js"></script>
+<script src="./scripts/js/orders.js"></script>
 </html>
 <?php
   if(isset($_SESSION['res'])){

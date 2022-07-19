@@ -80,11 +80,11 @@
 <body class="w-100">
   <?php require_once '../common/header.php'; ?>
   <div class="Reservations content">
-    <div class="Reservations__header">
+    <div class="page-header">
       <h2 class="fw-bold display-3">Reservations</h2>
       <p class="d-inline fs-5 text-muted">Make reservations for your tattoo orders and manage your ongoing reservations here.</p>
     </div>
-    <div class="Reservations__controls">
+    <div class="controls">
       <?php if($api->num_rows($reservations) > 0){ ?>
         <button type="button" class="btn btn-link btn-lg text-black text-decoration-none me-1" id="toggle_reservations">Show All Reservations</button>
       <?php } ?>
@@ -95,7 +95,7 @@
             <label class="form-check-label" for="edit_reservations" id="edit_reservations_label">Edit</label>
           </div>
         <?php } if(!empty($order_id)){ ?>
-          <button type="submit" class="Reservations__controls__control btn btn-outline-dark me-2" data-bs-toggle="collapse" data-bs-target="#new_reservation" aria-expanded="false" aria-controls="new_reservation" title="New Reservation"><span class="Reservations__controls__control__icon material-icons">bookmark_add</span><span class="Reservations__controls__control__text">New Reservation</span></button>
+          <button type="submit" class="control btn btn-outline-dark me-2" data-bs-toggle="collapse" data-bs-target="#new_reservation" aria-expanded="false" aria-controls="new_reservation" title="New Reservation"><span class="control__icon material-icons">bookmark_add</span><span class="control__text">New Reservation</span></button>
         <?php } ?>
       </div>
     </div>
@@ -168,44 +168,44 @@
                   <div class="Reservations__item__collapsible__body--stacking__item-details order-last">
                     <div class="row">
                       <!-- tattoo name -->
-                      <div class="col">
+                      <div class="col-6 col-md my-2">
                         <label class="form-label fw-semibold">Reserved Item</label>
                         <p><?php echo $tattoo_name; ?></p>
                         <input type="hidden" readonly class="d-none" value="<?php echo $item_id; ?>" name="item_id" />
                       </div>
                       <!-- status -->
-                      <div class="col">
+                      <div class="col-6 col-md my-2">
                         <label for="status" class="form-label fw-semibold">Status</label>
                         <div class="fw-semibold"><p class="Reservation__item__status d-inline <?php echo (strcasecmp($status, "Confirmed") == 0) ? "text-success" : "text-secondary"; ?>"><?php echo $status; ?></p>, <p class="d-inline <?php echo (strcasecmp($paid, "Fully Paid") == 0) ? "text-success" : "text-secondary"; ?>"><?php echo $paid; ?></p></div>
                         <input type="hidden" readonly class="d-none" value="<?php echo $reservation_id; ?>" name="reservation_id" />
                       </div>
                       <!-- addon amount -->
-                      <div class="col">
+                      <div class="col-12 col-md my-2">
                         <label class="form-label fw-semibold">Add-on Amount</label>
-                        <p>₱<?php echo $addon; ?></p>
+                        <p class="mb-0">₱<?php echo $addon; ?></p>
                       </div>
                     </div>
                     <div class="row">
                       <!-- quantity -->
-                      <div class="col">
+                      <div class="col col-md my-2">
                         <label for="quantity" class="form-label fw-semibold">Quantity</label>
                         <p><?php echo $quantity . " pc. "; ?></p>
                         <input type="hidden" readonly class="d-none" value="<?php echo $quantity; ?>" name="quantity" />
                       </div>
                       <!-- width -->
-                      <div class="col">
+                      <div class="col col-md my-2">
                         <label for="width" class="form-label fw-semibold">Width</label>
                         <p><?php echo $width . " in."; ?></p>
                       </div>
                       <!-- height --->
-                      <div class="col">
+                      <div class="col col-md my-2">
                         <label for="height" class="form-label fw-semibold">Height</label>
                         <p><?php echo $height . " in."; ?></p>
                       </div>
                     </div>
                     <div class="row">
                       <!-- service type -->
-                      <div class="col">
+                      <div class="col-12 col-md my-2">
                         <label for="service_type" class="form-label fw-semibold">Service Type</label>
                         <?php if(strcasecmp($status, "Confirmed") == 0){ ?>
                           <p><?php echo $service_type; ?></p>
@@ -218,7 +218,7 @@
                         <?php } ?>
                       </div>
                       <!-- time -->
-                      <div class="col">
+                      <div class="col-12 col-md my-2">
                         <label for="scheduled_time" class="form-label fw-semibold">Scheduled Time</label>
                         <?php if(strcasecmp($status, "Confirmed") == 0){ ?>
                           <p><?php echo $api->sanitize_data(date("g:i A", strtotime($scheduled_time)), 'string'); ?></p>
@@ -227,7 +227,7 @@
                         <label class="error-message scheduled_time_err d-none"><span class="material-icons-outlined fs-6 me-1">info</span><span></span></label>
                       </div>
                       <!-- date -->
-                      <div class="col">
+                      <div class="col-12 col-md my-2">
                         <label for="scheduled_date" class="form-label fw-semibold">Scheduled Date</label>
                         <?php if(strcasecmp($status, "Confirmed") == 0){ ?>
                           <p><?php echo $api->sanitize_data($date[0], 'string') . " " . $api->sanitize_data($date[1], 'int') . ", " . $api->sanitize_data($date[2], 'int'); ?></p>
@@ -239,38 +239,34 @@
                   </div>
                 </div>
                 <div class="Reservations__item__collapsible__body__item-details">
-                  <div class="row mb-5">
+                  <div>
                     <!-- address -->
-                    <div class="col">
-                      <label for="reservation_address" class="form-label fw-semibold">Address</label>
-                      <?php if(strcasecmp($status, "Confirmed") == 0){ ?>
-                        <p><?php echo $address; ?></p>
-                      <?php } ?>
-                      <input type="<?php echo strcasecmp($status, "Confirmed") == 0 ? "hidden" : "text"; ?>" readonly class="<?php echo strcasecmp($status, "Pending") == 0 ? "reservations form-control" : "d-none"; ?>" value="<?php echo $address; ?>" name="reservation_address" />
-                      <label class="error-message reservation_address_err d-none"><span class="material-icons-outlined fs-6 me-1">info</span><span></span></label>
-                    </div>
+                    <label for="reservation_address" class="form-label fw-semibold">Address</label>
+                    <?php if(strcasecmp($status, "Confirmed") == 0){ ?>
+                      <p><?php echo $address; ?></p>
+                    <?php } ?>
+                    <input type="<?php echo strcasecmp($status, "Confirmed") == 0 ? "hidden" : "text"; ?>" readonly class="<?php echo strcasecmp($status, "Pending") == 0 ? "reservations form-control" : "d-none"; ?>" value="<?php echo $address; ?>" name="reservation_address" />
+                    <label class="error-message reservation_address_err d-none"><span class="material-icons-outlined fs-6 me-1">info</span><span></span></label>
                   </div>
-                  <div class="row <?php echo strcasecmp($status, 'Confirmed') == 0 ? "mt-5" : "my-5"; ?>">
+                  <div>
                     <!-- demands -->
-                    <div class="col">
-                      <label for="reservation_description" class="form-label fw-semibold">Demands</label>
-                      <?php if(strcasecmp($status, "Confirmed") == 0){ ?>
-                        <p><?php echo $description; ?></p>
-                      <?php } else { ?>
-                        <textarea readonly class="<?php if(strcasecmp($status, "Pending") == 0) echo "reservations "; ?>form-control p-3 text-wrap" name="reservation_demands" rows="5" placeholder="Reservation Demands"><?php echo $description; ?></textarea>
-                        <p class="my-2 d-none text-danger"></p>
-                      <?php } ?>
-                    </div>
+                    <label for="reservation_description" class="form-label fw-semibold">Demands</label>
+                    <?php if(strcasecmp($status, "Confirmed") == 0){ ?>
+                      <p><?php echo $description; ?></p>
+                    <?php } else { ?>
+                      <textarea readonly class="<?php if(strcasecmp($status, "Pending") == 0) echo "reservations "; ?>form-control p-3 text-wrap" name="reservation_demands" rows="5" placeholder="Reservation Demands"><?php echo $description; ?></textarea>
+                      <p class="my-2 d-none text-danger"></p>
+                    <?php } ?>
                   </div>
                 </div>
                 <?php if(strcasecmp($status, 'Pending') == 0){ ?>
-                  <div class="row mt-1 mb-2">
-                    <div class="col d-flex justify-content-end">
-                      <button type="submit" class="order-0 btn btn-secondary d-none" name="update_reservation">Update</button>
-                      <button type="submit" class="order-1 ms-1 btn btn-primary" name="confirm_reservation">Confirm Reservation</button>
+                  <div class="mt-5 mb-2">
+                    <div class="d-flex justify-content-end">
+                      <button type="submit" class="control btn btn-outline-secondary order-first d-none" name="update_reservation" data-bs-toggle="tooltip" data-bs-placement="top" title="Update Reservation"><span class="control__icon material-icons">edit</span><span class="control__text">Update</span></button>
+                      <button type="submit" class="control btn btn-outline-primary order-1 ms-1" name="confirm_reservation" data-bs-toggle="tooltip" data-bs-placement="top" title="Confirm Reservation"><span class="control__icon material-icons">turned_in</span><span class="control__text">Confirm Reservation</span></button>
                       <?php if(strcasecmp($paid, 'Fully Paid') != 0){ ?>
-                        <button type="submit" class="order-2 ms-1 btn btn-outline-danger" name="cancel_reservation">Cancel</button>
-                      <?php } ?>
+                        <button type="submit" class="control btn btn-outline-danger order-last ms-1" name="cancel_reservation" data-bs-toggle="tooltip" data-bs-placement="top" title="Cancel Reservation"><span class="control__icon material-icons">bookmark_remove</span><span class="control__text">Cancel</span></button>
+                        <?php } ?>
                     </div>
                   </div>
                 <?php } ?>

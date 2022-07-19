@@ -78,31 +78,19 @@
 <head>
   <?php require_once '../common/meta.php'; ?>
   <link href="../style/reservations.css" rel="stylesheet" scoped>
-  <!-- native style -->
-  <style>
-    .Reservations__controls--tab {
-      font-size: 1.25rem !important;
-      background: rgba(255, 255, 255, 0) !important;
-      border-color: #212529 !important;
-      border-width: 3px !important;
-      padding: 0 0.25rem 0.5rem 0.25rem !important;
-      margin: 0 0.5rem !important;
-      transition: color .4s;
-    }
-  </style>
   <title>Bookings | NJC Tattoo</title>
 </head>
 <body class="w-100">
   <?php require_once '../common/header.php'; ?>
   <div class="Reservations content">
-    <div class="Reservations__header">
+    <div class="page-header">
       <h2 class="fw-bold display-3">Reservations</h2>
       <p class="d-inline fs-5 text-muted">Manage your ongoing worksessions and reservations here.</p>
     </div>
-    <div class="Reservations__controls">
-      <div>
-        <button type="button" class="Reservations__controls--tab border-0 border-bottom text-black" id="Reservations__controls--tab--sessions">Sessions</button>
-        <button type="button" class="Reservations__controls--tab border-0 text-muted" id="Reservations__controls--tab--reservations">Reservations</button>
+    <div class="controls">
+      <div class="tabs">
+        <button type="button" class="controls--tab" id="controls--tab--sessions">Sessions</button>
+        <button type="button" class="controls--tab controls--tab--active" id="controls--tab--reservations">Reservations</button>
       </div>
       <?php if($item_count > 0){ ?>
         <div>
@@ -110,7 +98,7 @@
         </div>
       <?php } ?>
     </div>
-    <div id="Reservations--tab--sessions" class="vstack d-flex">
+    <div id="Reservations--tab--sessions" class="vstack d-none">
       <?php
         if($api->num_rows($worksessions) > 0){
           while($worksession = $api->fetch_assoc($worksessions)){
@@ -149,7 +137,7 @@
               <p class="Reservations__item__collapsible__date"><?php echo " on " . $api->sanitize_data($date[0], "string") . " " . $api->sanitize_data($date[1], "int") . ", " . $api->sanitize_data($date[2], "int"); ?></p>
             </button>
             <div class="d-flex w-auto mx-3 pe-5">
-              <button type="submit" class="Reservations__controls__control btn btn-primary order-1 me-2" name="finish_worksession" data-bs-toggle="tooltip" data-bs-placement="top" title="Finish Worksession"><span class="Reservations__controls__control__icon material-icons">turned_in</span><span class="Reservations__controls__control__text">Finish</span></button>
+              <button type="submit" class="control btn btn-primary order-1 me-2" name="finish_worksession" data-bs-toggle="tooltip" data-bs-placement="top" title="Finish Worksession"><span class="control__icon material-icons">turned_in</span><span class="control__text">Finish</span></button>
             </div>
           </div>
           <div class="collapse mt-3 p-7 Reservations__item__collapsible__body rounded shadow-sm" id="item_<?php echo $item_id; ?>">
@@ -161,75 +149,71 @@
               <div class="Reservations__item__collapsible__body--stacking__item-details order-last">
                 <div class="row">
                   <!-- tattoo name -->
-                  <div class="col">
+                  <div class="col-6 col-md my-2">
                     <label class="form-label fw-semibold">Applied Item</label>
                     <p><?php echo $tattoo_name; ?></p>
                     <input type="hidden" readonly class="d-none" value="<?php echo $item_id; ?>" name="item_id" />
                   </div>
                   <!-- status -->
-                  <div class="col">
+                  <div class="col-6 col-md my-2">
                     <label for="status" class="form-label fw-semibold">Status</label>
                     <p class="fw-semibold text-success"><?php echo $status; ?></p>
                     <input type="hidden" readonly class="d-none" value="<?php echo $session_id; ?>" name="session_id" />
                     <input type="hidden" readonly class="d-none" value="<?php echo $reservation_id; ?>" name="reservation_id" />
                   </div>
                   <!-- addon amount -->
-                  <div class="col">
+                  <div class="col-12 col-md my-2">
                     <label class="form-label fw-semibold">Add-on Amount</label>
-                    <p><?php echo $addon; ?></p>
+                    <p class="mb-0"><?php echo $addon; ?></p>
                   </div>
                 </div>
                 <div class="row">
                   <!-- quantity -->
-                  <div class="col">
+                  <div class="col-6 col-md my-2">
                     <label for="quantity" class="form-label fw-semibold">Quantity</label>
                     <p><?php echo $quantity . " pc. "; ?></p>
                     <input type="hidden" readonly class="d-none" value="<?php echo $quantity; ?>" name="quantity" />
                   </div>
                   <!-- width -->
-                  <div class="col">
+                  <div class="col-6 col-md my-2">
                     <label for="width" class="form-label fw-semibold">Width</label>
                     <p><?php echo $width . " in."; ?></p>
                   </div>
                   <!-- height --->
-                  <div class="col">
-                    <label for="inputAddress" class="form-label fw-semibold">Height</label>
-                    <p><?php echo $height . " in."; ?></p>
+                  <div class="col-6 col-md my-2">
+                    <label for="height" class="form-label fw-semibold">Height</label>
+                    <p class="mb-0"><?php echo $height . " in."; ?></p>
                   </div>
                 </div>
                 <div class="row">
                   <!-- service type -->
-                  <div class="col">
+                  <div class="col-12 col-md my-2">
                     <label for="service_type" class="form-label fw-semibold">Service Type</label>
                     <p><?php echo $service_type; ?></p>
                   </div>
                   <!-- time -->
-                  <div class="col">
+                  <div class="col-12 col-md my-2">
                     <label for="scheduled_time" class="form-label fw-semibold">Start Time</label>
                     <p><?php echo date("g:i A", strtotime($session_time)); ?></p>
                   </div>
                   <!-- date -->
-                  <div class="col">
+                  <div class="col-12 col-md my-2">
                     <label for="scheduled_date" class="form-label fw-semibold">Session Date</label>
-                    <p><?php echo $api->sanitize_data($date[0], "string") . " " . $api->sanitize_data($date[1], "int") . ", " . $api->sanitize_data($date[2], "int"); ?></p>
+                    <p class="mb-0"><?php echo $api->sanitize_data($date[0], "string") . " " . $api->sanitize_data($date[1], "int") . ", " . $api->sanitize_data($date[2], "int"); ?></p>
                   </div>
                 </div>
               </div>
             </div>
             <div class="Reservations__item__collapsible__body__item-details">
-              <div class="row mb-5">
+              <div>
                 <!-- address -->
-                <div class="col">
-                  <label for="reservation_address" class="form-label fw-semibold">Address</label>
-                  <p><?php echo $address; ?></p>
-                </div>
+                <label for="reservation_address" class="form-label fw-semibold">Address</label>
+                <p><?php echo $address; ?></p>
               </div>
-              <div class="row mt-5">
+              <div>
                 <!-- demands -->
-                <div class="col">
-                  <label for="reservation_description" class="form-label fw-semibold">Demands</label>
-                  <p><?php if(empty($description)){ echo "None"; } else { echo $description; } ?></p>
-                </div>
+                <label for="reservation_description" class="form-label fw-semibold">Demands</label>
+                <p><?php if(empty($description)){ echo "None"; } else { echo $description; } ?></p>
               </div>
             </div>
           </div>
@@ -239,7 +223,7 @@
       <h1 class="p-7 display-2 fst-italic text-muted no-select">No ongoing sessions.</h1>
       <?php } ?>
     </div>
-    <div id="Reservations--tab--reservations" class="vstack d-none">
+    <div id="Reservations--tab--reservations" class="vstack d-flex">
       <?php
         if($api->num_rows($reservations) > 0){
           while($reservation = $api->fetch_assoc($reservations)){
@@ -279,12 +263,12 @@
               <p class="Reservations__item__collapsible__date"><?php echo " on " . $api->sanitize_data($date[0], "string") . " " . $api->sanitize_data($date[1], "int") . ", " . $api->sanitize_data($date[2], "int"); ?></p>
             </button>
             <div class="d-flex w-auto mx-3 pe-5">
-              <button type="submit" class="Reservations__controls__control btn btn-outline-primary order-first me-2" name="update_reservation" data-bs-toggle="tooltip" data-bs-placement="top" title="Update Reservation"><span class="Reservations__controls__control__icon material-icons">edit</span><span class="Reservations__controls__control__text">Update</span></button>
+              <button type="submit" class="control btn btn-outline-primary order-first me-2" name="update_reservation" data-bs-toggle="tooltip" data-bs-placement="top" title="Update Reservation"><span class="control__icon material-icons">edit</span><span class="control__text">Update</span></button>
               <?php if(strcasecmp($status, "Confirmed") == 0){ ?>
-                <button type="submit" class="Reservations__controls__control btn btn-primary order-1 me-2" name="start_worksession" data-bs-toggle="tooltip" data-bs-placement="top" title="Start Worksession"><span class="Reservations__controls__control__icon material-icons">bookmark_add</span><span class="Reservations__controls__control__text">Start Worksession</span></button>
+                <button type="submit" class="control btn btn-primary order-1 me-2" name="start_worksession" data-bs-toggle="tooltip" data-bs-placement="top" title="Start Worksession"><span class="control__icon material-icons">bookmark_add</span><span class="control__text">Start Worksession</span></button>
               <?php } ?>
               <input type="hidden" readonly class="d-none" value="<?php echo $client_id; ?>" name="client_id" />
-              <button type="submit" class="Reservations__controls__control btn btn-outline-danger order-last" name="cancel_reservation" data-bs-toggle="tooltip" data-bs-placement="top" title="Cancel Reservation"><span class="Reservations__controls__control__icon material-icons">bookmark_remove</span><span class="Reservations__controls__control__text">Cancel</span></button>
+              <button type="submit" class="control btn btn-outline-danger order-last" name="cancel_reservation" data-bs-toggle="tooltip" data-bs-placement="top" title="Cancel Reservation"><span class="control__icon material-icons">bookmark_remove</span><span class="control__text">Cancel</span></button>
             </div>
           </div>
           <div class="Reservations__item__collapsible__body collapse mt-3 p-7 rounded shadow-sm" id="item_<?php echo $item_id; ?>">
@@ -296,22 +280,22 @@
               <div class="Reservations__item__collapsible__body--stacking__item-details order-last">
                 <div class="row">
                   <!-- tattoo name -->
-                  <div class="col">
+                  <div class="col-6 col-md my-2">
                     <label class="form-label fw-semibold">Reserved Item</label>
                     <p><?php echo $tattoo_name; ?></p>
                     <input type="hidden" readonly class="d-none" value="<?php echo $item_id; ?>" name="item_id" />
                   </div>
                   <!-- status -->
-                  <div class="col">
+                  <div class="col-6 col-md my-2">
                     <label for="status" class="form-label fw-semibold">Status</label>
                     <div class="fw-semibold"><p class="d-inline <?php if(strcasecmp($status, "Confirmed") == 0){ echo "text-success"; } else { echo "text-secondary"; } ?>"><?php echo $status . ", "; ?></p><p class="d-inline <?php if(strcasecmp($paid, "Fully Paid") == 0){ echo "text-success"; } else { echo "text-secondary"; } ?>"><?php echo $paid; ?></p></div>
                     <input type="hidden" readonly class="d-none" value="<?php echo $reservation_id; ?>" name="reservation_id" />
                   </div>
                   <!-- addon amount -->
-                  <div class="col">
+                  <div class="col-12 col-md my-2">
                     <label class="form-label fw-semibold">Add-on Amount</label>
                     <?php if(strcasecmp($paid, 'Fully Paid') == 0){ ?>
-                      <p>₱<?php echo number_format($addon, 2, '.', ''); ?></p>
+                      <p class="mb-0">₱<?php echo number_format($addon, 2, '.', ''); ?></p>
                     <?php } else { ?>
                       <div class="input-group">
                         <?php if(strcasecmp($paid, "Fully Paid") != 0){ ?>
@@ -324,39 +308,39 @@
                 </div>
                 <div class="row">
                   <!-- quantity -->
-                  <div class="col">
+                  <div class="col col-md my-2">
                     <label for="quantity" class="form-label fw-semibold">Quantity</label>
                     <p><?php echo $quantity . " pc. "; ?></p>
                     <input type="hidden" readonly class="d-none" value="<?php echo $quantity; ?>" name="quantity" />
                   </div>
                   <!-- width -->
-                  <div class="col">
+                  <div class="col-6 col-md my-2">
                     <label for="width" class="form-label fw-semibold">Width</label>
                     <p><?php echo $width . " in."; ?></p>
                   </div>
                   <!-- height --->
-                  <div class="col">
-                    <label for="inputAddress" class="form-label fw-semibold">Height</label>
-                    <p><?php echo $height . " in."; ?></p>
+                  <div class="col-6 col-md my-2">
+                    <label for="height" class="form-label fw-semibold">Height</label>
+                    <p class="mb-0"><?php echo $height . " in."; ?></p>
                   </div>
                 </div>
                 <div class="row">
                   <!-- service type -->
-                  <div class="col">
+                  <div class="col-12 col-md my-2">
                     <label for="service_type" class="form-label fw-semibold">Service Type</label>
-                    <select name="service_type" class="form-select form-select-md mb-3">
+                    <select name="service_type" class="form-select form-select-md">
                       <option value="Walk-in" <?php if(strcasecmp($service_type, 'Walk-in') == 0){ echo "selected"; } ?>>Walk-in</option>
                       <option value="Home Service" <?php if(strcasecmp($service_type, 'Walk-in') != 0){ echo "selected"; } ?>>Home Service</option>
                     </select>
                   </div>
                   <!-- time -->
-                  <div class="col">
+                  <div class="col-12 col-md my-2">
                     <label for="scheduled_time" class="form-label fw-semibold">Scheduled Time</label>
                     <input type="time" class="form-control" value="<?php echo $scheduled_time; ?>" name="scheduled_time" />
                     <label class="error-message scheduled_time_err d-none"><span class="material-icons-outlined fs-6 me-1">info</span><span></span></label>
                   </div>
                   <!-- date -->
-                  <div class="col">
+                  <div class="col-12 col-md my-2">
                     <label for="scheduled_date" class="form-label fw-semibold">Scheduled Date</label>
                     <input type="date" class="form-control" value="<?php echo $scheduled_date; ?>" name="scheduled_date" />
                     <label class="error-message scheduled_date_err d-none"><span class="material-icons-outlined fs-6 me-1">info</span><span></span></label>
@@ -365,20 +349,16 @@
               </div>
             </div>
             <div class="Reservations__item__collapsible__body__item-details">
-              <div class="row mb-5">
+              <div>
                 <!-- address -->
-                <div class="col">
-                  <label for="reservation_address" class="form-label fw-semibold">Address</label>
-                  <input type="text" class="form-control" value="<?php echo $address; ?>" name="reservation_address" />
-                  <label class="error-message reservation_address_err d-none"><span class="material-icons-outlined fs-6 me-1">info</span><span></span></label>
-                </div>
+                <label for="reservation_address" class="form-label fw-semibold">Address</label>
+                <input type="text" class="form-control" value="<?php echo $address; ?>" name="reservation_address" />
+                <label class="error-message reservation_address_err d-none"><span class="material-icons-outlined fs-6 me-1">info</span><span></span></label>
               </div>
-              <div class="row mt-5">
+              <div>
                 <!-- demands -->
-                <div class="col">
-                  <label for="reservation_description" class="form-label fw-semibold">Demands</label>
-                  <p><?php if(empty($description)){ echo "None"; } else { echo $description; } ?></p>
-                </div>
+                <label for="reservation_description" class="form-label fw-semibold">Demands</label>
+                <p><?php if(empty($description)){ echo "None"; } else { echo $description; } ?></p>
               </div>
             </div>
           </div>
@@ -394,24 +374,24 @@
 <script src="../api/api.js"></script>
 <script>
   // tabs
-  var sessions_tab = document.getElementById('Reservations__controls--tab--sessions');
-  var reservations_tab = document.getElementById('Reservations__controls--tab--reservations');
+  var sessions_tab = document.getElementById('controls--tab--sessions');
+  var reservations_tab = document.getElementById('controls--tab--reservations');
 
   // tab sections
   var sessions = document.getElementById('Reservations--tab--sessions');
   var reservations = document.getElementById('Reservations--tab--reservations');
 
   sessions_tab.addEventListener('click', function(){
-    this.className = "Reservations__controls--tab border-0 border-bottom text-black";
-    reservations_tab.className = "Reservations__controls--tab border-0 text-muted";
+    this.classList.add("controls--tab--active");
+    reservations_tab.classList.remove("controls--tab--active");
 
     sessions.classList.replace('d-none', 'd-flex');
     reservations.classList.replace('d-flex', 'd-none');
   });
 
   reservations_tab.addEventListener('click', function(){
-    this.className = "Reservations__controls--tab border-0 border-bottom text-black";
-    sessions_tab.className = "Reservations__controls--tab border-0 text-muted";
+    this.classList.add("controls--tab--active");
+    sessions_tab.classList.remove("controls--tab--active");
 
     reservations.classList.replace('d-none', 'd-flex');
     sessions.classList.replace('d-flex', 'd-none');
