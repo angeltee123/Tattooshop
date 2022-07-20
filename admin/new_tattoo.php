@@ -16,10 +16,10 @@
   <link href="../style/catalogue.css" rel="stylesheet" scoped>
   <style scoped>
     .Catalogue__cards__modal {
-      display: flex;
+      display: flex !important;
     }
 
-    .Catalogue__cards__modal__preview-image {
+    .Catalogue__cards__modal__preview__image {
       display: flex;
       justify-content: center;
       align-items: center;
@@ -27,23 +27,27 @@
       order: -1 !important;
     }
 
-    .Catalogue__cards__modal__preview-body__form {
-      width: 65% !important;
+    @media (max-width: 1400px){
+      .Catalogue__cards__modal__preview {
+        margin-top: 40vh !important;
+      }
     }
   </style>
   <!-- native style -->
   <title>Catalog New Tattoo | NJC Tattoo</title>
 </head>
-<body class="w-100 h-100">
-  <div class="Catalogue__cards__modal">
-    <div class="Catalogue__cards__modal__preview-image col-5" id="Preview">
-      <h1 class="text-muted no-select" id="Preview__text">Image Preview</h1>
+<body>
+  <div class="Catalogue__cards__modal overflow-auto" >
+    <div class="Catalogue__cards__modal__preview" style="width: 39.5%;">
+      <div class="Catalogue__cards__modal__preview__image" id="Preview">
+        <h1 class="text-muted no-select" id="Preview__text">Image Preview</h1>
+      </div>
+    </div> 
+    <div class="Catalogue__cards__modal__preview-body flex-grow-1">
       <div class="Catalogue__cards__modal--back">
         <a href="./catalogue.php" class="stretched-link"><span class="material-icons md-48 display-5" style="width: 24px;">arrow_back_ios</span></a>
       </div>
-    </div>
-    <div class="Catalogue__cards__modal__preview-body col">
-      <div class="flex-grow-1">
+      <div>
         <div class="Catalogue__cards__modal__preview-body__form">
           <form id="New-tattoo__form" action="./scripts/php/queries.php" method="POST" enctype="multipart/form-data">
             <div class="my-3">
@@ -59,8 +63,8 @@
               <textarea class="form-control p-3 text-wrap" name="tattoo_description" id="tattoo_description" rows="5" placeholder="Tattoo Description" required></textarea>
               <label id="description_err" class="error-message <?php echo isset($_SESSION['description_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><span><?php if(isset($_SESSION['description_err'])) { echo $_SESSION['description_err']; } ?></span></label>
             </div>
-            <div class="row my-3">
-              <div class="col">
+            <div class="row">
+              <div class="col-12 col-lg my-2">
                 <div class="form-floating">
                   <select class="form-select" name="color_scheme" id="color_scheme" required>
                     <option value="Monochrome">Monochrome</option>
@@ -70,7 +74,7 @@
                 </div>
                 <label id="color_scheme_err" class="error-message <?php echo isset($_SESSION['color_scheme_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><span><?php if(isset($_SESSION['color_scheme_err'])) { echo $_SESSION['color_scheme_err']; } ?></span></label>
               </div>
-              <div class="col">
+              <div class="col-12 col-lg my-2">
                 <div class="form-floating">
                   <select class="form-select" name="complexity_level" id="complexity_level" required>
                     <option value="Simple">Simple</option>
@@ -81,15 +85,15 @@
                 <label id="complexity_level_err" class="error-message <?php echo isset($_SESSION['complexity_level_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><span><?php if(isset($_SESSION['complexity_level_err'])) { echo $_SESSION['complexity_level_err']; } ?></span></label>
               </div>
             </div>
-            <div class="row my-3">
-              <div class="col">
+            <div class="row">
+              <div class="col-12 col-lg my-2">
                 <div class="form-floating">
                   <input type="number" class="form-control" name="tattoo_width" id="tattoo_width" min="1" max="24" placeholder="Width" required/>
                   <label for="tattoo_width">Width (in inches)</label>
                 </div>
                 <label id="width_err" class="error-message <?php echo isset($_SESSION['width_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><span><?php if(isset($_SESSION['width_err'])) { echo $_SESSION['width_err']; } ?></span></label>
               </div>
-              <div class="col">
+              <div class="col-12 col-lg my-2">
                 <div class="form-floating">
                   <input type="number" class="form-control" name="tattoo_height" id="tattoo_height" min="1" max="36" placeholder="Height" required/>
                   <label for="tattoo_height">Height (in inches)</label>

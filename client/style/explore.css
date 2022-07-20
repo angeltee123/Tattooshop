@@ -1,72 +1,16 @@
-.Catalogue__cards__modal__preview-body__form {
-    width: 60%;
-}
-
-.Catalogue__cards__modal {
-    flex-flow: row nowrap;
-}
-
-    .Catalogue__cards__modal__preview-body__form {
-    margin: 0 0 0 5rem;
-}
-
-.Catalogue__cards__modal__preview-body__form__color {
-    height: 27.5px;
-    width: 27.5px;
-    border: 4px solid #dee2e6 !important;
-    border-radius: 360px !important;
-    cursor: pointer;
-}
-
-.Catalogue__cards__modal__preview-body__form__color--tooltip {
-    display: inline !important;
-    padding: 0.5rem !important;
-    margin: 0 0 0 0.5rem !important;
-    font-size: .93em;
-    color: #fff;
-    background-color: #212529;
-    border-radius: .25rem !important;
-    opacity: 0;
-    transition: all .25s;
-}
-
-.Catalogue__cards__modal__preview-body__form__color:hover + .Catalogue__cards__modal__preview-body__form__color--tooltip {
-    opacity: 1;
-}
-
 .Catalogue__cards__modal__preview-body__description {
     margin: 3rem 0;
 }
 
 .Catalogue__cards__modal__preview-body__fields {
-    margin-top: 3rem;
-    margin-bottom: 3rem;
+    margin-top: 3rem !important;
+    margin-bottom: 3rem !important;
 }
 
-.Catalogue__cards__modal__preview-body__scheme {
-display: flex;
-}
+/* Reactive styles */
 
-@media (max-width: 1496px){
-    .Catalogue__cards__modal {
-        flex-flow: column nowrap !important;
-    }
-
-    .Catalogue__cards__modal__preview-body {
-        flex: 0 !important;
-        margin: 3.5rem 0 !important;
-    }
-
-    .Catalogue__cards__modal__preview-image {
-        width: 400px !important;
-        height: 400px !important;
-        border-radius: 360px !important;
-    }
-
-    .Catalogue__cards__modal__preview-body__form {
-        margin: 0 auto !important;
-    }
-
+/* xxl breakpoint */
+@media (max-width: 1400px){
     .Catalogue__cards__modal__preview-body__description {
         margin: 1rem 0 !important;
         overflow: hidden;
@@ -74,36 +18,13 @@ display: flex;
         text-overflow: ellipsis;
         max-height: 4.5rem;
     }
-
+    
     .Catalogue__cards__modal__preview-body__price {
         font-size: 1.25rem !important;
     }
-
-    .Catalogue__cards__modal__preview-body__scheme {
-        display: none !important;
-    }
-
+    
     .Catalogue__cards__modal__preview-body__fields {
         margin-top: 2rem !important;
         margin-bottom: 2.25rem !important;
-    }
-}
-
-@media (max-width: 654px){
-    .Catalogue__cards__modal__preview-image {
-        width: 300px !important;
-        height: 300px !important;
-        border-radius: 360px !important;
-    }
-
-    .Catalogue__cards__modal__preview-body__fields {
-        flex-flow: column nowrap !important;
-        margin-top: 2.25rem !important;
-        margin-bottom: 2.25rem !important;
-    }
-
-    .Catalogue__cards__modal__preview-body__fields > .col {
-        margin-top: 0.5rem !important;
-        margin-bottom: 0.5rem !important;
     }
 }

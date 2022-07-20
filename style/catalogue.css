@@ -59,7 +59,7 @@
     flex-flow: row nowrap;
     justify-content: center;
     align-items: center;
-    height: 100%;
+    height: 100vh;
     width: 100%;
     top: 0;
     left: 0;
@@ -72,28 +72,32 @@
 }
 
 .Catalogue__cards__modal > div {
-    height: 100vh;
+    height: inherit;
 }
 
-.Catalogue__cards__modal__preview-image {
+.Catalogue__cards__modal__preview {
     order: -1 !important;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-repeat: no-repeat;
+}
+
+.Catalogue__cards__modal__preview__image {
+    height: inherit;
+    background-position: center !important;
+    background-size: cover !important;
+    background-repeat: no-repeat !important;
 }
 
 .Catalogue__cards__modal__preview-body {
     order: 6 !important;
     display: flex;
-    background-color: #fff;
-    justify-content: center;
+    justify-content: start;
     align-items: center;
-    border-right: 1px solid #dee2e6 !important;
+    background-color: #fff;
+    border-left: 1px solid #dee2e6;
 }
 
 .Catalogue__cards__modal--back {
     position: absolute;
+    z-index: 1060;
     display: flex;
     flex-flow: column nowrap;
     justify-content: center;
@@ -108,5 +112,43 @@
 }
 
 .Catalogue__cards__modal__preview-body__form {
-    margin-left: 5rem !important;
+    width: 60% !important;
+    margin: 0 0 0 5rem;
+}
+
+/* xxl breakpoint */
+@media (max-width: 1400px){
+    body {
+        overflow: hidden;
+    }
+
+    .Catalogue__cards__modal {
+        flex-flow: column nowrap !important;
+    }
+
+    .Catalogue__cards__modal__preview {
+        position: relative;
+        width: auto !important;
+        height: auto !important;
+        margin-top: 15vh;
+        margin-bottom: 3rem !important;
+    }
+    
+    .Catalogue__cards__modal__preview__image {
+        position: relative;
+        min-width: 250px !important;
+        min-height: 250px !important;
+        width: 32.5vw !important;
+        height: 32.5vw !important;
+        border-radius: 50% !important;
+    }
+
+    .Catalogue__cards__modal__preview-body {
+        margin-bottom: 3rem !important;
+        border: none !important;
+    }
+
+    .Catalogue__cards__modal__preview-body__form {
+        margin: 0 auto !important;
+    }
 }

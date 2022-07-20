@@ -61,68 +61,87 @@
 <head>
   <?php require_once '../common/meta.php'; ?>
   <!-- native style -->
-  <link href="./style/new_reservation.css" rel="stylesheet" scoped>
+  <link href="../style/catalogue.css" rel="stylesheet" scoped>
+  <link href="./style/explore.css" rel="stylesheet" scoped>
+  <style scoped>
+    .Catalogue__cards__modal {
+      display: flex !important;
+    }
+
+    #book {
+      display: flex;
+      border-radius: 50rem !important;
+      align-items: center;
+    }
+
+    /* xxl breakpoint */
+    @media (max-width: 1400px){
+      .Catalogue__cards__modal__preview-body__form {
+        margin: 0 auto !important;
+        width: 100% !important;
+      }
+    }
+  </style>
   <title>New Reservation | NJC Tattoo</title>
 </head>
-<body class="w-100 h-100">
-  <div class="New-booking row">
-    <div class="New-booking__preview col-5" style="background-image: url(<?php echo $tattoo_image; ?>);">
-      <div class="New-booking__preview__back border">
+<body>
+  <div class="Catalogue__cards__modal overflow-auto">
+    <div class="Catalogue__cards__modal__preview" style="width: 39.5%;">
+      <div class="Catalogue__cards__modal__preview__image" style="background-image: url(<?php echo $tattoo_image; ?>);"></div>
+    </div>
+    <div class="Catalogue__cards__modal__preview-body flex-grow-1">
+      <div class="Catalogue__cards__modal--back">
         <a href="./reservations.php" class="stretched-link"><span class="material-icons md-48 display-5" style="width: 24px;">arrow_back_ios</span></a>
       </div>
-    </div>  
-    <div class="New-booking__form col">
-      <div class="flex-grow-1">
-        <div class="ms-6 w-60">
-          <h1 class="display-4 fw-bold">New Booking</h1>
-          <form id="New-booking__form" class="mt-4" action="../scripts/php/queries.php" method="post">
-            <input type="hidden" readonly class="d-none" name="item_id" value="<?php echo $item_id; ?>" required/>
-            <input type="hidden" readonly class="d-none" name="original_quantity" id="original_quantity" value="<?php echo $quantity; ?>" required/>
-            <div class="row mb-4">
-              <div class="col-5">
-                <div class="form-floating">
-                  <input type="number" class="form-control" name="quantity" id="quantity" min="1" max="<?php echo $quantity; ?>" value="<?php echo $quantity; ?>" placeholder="Quantity" required/>
-                  <label for="quantity">Quantity</label>
-                </div>
-                <label id="quantity_err" class="error-message <?php echo isset($_SESSION['quantity_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><span><?php if(isset($_SESSION['quantity_err'])) { echo $_SESSION['quantity_err']; } ?></span></label>
-              </div>
-              <div class="col">
-                <div class="form-floating">
-                  <select name="service_type" id="service_type" class="form-select">
-                    <option value="Walk-in" selected>Walk-in</option>
-                    <option value="Home Service">Home Service</option>
-                  </select>
-                  <label for="service_type">Service Type</label>
-                </div>
-              </div>
-            </div>
-            <div class="mb-4">
+      <div class="Catalogue__cards__modal__preview-body__form">
+        <form id="New-booking__form" class="Catalogue__cards__modal__form" action="../scripts/php/queries.php" method="post">
+          <h1 class="display-4 fw-bold mb-3">New Booking</h1>
+          <input type="hidden" readonly class="d-none" name="item_id" value="<?php echo $item_id; ?>" required/>
+          <input type="hidden" readonly class="d-none" name="original_quantity" id="original_quantity" value="<?php echo $quantity; ?>" required/>
+          <div class="row mb-3">
+            <div class="col-12 col-lg-5 my-2">
               <div class="form-floating">
-                <input type="text" readonly class="form-control" name="address" id="address" value="Mandaue City, Cebu" placeholder="Service Location" required/>
-                <label for="address">Service Location</label>
+                <input type="number" class="form-control" name="quantity" id="quantity" min="1" max="<?php echo $quantity; ?>" value="<?php echo $quantity; ?>" placeholder="Quantity" required/>
+                <label for="quantity">Quantity</label>
               </div>
-              <label id="address_err" class="error-message <?php echo isset($_SESSION['address_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><span><?php if(isset($_SESSION['address_err'])) { echo $_SESSION['address_err']; } ?></span></label>
+              <label id="quantity_err" class="error-message <?php echo isset($_SESSION['quantity_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><span><?php if(isset($_SESSION['quantity_err'])) { echo $_SESSION['quantity_err']; } ?></span></label>
             </div>
-            <div class="mb-4">
+            <div class="col-12 col-lg my-2">
               <div class="form-floating">
-                <input type="date" class="form-control" name="scheduled_date" id="scheduled_date" placeholder="Date" required/>
-                <label for="scheduled_date">Date</label>
+                <select name="service_type" id="service_type" class="form-select">
+                  <option value="Walk-in" selected>Walk-in</option>
+                  <option value="Home Service">Home Service</option>
+                </select>
+                <label for="service_type">Service Type</label>
               </div>
-              <label id="scheduled_date_err" class="error-message <?php echo isset($_SESSION['scheduled_date_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><span><?php if(isset($_SESSION['scheduled_date_err'])) { echo $_SESSION['scheduled_date_err']; } ?></span></label>
             </div>
-            <div class="mb-4">
-              <div class="form-floating">
-                <input type="time" class="form-control" name="scheduled_time" id="scheduled_time" placeholder="Time" required/>
-                <label for="scheduled_time">Time</label>
-              </div>
-              <label id="scheduled_time_err" class="error-message <?php echo isset($_SESSION['scheduled_time_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><span><?php if(isset($_SESSION['scheduled_time_err'])) { echo $_SESSION['scheduled_time_err']; } ?></span></label>
+          </div>
+          <div class="mb-4">
+            <div class="form-floating">
+              <input type="text" readonly class="form-control" name="address" id="address" value="Mandaue City, Cebu" placeholder="Service Location" required/>
+              <label for="address">Service Location</label>
             </div>
-            <div class="mb-4">
-              <textarea class="form-control p-3 text-wrap" name="description" rows="5" placeholder="Demands (Optional)"></textarea>
+            <label id="address_err" class="error-message <?php echo isset($_SESSION['address_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><span><?php if(isset($_SESSION['address_err'])) { echo $_SESSION['address_err']; } ?></span></label>
+          </div>
+          <div class="mb-4">
+            <div class="form-floating">
+              <input type="date" class="form-control" name="scheduled_date" id="scheduled_date" placeholder="Date" required/>
+              <label for="scheduled_date">Date</label>
             </div>
-            <button type="submit" class="btn btn-dark" name="book" id="book"><span class="material-icons lh-base pe-2">bookmark_add</span>Book Now</button>
-          </form>
-        </div>
+            <label id="scheduled_date_err" class="error-message <?php echo isset($_SESSION['scheduled_date_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><span><?php if(isset($_SESSION['scheduled_date_err'])) { echo $_SESSION['scheduled_date_err']; } ?></span></label>
+          </div>
+          <div class="mb-4">
+            <div class="form-floating">
+              <input type="time" class="form-control" name="scheduled_time" id="scheduled_time" placeholder="Time" required/>
+              <label for="scheduled_time">Time</label>
+            </div>
+            <label id="scheduled_time_err" class="error-message <?php echo isset($_SESSION['scheduled_time_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><span><?php if(isset($_SESSION['scheduled_time_err'])) { echo $_SESSION['scheduled_time_err']; } ?></span></label>
+          </div>
+          <div class="mb-4">
+            <textarea class="form-control p-3 text-wrap" name="description" rows="5" placeholder="Demands (Optional)"></textarea>
+          </div>
+          <button type="submit" class="btn btn-dark" name="book" id="book"><span class="material-icons lh-base pe-2">bookmark_add</span>Book Now</button>
+        </form>
       </div>
     </div>
   </div>

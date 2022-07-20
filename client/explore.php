@@ -85,66 +85,53 @@
             $complexity = $api->sanitize_data($tattoo['complexity_level'], 'string');  
       ?>
         <a class="Catalogue__cards__card shadow-sm d-block" href="#<?php echo $name?>" style="background-image: url(<?php echo $image; ?>)"></a>
-        <div id="<?php echo $name?>" class="Catalogue__cards__modal">
-          <div class="Catalogue__cards__modal__preview-image col-5" style="background-image: url(<?php echo $image; ?>)"></div>
-          <div class="Catalogue__cards__modal__preview-body col">
-            <div class="flex-grow-1">
+        <div id="<?php echo $name?>" class="Catalogue__cards__modal overflow-auto">
+          <div class="Catalogue__cards__modal__preview" style="width: 80%;">
+            <div class="Catalogue__cards__modal__preview__image" style="background-image: url(<?php echo $image; ?>);"></div>
+          </div>
+          <div class="Catalogue__cards__modal__preview-body flex-grow-1">
             <div class="Catalogue__cards__modal--back">
               <a href="./explore.php" class="stretched-link"><span class="material-icons md-48 display-5" style="width: 24px;">arrow_back_ios</span></a>
             </div>
-              <div class="Catalogue__cards__modal__preview-body__form">
-                <form class="Catalogue__cards__modal__form" action="../scripts/php/queries.php" method="POST">
-                  <input type="hidden" class="d-none" name="tattoo_id" value="<?php echo $id ?>" required/>
-                  <input type="hidden" class="d-none" name="tattoo_name" value="<?php echo $id ?>" required/>
-                  <div>
-                    <h1 class="Catalogue__cards__modal__preview-body__name display-4 fw-bold my-0"><?php echo $name ?></h1>
-                    <h4 class="Catalogue__cards__modal__preview-body__price text-secondary">₱<?php echo $price ?></h4>
+            <div class="Catalogue__cards__modal__preview-body__form">
+              <form class="Catalogue__cards__modal__form" action="../scripts/php/queries.php" method="POST">
+                <input type="hidden" class="d-none" name="tattoo_id" value="<?php echo $id ?>" required/>
+                <input type="hidden" class="d-none" name="tattoo_name" value="<?php echo $id ?>" required/>
+                <div>
+                  <h1 class="Catalogue__cards__modal__preview-body__name display-4 fw-bold my-0"><?php echo $name ?></h1>
+                  <h4 class="Catalogue__cards__modal__preview-body__price text-secondary">₱<?php echo $price ?> • <?php echo $complexity ?> • <?php echo $color_scheme ?></h4>
+                </div>
+                <div class="Catalogue__cards__modal__preview-body__description text-justify">
+                  <p class="fs-6 text-wrap"><?php echo $description ?></p>
+                </div>
+                <div class="Catalogue__cards__modal__preview-body__fields row">
+                  <div class="col-12 col-lg my-2">
+                    <div class="form-floating">
+                      <input type="number" class="form-control<?php if(isset($_SESSION['quantity_err'])) echo " is-invalid"; ?>" name="quantity" min="1" placeholder="Quantity" required/>
+                      <label for="tattoo_width">Order Quantity</label>
+                    </div>
+                    <label class="error-message quantity_err <?php echo isset($_SESSION['quantity_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><span><?php if(isset($_SESSION['quantity_err'])) { echo $_SESSION['quantity_err']; } ?></span></label>
                   </div>
-                  <div class="Catalogue__cards__modal__preview-body__description text-justify">
-                    <p class="fs-6 text-wrap"><?php echo $description ?></p>
+                  <div class="col-12 col-lg my-2">
+                    <div class="form-floating">
+                      <input type="number" class="form-control<?php if(isset($_SESSION['width_err'])) echo " is-invalid"; ?>" name="width" min="1" max="24" value="<?php echo $width ?>" placeholder="Width" required/>
+                      <label for="tattoo_width">Width (in inches)</label>
+                    </div>
+                    <label class="error-message width_err <?php echo isset($_SESSION['width_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><span><?php if(isset($_SESSION['width_err'])) { echo $_SESSION['width_err']; } ?></span></label>
                   </div>
-                  <div class="Catalogue__cards__modal__preview-body__scheme row">
-                    <div class="col">
-                      <h4>Color</h4>
-                      <div class="d-flex flex-row align-items-center">
-                        <div class="Catalogue__cards__modal__preview-body__form__color" style="background: <?php echo strcasecmp($color_scheme, "Monochrome") == 0 ? "#000000" : "linear-gradient(to bottom right, #FF00FF, blue)"; ?>"></div>
-                        <p class="Catalogue__cards__modal__preview-body__form__color--tooltip"><?php echo strcasecmp($color_scheme, "Monochrome") == 0 ? "Monochrome" : "Multicolor"; ?></p>
-                      </div>
+                  <div class="col-12 col-lg my-2">
+                    <div class="form-floating">
+                      <input type="number" class="form-control"<?php if(isset($_SESSION['height_err'])) echo " is-invalid"; ?> name="height" min="1" max="36" value="<?php echo $height ?>" placeholder="Height" required/>
+                      <label for="tattoo_height">Height (in inches)</label>
                     </div>
-                    <div class="col-md-8">
-                      <h4>Complexity</h4>
-                      <p><?php echo $complexity ?></p>
-                    </div>
+                    <label class="error-message height_err <?php echo isset($_SESSION['height_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><span><?php if(isset($_SESSION['height_err'])) { echo $_SESSION['height_err']; } ?></span></label>
                   </div>
-                  <div class="Catalogue__cards__modal__preview-body__fields row">
-                    <div class="col">
-                      <div class="form-floating">
-                        <input type="number" class="form-control<?php if(isset($_SESSION['quantity_err'])) echo " is-invalid"; ?>" name="quantity" min="1" placeholder="Quantity" required/>
-                        <label for="tattoo_width">Order Quantity</label>
-                      </div>
-                      <label class="error-message quantity_err <?php echo isset($_SESSION['quantity_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><span><?php if(isset($_SESSION['quantity_err'])) { echo $_SESSION['quantity_err']; } ?></span></label>
-                    </div>
-                    <div class="col">
-                      <div class="form-floating">
-                        <input type="number" class="form-control<?php if(isset($_SESSION['width_err'])) echo " is-invalid"; ?>" name="width" min="1" max="24" value="<?php echo $width ?>" placeholder="Width" required/>
-                        <label for="tattoo_width">Width (in inches)</label>
-                      </div>
-                      <label class="error-message width_err <?php echo isset($_SESSION['width_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><span><?php if(isset($_SESSION['width_err'])) { echo $_SESSION['width_err']; } ?></span></label>
-                    </div>
-                    <div class="col">
-                      <div class="form-floating">
-                        <input type="number" class="form-control"<?php if(isset($_SESSION['height_err'])) echo " is-invalid"; ?> name="height" min="1" max="36" value="<?php echo $height ?>" placeholder="Height" required/>
-                        <label for="tattoo_height">Height (in inches)</label>
-                      </div>
-                      <label class="error-message height_err <?php echo isset($_SESSION['height_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><span><?php if(isset($_SESSION['height_err'])) { echo $_SESSION['height_err']; } ?></span></label>
-                    </div>
-                  </div>
-                  <button type="submit" class="btn btn-dark btn-lg d-flex align-items-center" name="order_item"><span class="material-icons md-48 lh-base pe-2">add_shopping_cart</span>Add to Order</button>
-                  <?php if(isset($_SESSION['res'])){ ?>
-                    <label class="error-message d-flex"><?php echo $_SESSION['res']; ?></label>
-                  <?php } ?>
-                </form>
-              </div>
+                </div>
+                <button type="submit" class="btn btn-dark btn-lg d-flex align-items-center" name="order_item"><span class="material-icons md-48 lh-base pe-2">add_shopping_cart</span>Add to Order</button>
+                <?php if(isset($_SESSION['res'])){ ?>
+                  <label class="error-message d-flex"><?php echo $_SESSION['res']; ?></label>
+                <?php } ?>
+              </form>
             </div>
           </div>
         </div>
