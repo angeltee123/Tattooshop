@@ -40,6 +40,19 @@ var loadFile = function(event){
   }
 };
 
+// resizing fields
+window.addEventListener("resize", () => {
+  if (window.innerWidth < 1400) {
+    description.rows = 2;
+    image.classList.remove("form-control-lg");
+  } else {
+    description.rows = 5;
+    image.classList.add("form-control-lg");
+  }
+});
+
+window.dispatchEvent(new Event("resize"));
+
 // error reporting
 page_form.addEventListener('change', function(){
   errors.length = 0;

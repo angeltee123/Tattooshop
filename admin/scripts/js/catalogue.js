@@ -54,6 +54,23 @@ search.addEventListener('input', function (){
   }
 });
 
+// resizing fields
+window.addEventListener("resize", () => {
+  if (window.innerWidth < 1400) {
+    for (let i = 0, count = description_fields.length; i < count; i++) {
+      description_fields[i].rows = 2;
+      image_fields[i].classList.remove("form-control-lg");
+    }
+  } else {
+    for (let i = 0, count = description_fields.length; i < count; i++) {
+      description_fields[i].rows = 5;
+      image_fields[i].classList.add("form-control-lg");
+    }
+  }
+});
+
+window.dispatchEvent(new Event("resize"));
+
 // error reporting
 for(let x = 0, count = modal_forms.length; x < count; x++){
   modal_forms[x].addEventListener('change', function(){
