@@ -26,10 +26,10 @@ GRANT ALL PRIVILEGES ON *.* TO `admin`@`localhost` IDENTIFIED BY PASSWORD '*4C80
 GRANT ALL PRIVILEGES ON `njctattoodb`.* TO `admin`@`localhost` WITH GRANT OPTION;
 
 --
--- Database: `njctattoodb`
+-- Database: `njctattoo_db`
 --
-CREATE DATABASE IF NOT EXISTS `njctattoodb` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
-USE `njctattoodb`;
+CREATE DATABASE IF NOT EXISTS `njctattoo_db` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `njctattoo_db`;
 
 -- --------------------------------------------------------
 
