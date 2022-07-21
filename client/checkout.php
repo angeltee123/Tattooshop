@@ -231,7 +231,7 @@
         </div>
       </div>
 
-      <!-- page divider -->
+      <!-- content divider -->
       <hr class="mb-5" />
 
       <!-- checkout billing form -->
@@ -344,7 +344,7 @@
         </div>
       </div>
 
-      <!-- page divider -->
+      <!-- content divider -->
       <hr class="my-5" />
 
       <!-- checkout -->

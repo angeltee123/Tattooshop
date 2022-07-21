@@ -58,7 +58,7 @@
             <?php } ?>
           </form>
 
-          <!-- page divider -->
+          <!-- content divider -->
           <hr class="my-5" />
 
           <!-- signup page link -->

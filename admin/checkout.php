@@ -2,7 +2,7 @@
   session_name("sess_id");
   session_start();
 
-  //navigation guard
+  // navigation guard
   if(!isset($_SESSION['user']['user_id']) || strcasecmp($_SESSION['user']['user_type'], "Admin") != 0){
     Header("Location: ./orders.php");
     die();
@@ -313,7 +313,7 @@
         </div>
       </div>
 
-      <!-- page divider -->
+      <!-- content divider -->
       <hr class="my-5" />
       
       <input type="hidden" class="d-none" value="<?php echo $order_id; ?>" name="order_id" required />

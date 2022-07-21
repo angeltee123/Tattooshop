@@ -88,7 +88,7 @@
         </script>
       </div>
 
-      <!-- page divider -->
+      <!-- content divider -->
       <hr class="mx-5">
 
       <!-- most frequently ordered tattoos snapshot -->
@@ -173,7 +173,7 @@
         </script>
       </div>
 
-      <!-- page divider -->
+      <!-- content divider -->
       <hr class="mx-5">
 
       <!-- total sales monthly snapshot -->

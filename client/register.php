@@ -89,7 +89,7 @@
             <label class="error-message <?php echo isset($_SESSION['res']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><span><?php if(isset($_SESSION['res'])) { echo $_SESSION['res']; } ?></span></label>
           </form>
 
-          <!-- page divider -->
+          <!-- content divider -->
           <hr class="my-4" />
 
           <!-- login page link -->
