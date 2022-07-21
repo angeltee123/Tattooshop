@@ -1,10 +1,12 @@
 <?php
   session_name("sess_id");
   session_start();
-  // if(!isset($_SESSION['user']['user_id']) || strcasecmp($_SESSION['user']['user_type'], "Admin") != 0){
-  //   Header("Location: ../client/index.php");
-  //   die();
-  // } else {
+
+  // navigation guard
+  if(!isset($_SESSION['user']['user_id']) || strcasecmp($_SESSION['user']['user_type'], "Admin") != 0){
+    Header("Location: ../client/index.php");
+    die();
+  } else {
     require_once '../api/api.php';
     $api = new api();
 
@@ -34,13 +36,17 @@
       echo $e->getMessage();
       exit;
     }
-  // }
+  }
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- meta -->
   <?php require_once '../common/meta.php'; ?>
+
+  <!-- external stylesheets -->
   <link href="../style/catalogue.css" rel="stylesheet" scoped>
+
   <!-- native style -->
   <style scoped>
     #new_tattoo {
@@ -59,23 +65,36 @@
   </style>
   <title>Catalogue | NJC Tattoo</title>
 </head>
-<body class="w-100">
+<body>
+  <!-- navigation bar -->
   <?php require_once '../common/header.php'; ?>
+
+  <!-- page content -->
   <div class="Catalogue content">
+
+    <!-- page header -->
     <div class="Catalogue__header">
       <h2 class="fw-bold display-3">Catalogue</h2>
       <p class="fs-5 text-muted">Manage your catalogue of tattoos and add new tattoos to it.</p>
     </div>
+
+    <!-- search bar -->
     <div class="Catalogue__search-bar">
       <div class="material-icons position-absolute fs-2 ms-4 no-select">search</div>
       <input type="text" class="Catalogue__search-bar__input form-control form-control-lg" id="search" placeholder="Search">
     </div>
+
+    <!-- tattoo cards -->
     <div class="Catalogue__cards justify-content-between" id="Catalogue">
+
+      <!-- add new tattoo -->
       <a class="Catalogue__cards__card shadow-sm order-first d-flex text-center" id="new_tattoo" href="./new_tattoo.php">
         <h1 class="my-0"><span class="material-icons md-48 display-1">add</span></h1>
         <h3>Add New Tattoo</h3>
       </a>
+
       <?php
+        // extract sql row data
         if($api->num_rows($res)){
           while($tattoo = $api->fetch_assoc($res)){
             $id = $api->sanitize_data($tattoo['tattoo_id'], "string");
@@ -88,8 +107,10 @@
             $color_scheme = $api->sanitize_data($tattoo['color_scheme'], "string");
             $complexity = $api->sanitize_data($tattoo['complexity_level'], "string");  
       ?>
+        <!-- tattoo card -->
         <a class="Catalogue__cards__card shadow-sm d-block" href="#<?php echo $name; ?>" style="background-image: url(<?php echo $image; ?>)"></a>
-        <!-- deletion-modal -->
+        
+        <!-- deletion modal -->
         <div class="modal fade" id="delete_<?php echo $id; ?>" tabindex="-1" aria-labelledby="delete_<?php echo $name; ?>_label" aria-hidden="true">
           <div class="modal-dialog">
             <div class="modal-content">
@@ -110,31 +131,48 @@
             </div>
           </div>
         </div>
+
+        <!-- tattoo modal -->
         <div id="<?php echo $name; ?>" class="Catalogue__cards__modal overflow-auto">
+          
+          <!-- tattoo preview -->
           <div class="Catalogue__cards__modal__preview" style="width: 39.5%;">
             <div class="Catalogue__cards__modal__preview__image" style="background-image: url(<?php echo $image; ?>);" id="preview_<?php echo $id; ?>"></div>
           </div> 
+
+          <!-- tattoo details -->
           <div class="Catalogue__cards__modal__preview-body flex-grow-1">
+            <!-- close modal -->
             <div class="Catalogue__cards__modal--back">
               <a href="./catalogue.php" class="stretched-link"><span class="material-icons md-48 display-5">close</span></a>
             </div>
+
+            <!-- modal form -->
             <div class="Catalogue__cards__modal__preview-body__form">
               <form class="Catalogue__cards__modal__form" action="./scripts/php/queries.php" method="POST" enctype="multipart/form-data">
                 <input type="hidden" class="d-none" name="tattoo_id" value="<?php echo $id; ?>" required/>
+                
+                <!-- tattoo name -->
                 <div class="my-3">
                   <input type="text" class="form-control form-control-lg ps-3 fs-display-5 fw-bold" name="tattoo_name" maxlength="50" value="<?php echo $name; ?>" placeholder="Name" required/>
                   <label class="error-message name_err <?php echo isset($_SESSION['name_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><span><?php if(isset($_SESSION['name_err'])) { echo $_SESSION['name_err']; } ?></span></label>
                 </div>
+
+                <!-- price -->
                 <div class="input-group mt-3">
                   <span class="input-group-text">₱</span>
                   <input type="number" class="form-control form-control-lg" min="1" name="tattoo_price" value="<?php echo $price; ?>" placeholder="Price" required/>
                 </div>
                 <label class="error-message mb-3 price_err <?php echo isset($_SESSION['price_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><span><?php if(isset($_SESSION['price_err'])) { echo $_SESSION['price_err']; } ?></span></label>
+                
+                <!-- description -->
                 <div class="my-3">
                   <textarea class="form-control p-3 text-wrap text-justify" name="tattoo_description" rows="5" placeholder="Tattoo Description" required><?php echo $description; ?></textarea>
                   <label class="error-message description_err <?php echo isset($_SESSION['description_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><span><?php if(isset($_SESSION['description_err'])) { echo $_SESSION['description_err']; } ?></span></label>
                 </div>
+                
                 <div class="row">
+                  <!-- color scheme -->
                   <div class="col-12 col-lg my-2">
                     <div class="form-floating">
                       <select name="color_scheme" class="form-select" required>
@@ -145,6 +183,8 @@
                     </div>
                     <label class="error-message color_scheme_err <?php echo isset($_SESSION['color_scheme_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><span><?php if(isset($_SESSION['color_scheme_err'])) { echo $_SESSION['color_scheme_err']; } ?></span></label>
                   </div>
+
+                  <!-- complexity level -->
                   <div class="col-12 col-lg my-2">
                     <div class="form-floating">
                       <select name="complexity_level" class="form-select" required>
@@ -156,7 +196,9 @@
                     <label class="error-message complexity_level_err <?php echo isset($_SESSION['complexity_level_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><span><?php if(isset($_SESSION['complexity_level_err'])) { echo $_SESSION['complexity_level_err']; } ?></span></label>
                   </div>
                 </div>
+
                 <div class="row my-0">
+                  <!-- tattoo width -->
                   <div class="col-12 col-lg my-2">
                     <div class="form-floating">
                       <input type="number" class="form-control" name="tattoo_width" min="1" max="24" value="<?php echo $width; ?>" placeholder="Width" required/>
@@ -164,6 +206,8 @@
                     </div>
                     <label class="error-message width_err <?php echo isset($_SESSION['width_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><span><?php if(isset($_SESSION['width_err'])) { echo $_SESSION['width_err']; } ?></span></label>
                   </div>
+
+                  <!-- tattoo height -->
                   <div class="col-12 col-lg my-2">
                     <div class="form-floating">
                       <input type="number" class="form-control" name="tattoo_height" min="1" max="36" value="<?php echo $height; ?>" placeholder="Height" required/>
@@ -172,14 +216,21 @@
                     <label class="error-message height_err <?php echo isset($_SESSION['height_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><span><?php if(isset($_SESSION['height_err'])) { echo $_SESSION['height_err']; } ?></span></label>
                   </div>
                 </div>
+
+                <!-- tattoo image -->
                 <div class="my-3">
                   <label for="image" class="form-label text-muted">Tattoo Image</label>
                   <input type="file" class="form-control form-control-lg" accept="image/*" name="image" id="image_<?php echo $id; ?>" onchange="loadpreview_<?php echo $id; ?>(event)"/>
                   <label class="error-message image_err <?php echo isset($_SESSION['tattoo_image_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><span><?php if(isset($_SESSION['tattoo_image_err'])) { echo $_SESSION['tattoo_image_err']; } ?></span></label>
                   <?php echo "<script>var loadpreview_" . $id . " = function(event){ var image_" . $id . " = document.getElementById('image_". $id ."'); var preview_" . $id . " = document.getElementById('preview_". $id ."'); if(image_". $id .".value.length != 0){ preview_" . $id . ".style.backgroundImage = 'url(' + URL.createObjectURL(event.target.files[0]) + ')'; preview_" . $id . ".onload = () => { URL.revokeObjectURL(preview_" . $id . ".style.backgroundImage); }} else { preview_" . $id . ".style.backgroundImage = 'url(". $image .")'; }};</script>"; ?>
                 </div>
+
+                <!-- update tattoo -->
                 <button type="submit" class="btn btn-primary btn-lg" name="update_tattoo">Save Changes</button>
+                
+                <!-- delete tattoo -->
                 <button type="button" class="btn btn-outline-danger btn-lg" data-bs-toggle="modal" data-bs-target="#delete_<?php echo $id; ?>">Delete</button>
+                
                 <?php if(isset($_SESSION['res'])){ ?>
                   <label class="error-message d-flex"><?php echo $_SESSION['res']; ?></label>
                 <?php } ?>
@@ -199,6 +250,7 @@
 <script src="./scripts/js/catalogue.js"></script>
 </html>
 <?php
+  // refresh back-end validation feedback
   if(isset($_SESSION['name_err'])){
     unset($_SESSION['name_err']);
   }

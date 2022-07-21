@@ -123,12 +123,10 @@ registration_form.addEventListener('change', function(){
   }
 
   // validate password
-  password.input = "text";
-  confirm_password.input = "text";
+  confirm_password.input = password.input = "text";
   value = confirm_password.value.toString().trim();
   let match_password = password.value.toString().trim();
-  password.input = "password";
-  confirm_password.input = "password";
+  confirm_password.input = password.input = "password";
   message = confirm_password_err.lastChild;
   if (value.length == 0 || value.localeCompare(match_password) != 0) {
     confirm_password.classList.remove('is-valid');
@@ -145,5 +143,5 @@ registration_form.addEventListener('change', function(){
   }
 
   // submission guard
-  register.disabled = (errors.length > 0 && tos_checkbox.checked == false) ? true : false;
+  register.disabled = (errors.length > 0 || tos_checkbox.checked == false) ? true : false;
 });

@@ -33,7 +33,7 @@ var height_err = Array.from(document.getElementsByClassName('height_err'));
 var image_err = Array.from(document.getElementsByClassName('image_err'));
 
 // searching for tattoo
-search.addEventListener('input', function (){
+search.addEventListener('input', function(){
   if(search.value.length == 0){
     catalogue.classList.replace('justify-content-center', 'justify-content-between');
 
@@ -45,17 +45,15 @@ search.addEventListener('input', function (){
 
     for(var i = 0, count = cards.length; i < count; i++){
       item_name = cards[i].href.toLowerCase().split("#").pop();
-      if(item_name.indexOf(search.value.toLowerCase().replaceAll(' ', '%20')) > -1 && cards[i] !== new_tattoo){
-        cards[i].classList.replace('d-none', 'd-block');
-      } else {
+      (item_name.indexOf(search.value.toLowerCase().replaceAll(' ', '%20')) > -1 && cards[i] !== new_tattoo) ?
+        cards[i].classList.replace('d-none', 'd-block'):
         cards[i].classList.replace('d-block', 'd-none');
-      }
     }
   }
 });
 
 // resizing fields
-window.addEventListener("resize", () => {
+window.addEventListener("resize", function(){
   if (window.innerWidth < 1400) {
     for (let i = 0, count = description_fields.length; i < count; i++) {
       description_fields[i].rows = 2;

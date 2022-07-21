@@ -1,9 +1,9 @@
-/* Checkout */
+/* CHECKOUT */
 .Checkout {
     width: 70%;
 }
 
-/* Checkout item */
+/* CHECKOUT ITEMS */
 .Checkout__list__item {
     display: flex;
     flex-flow: row nowrap;
@@ -57,7 +57,7 @@
     margin-right: 0.5rem !important;
 }
 
-/* Reactive styles */
+/* REACTIVE CONTENT STYLES */
 
 /* sm breakpoint */
 @media (max-width: 576px){

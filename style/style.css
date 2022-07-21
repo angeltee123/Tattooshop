@@ -5,7 +5,7 @@
 }
 
 body {
-  width: 100%;
+  width: 100% !important;
   height: auto;
   color: #000000;
   font-family: 'Open Sans', 'Raleway', 'Helvetica Neue', 'Libre Caslon Text', 'Arial', sans-serif;
@@ -128,6 +128,21 @@ textarea {
   background-color: #fff !important;
 }
 
+.navbar-nav {
+  align-items: center;
+}
+
+.nav-brand {
+  min-width: 60px !important;
+  min-height: 60px !important;
+  width: 60px !important;
+  height: 60px !important;
+  background-image: url('../images/njc\ tatoo\ logo.svg');
+  background-position: center !important;
+  background-size: cover !important;
+  background-repeat: no-repeat !important;
+}
+
 .nav-link {
   display: block;
   color: #000;
@@ -175,9 +190,13 @@ textarea {
 
 /* CONTENT STYLES */
 
-.page-header{
+.page-header {
   padding-bottom: 3.5rem;
   border-bottom: 1px solid #dee2e6!important;
+}
+
+.page-header h2 {
+  font-family: 'Yeseva One', cursive, serif !important;
 }
 
 .controls {
@@ -196,13 +215,14 @@ textarea {
   border-width: 0;
   padding: 0 0.25rem 0.5rem 0.25rem;
   margin: 0 0.5rem;
-  transition: color .4s;
+  transition: color .4s, fontWeight .4s;
 }
 
 .controls--tab--active {
   color: #000000 !important;
   padding: 0 0.25rem 0.5rem 0.25rem !important;
   border-bottom-width: 3px !important;
+  font-weight: bold !important;
 }
 
 .control {
@@ -222,10 +242,6 @@ textarea {
 }
 
 /* REACTIVE CONTENT STYLES */
-
-/* sm breakpoint */
-@media (max-width: 576px){
-}
 
 @media (max-width: 768px){
   .control__text {
@@ -256,12 +272,20 @@ textarea {
     justify-content: flex-end;
   }
 
+  .navbar-nav {
+    align-items: stretch !important;
+  }
+
   .navbar-toggler:focus {
     box-shadow: 0 0 0 0.25rem rgb(13 110 253 / 25%);
   }
 
   #nav__links {
     margin-top: .25rem !important;
+  }
+
+  .nav-brand {
+    display: none !important;
   }
 
   .nav-link {
@@ -288,8 +312,4 @@ textarea {
   .control__text {
     display: none !important;
   }
-}
-
-/* xxl breakpoint */
-@media (max-width: 1400px){
 }

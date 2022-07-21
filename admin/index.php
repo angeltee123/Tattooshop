@@ -1,29 +1,41 @@
 <?php
   session_name("sess_id");
   session_start();
-  // if(!isset($_SESSION['user']['user_id']) || strcasecmp($_SESSION['user']['user_type'], "Admin") != 0){
-  //   Header("Location: ../client/index.php");
-  //   die();
-  // } else {
+
+  // navigation guard
+  if(!isset($_SESSION['user']['user_id']) || strcasecmp($_SESSION['user']['user_type'], "Admin") != 0){
+    Header("Location: ../client/index.php");
+    die();
+  } else {
     require_once '../api/api.php';
     $api = new api();
-  // }
+  }
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- meta -->
   <?php require_once '../common/meta.php'; ?>
+  
   <!-- native style -->
   <title>Analytics | NJC Tattoo</title>
 </head>
-<body class="w-100">
+<body>
+  <!-- navigation bar -->
   <?php require_once '../common/header.php'; ?>
+  
+   <!-- page content -->
   <div class="content w-65">
+
+    <!-- page header -->
     <div class="mb-4">
-      <h2 class="fw-bold display-3">Analytics</h2>
+      <h2 class="fw-bold display-3" style="font-family: 'Yeseva One', cursive, serif;">Analytics</h2>
       <p class="fs-5 text-muted">View live snapshots of your collected business data here.</p>
     </div>
+
+    <!-- analytics -->
     <div class="container border rounded" style="background-color: rgb(252,252,252);">
+      <!-- total orders monthly snapshot -->
       <div class="position-relative p-5">
         <h3 class="fw-bold">Total Orders Monthly</h3>
         <p class="text-secondary">This snapshot shows how many tattoo orders have been placed monthly over the last six months.</p>
@@ -75,9 +87,13 @@
           ?>
         </script>
       </div>
+
+      <!-- page divider -->
       <hr class="mx-5">
+
+      <!-- most frequently ordered tattoos snapshot -->
       <div class="position-relative p-5">
-        <h3 class="fw-bold">Most Ordered Tattoos</h3>
+        <h3 class="fw-bold">Most Frequently Ordered Tattoos</h3>
         <p class="text-secondary">This snapshot shows which tattoos in the catalog are most frequently ordered over a year.</p>
         <canvas id="hottest_items" class="my-3"></canvas>
         <script>
@@ -156,7 +172,11 @@
           ?>
         </script>
       </div>
+
+      <!-- page divider -->
       <hr class="mx-5">
+
+      <!-- total sales monthly snapshot -->
       <div class="position-relative p-5">
         <h3 class="fw-bold">Total Sales Monthly</h3>
         <p class="text-secondary">This snapshot shows the total amount of sales monthly over the last six months.</p>

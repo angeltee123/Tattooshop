@@ -17,11 +17,11 @@ var referrals = document.getElementsByClassName('Orders__order__referrals');
 for(var i=0, count=orders.length; i < count; i++){
   let order = orders[i];
 
-  order_collapsibles[i].addEventListener('shown.bs.collapse', function (){
+  order_collapsibles[i].addEventListener('shown.bs.collapse', function(){
     order.classList.replace('my-2', 'my-4');
   });
 
-  order_collapsibles[i].addEventListener('hidden.bs.collapse', function (){
+  order_collapsibles[i].addEventListener('hidden.bs.collapse', function(){
     order.classList.replace('my-4', 'my-2');
   });
 }

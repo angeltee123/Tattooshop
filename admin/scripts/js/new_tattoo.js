@@ -32,7 +32,7 @@ var loadFile = function(event){
   var previewText = document.getElementById('Preview__text');
   if(image.value.length != 0){
     preview.style.backgroundImage = "url('" + URL.createObjectURL(event.target.files[0]) + "')";
-    preview.onload = () => { URL.revokeObjectURL(preview.style.backgroundImage); }
+    preview.onload = function(){ URL.revokeObjectURL(preview.style.backgroundImage); }
     previewText.classList.add('d-none');
   } else {
     previewText.classList.remove('d-none');
@@ -41,7 +41,7 @@ var loadFile = function(event){
 };
 
 // resizing fields
-window.addEventListener("resize", () => {
+window.addEventListener("resize", function(){
   if (window.innerWidth < 1400) {
     description.rows = 2;
     image.classList.remove("form-control-lg");

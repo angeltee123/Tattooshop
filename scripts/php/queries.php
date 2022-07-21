@@ -206,10 +206,7 @@ if(isset($_POST['signup'])){
 
             $mysqli_checks = $api->execute($insert_user);
             if($mysqli_checks===true){
-                $_SESSION['user_id'] = $uid;
-                $_SESSION['user']['client_id'] = $id;
-                $_SESSION['user_type'] = "User";
-                Header("Location: ../../client/index.php");
+                $api->login($email, $_POST['password']);
             } else {
                 throw new Exception('Execute error: The prepared statement could not be executed.');
             }

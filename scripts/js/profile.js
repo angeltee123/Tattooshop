@@ -57,16 +57,10 @@ tab__account_details.addEventListener('click', function(){
   account_form_is_active = true;
   password_form_is_active = false;
 
-  first_name.required = true;
-  last_name.required = true;
-  address.required = true;
-  contact_number.required = true;
-  email.required = true;
-  birthdate.required = true;
+  birthdate.required = email.required = contact_number.required =
+  address.required = last_name.required = first_name.required = true;
 
-  password.required = false;
-  new_password.required = false;
-  confirm_password.required = false;
+  confirm_password.required = new_password.required = password.required = false;
 });
 
 // change password tab
@@ -77,16 +71,10 @@ tab__change_password.addEventListener('click', function(){
   account_form_is_active = false;
   password_form_is_active = true;
 
-  first_name.required = false;
-  last_name.required = false;
-  address.required = false;
-  contact_number.required = false;
-  email.required = false;
-  birthdate.required = false;
+  birthdate.required = email.required = contact_number.required =
+  address.required = last_name.required = first_name.required = false;
 
-  password.required = true;
-  new_password.required = true;
-  confirm_password.required = true;
+  confirm_password.required = new_password.required = password.required = true;
 });
 
 // error reporting
@@ -252,12 +240,10 @@ change_password_form.addEventListener('change', function(){
   }
 
     // validate password
-    new_password.input = "text";
-    confirm_password.input = "text";
+    confirm_password.input = new_password.input = "text";
     value = confirm_password.value.toString().trim();
     let match_password = new_password.value.toString().trim();
-    new_password.input = "password";
-    confirm_password.input = "password";
+    confirm_password.input = new_password.input = "password";
     message = confirm_password_err.lastChild;
     if (value.length == 0 || value.localeCompare(match_password) != 0) {
       confirm_password.classList.remove('is-valid');

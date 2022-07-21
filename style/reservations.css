@@ -1,9 +1,9 @@
-/* Reservation page */
+/* RESERVATION PAGE */
 .Reservations {
     width: 80% !important;
 }
 
-/* Reservation */
+/* RESERVATIONS */
 .Reservations__item {
     transition: margin .35s;
 }
@@ -77,7 +77,7 @@
     margin: 3rem 0 0 0;
 }
 
-/* Reactive styles */
+/* REACTIVE CONTENT STYLES */
 
 /* sm breakpoint */
 @media (max-width: 576px){

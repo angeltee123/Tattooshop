@@ -20,7 +20,7 @@ var width_err = Array.from(document.getElementsByClassName('width_err'));
 var height_err = Array.from(document.getElementsByClassName('height_err'));
 
 // searching for tattoo
-search.addEventListener('input', function (){
+search.addEventListener('input', function(){
   if(search.value.length == 0){
     catalogue.classList.replace('justify-content-center', 'justify-content-between');
 
@@ -32,11 +32,9 @@ search.addEventListener('input', function (){
 
     for(var i = 0, count = cards.length; i < count; i++){
       item_name = cards[i].href.toLowerCase().split("#").pop();
-      if(item_name.indexOf(search.value.toLowerCase().replaceAll(' ', '%20')) > -1){
-        cards[i].classList.replace('d-none', 'd-block');
-      } else {
+      (item_name.indexOf(search.value.toLowerCase().replaceAll(' ', '%20')) > -1) ?
+        cards[i].classList.replace('d-none', 'd-block'):
         cards[i].classList.replace('d-block', 'd-none');
-      }
     }
   }
 });

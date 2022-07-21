@@ -2,12 +2,16 @@
     margin: 3rem 0;
 }
 
+.Catalogue__cards__modal__preview-body__name {
+    font-family: 'Yeseva One', cursive, serif !important;
+}
+
 .Catalogue__cards__modal__preview-body__fields {
     margin-top: 3rem !important;
     margin-bottom: 3rem !important;
 }
 
-/* Reactive styles */
+/* REACTIVE CONTENT STYLE */
 
 /* xxl breakpoint */
 @media (max-width: 1400px){

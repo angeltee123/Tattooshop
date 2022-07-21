@@ -1,4 +1,4 @@
-/* Catalogue */
+/* CATALOGUE */
 .Catalogue {
     width: 70% !important;
 }
@@ -8,7 +8,11 @@
     margin-bottom: 4.5rem;
 }
 
-/* Catalogue search bar */
+.Catalogue__header h2 {
+    font-family: 'Yeseva One', cursive, serif !important;
+}
+
+/* SEARCH BAR */
 .Catalogue__search-bar {
     position: relative;
     display: flex;
@@ -26,7 +30,7 @@
     border-radius: 50px !important;
 }
 
-/* Catalogue cards */
+/* CARDS */
 .Catalogue__cards {
     display: flex;
     flex-flow: row wrap;
@@ -51,7 +55,7 @@
     transform: scale(1.02, 1.02);
 }
 
-/* Catalogue card modals */
+/* CARD MODALS */
 .Catalogue__cards__modal {
     position: fixed;
     z-index: 1040;
@@ -115,6 +119,8 @@
     width: 60% !important;
     margin: 0 0 0 5rem;
 }
+
+/* REACTIVE CONTENT STYLES */
 
 /* xxl breakpoint */
 @media (max-width: 1400px){

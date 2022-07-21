@@ -28,11 +28,11 @@ var item_collapsibles = document.getElementsByClassName('Reservations__item__col
 
 // collapsibles stateful styling
 for(var i=0, count=items.length; i < count; i++){
-  items[i].addEventListener('shown.bs.collapse', function (){
+  items[i].addEventListener('shown.bs.collapse', function(){
     this.classList.add('mb-5');
   });
 
-  items[i].addEventListener('hidden.bs.collapse', function (){
+  items[i].addEventListener('hidden.bs.collapse', function(){
     this.classList.remove('mb-5');
   });
 }
