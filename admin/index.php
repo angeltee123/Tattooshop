@@ -1,279 +1,237 @@
 <?php
-	session_name("sess_id");
-	session_start();
-	// if(!isset($_SESSION['user_id']) || strcasecmp($_SESSION['user_type'], 'User') == 0){
-	// 	Header("Location: ../client/index.php");
-	// 	die();
-	// } else {
+  session_name("sess_id");
+  session_start();
+
+  // navigation guard
+  if(!isset($_SESSION['user']['user_id']) || strcasecmp($_SESSION['user']['user_type'], "Admin") != 0){
+    Header("Location: ../client/index.php");
+    die();
+  } else {
     require_once '../api/api.php';
     $api = new api();
-	// }
+  }
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	
-	<!-- fonts -->
-	<link rel="preconnect" href="https://fonts.googleapis.com">
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link rel="preconnect" href="https://fonts.googleapis.com">
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link href="https://fonts.googleapis.com/css2?family=Yeseva+One&display=swap" rel="stylesheet">
-
-	<!-- bootstrap -->
-	<link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-	
-	<!-- native style -->
-	<link href="../client/style/style.css" rel="stylesheet">
-	<title>Admin | NJC Tattoo</title>
+  <!-- meta -->
+  <?php require_once '../common/meta.php'; ?>
+  
+  <!-- native style -->
+  <title>Analytics | NJC Tattoo</title>
 </head>
 <body>
-  <ul class="nav nav-tabs" id="myTab" role="tablist">
-  <li class="nav-item" role="presentation">
-      <button class="nav-link p-3" id="reservations-tab" data-bs-toggle="tab" data-bs-target="#reservations" type="button" role="tab" aria-controls="reservations" aria-selected="false">Reservations</button>
-    </li>
-    <li class="nav-item" role="presentation">
-      <button class="nav-link p-3" id="workorders-tab" data-bs-toggle="tab" data-bs-target="#workorders" type="button" role="tab" aria-controls="workorders" aria-selected="false">Workorders</button>
-    </li>
-    <li class="nav-item" role="presentation">
-      <button class="nav-link p-3 active" id="clients-tab" data-bs-toggle="tab" data-bs-target="#clients" type="button" role="tab" aria-controls="clients" aria-selected="true">Clients</button>
-    </li>
-    <li class="nav-item" role="presentation">
-      <button class="nav-link p-3" id="users-tab" data-bs-toggle="tab" data-bs-target="#users" type="button" role="tab" aria-controls="users" aria-selected="false">Users</button>
-    </li>
-  </ul>
-  <div class="tab-content">
-    <div class="tab-pane fade" id="reservations" role="tabpanel" aria-labelledby="reservations-tab">...</div>
-    <div class="tab-pane fade" id="workorders" role="tabpanel" aria-labelledby="workorders-tab">
-      <h1 class="display-6">Ongoing Workorders</h1>
-      <?php
-        try {
-          $get_workorders = $api->prepare("SELECT * FROM workorder WHERE status=?");
-          if($get_workorders===false){
-            throw new Exception("prepare() error: The statement could not be prepared.");
-          }
+  <!-- navigation bar -->
+  <?php require_once '../common/header.php'; ?>
+  
+   <!-- page content -->
+  <div class="content w-65">
 
-          $mysqli_checks = $api->bind_params($get_workorders, "s", "Ongoing");
-          if($mysqli_checks===false){
-            throw new Exception('Execute error: The prepared statement could not be executed.');
-          }
-      
-          $mysqli_checks = $api->execute($get_workorders);
-          if($mysqli_checks===false){
-            throw new Exception('Execute error: The prepared statement could not be executed.');
-          }
-      
-          $res = $api->get_result($get_workorders);
-          if($res===false){
-            throw new Exception('get_result() error: Getting result set from statement failed.');
-          }
-        } catch (Exception $e){
-          exit;
-          echo $e->getMessage();
-        }
-      ?>
-      <div class="form-check form-switch">
-        <input class="form-check-input" type="checkbox" id="change_workorder_rows" />
-        <label class="form-check-label" for="change_workorder_rows" id="workorder_editing_label">Edit</label>
+    <!-- page header -->
+    <div class="mb-4">
+      <h2 class="fw-bold display-3" style="font-family: 'Yeseva One', cursive, serif;">Analytics</h2>
+      <p class="fs-5 text-muted">View live snapshots of your collected business data here.</p>
+    </div>
+
+    <!-- analytics -->
+    <div class="container border rounded" style="background-color: rgb(252,252,252);">
+      <!-- total orders monthly snapshot -->
+      <div class="position-relative p-5">
+        <h3 class="fw-bold">Total Orders Monthly</h3>
+        <p class="text-secondary">This snapshot shows how many tattoo orders have been placed monthly over the last six months.</p>
+        <canvas id="monthly_orders" class="my-3"></canvas>
+        <script>
+          const months = [];
+          const orders = [];
+        
+          <?php
+            $month = date("Y-m-d");
+
+            try {           
+              for($m = date("Y-m-d", strtotime("-5 months")); $m <= $month; $m = date("Y-m-d", strtotime("+1 month", strtotime($m)))){
+                $mo = date("m", strtotime($m));
+                $statement = $api->prepare("SELECT COUNT(item_id) FROM (workorder JOIN order_item ON workorder.order_id=order_item.order_id) WHERE MONTH(order_date)=? LIMIT 1");
+                if($statement===false){
+                  throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                }
+
+                $mysqli_checks = $api->bind_params($statement, "i", $mo);
+                if($mysqli_checks===false){
+                  throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
+                }
+                
+                $mysqli_checks = $api->execute($statement);
+                if($mysqli_checks===false){
+                  throw new Exception('Execute error: The prepared statement could not be executed.');
+                }
+
+                $res = $api->get_result($statement);
+                if($res===false){
+                  throw new Exception('get_result() error: Getting result set from statement failed.');
+                }
+
+                ($api->num_rows($res) > 0) ? $order = $api->fetch_assoc($res) : throw new Exception('An error occured with the server. Please try again later.');
+
+                $api->free_result($statement);
+                $mysqli_checks = $api->close($statement);
+                ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+
+                echo "months.push('" . date("F", strtotime($m)) . "');";
+                echo "orders.push(" . $order['COUNT(item_id)'] . ");";
+              }
+            } catch (Exception $e){
+              $_SESSION['res'] = $e->getMessage();
+              Header("Location: ./index.php");
+              exit();
+            }
+          ?>
+        </script>
       </div>
-      <button type="button" id="workorder_form select-all" class="btn btn-link">Select All</button>
-      <form method="POST" action="./queries.php">
-        <button type="submit" class="btn btn-outline-primary" name="update_workorder">Update</button>
-        <button type="submit" class="btn btn-outline-danger" name="delete_workorder">Delete</button>
-        <table class="table w-100">
-          <thead class="align-middle" style="height: 4em;">
-            <tr>
-              <th scope="col"></th>
-              <th scope="col">order_id</th>
-              <th scope="col">client_id</th>
-              <th scope="col">order_date</th>
-              <th scope="col">amount_due</th>
-              <th scope="col">incentive</th>
-              <th scope="col">status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <?php
-              if($api->num_rows($res) > 0){
-                while($row = $api->fetch_assoc($res)){
-            ?>
-            <tr class="align-middle" style="height: 5em;">
-              <td scope="row"><input type="checkbox" class="workorder form-check-input" name="item[]" value="<?php echo $row['order_id']?>"/></td>
-              <th><input type="text" readonly class="form-control-plaintext" name="order_id[]" value="<?php echo $api->clean($row['order_id']) ?>"/></th>
-              <td><input type="text" readonly class="form-control-plaintext" name="client_id[]" value="<?php echo $api->clean($row['client_id']) ?>" required/></td>
-              <td><input type="date" readonly class="form-control-plaintext" name="order_date[]" value="<?php echo $row['order_date'] ?>" required/></td>
-              <td><input type="text" inputmode="numeric" readonly class="workorder form-control-plaintext" name="amount_due[]" value="<?php echo $row['amount_due'] ?>" required/></td>
-              <td>
-                <select class="form-select" name="incentive" disabled>
-                  <option value="None" <?php if(strcasecmp($api->clean($row['incentive']), 'None') == 0){ echo 'selected'; } ?>>None</option>
-                  <option value="Free 3x3 Tattoo" <?php if(strcasecmp($api->clean($row['incentive']), 'Free 3x3 Tattoo') == 0){ echo 'selected'; } ?>>Free 3x3 Tattoo</option>
-                  <option value="15% Discount" <?php if(strcasecmp($api->clean($row['incentive']), '15% Discount') == 0){ echo 'selected'; } ?>>15% discount</option>
-                </select>
-              </td>
-              <td>
-                <select class="form-select" name="status" disabled>
-                  <option value="Ongoing" <?php if(strcasecmp($api->clean($row['status']), 'Ongoing') == 0){ echo 'selected'; } ?>>Ongoing</option>
-                  <option value="Finished" <?php if(strcasecmp($api->clean($row['status']), 'Finished') == 0){ echo 'selected'; } ?>>Finished</option>
-                </select>
-              </td>
-            </tr>
-            <?php } ?>
-            <?php
+
+      <!-- content divider -->
+      <hr class="mx-5">
+
+      <!-- most frequently ordered tattoos snapshot -->
+      <div class="position-relative p-5">
+        <h3 class="fw-bold">Most Frequently Ordered Tattoos</h3>
+        <p class="text-secondary">This snapshot shows which tattoos in the catalog are most frequently ordered over a year.</p>
+        <canvas id="hottest_items" class="my-3"></canvas>
+        <script>
+          const tattoos = [];
+          const quantities = [];
+          const colors = [];
+
+          <?php
+            try {
+              $tattoos = array();
+              $mo = date("Y");
+
+              $statement = $api->prepare("SELECT tattoo_id, tattoo_name FROM tattoo");
+              if($statement===false){
+                throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+              }
+              
+              $mysqli_checks = $api->execute($statement);
+              if($mysqli_checks===false){
+                throw new Exception('Execute error: The prepared statement could not be executed.');
               }
 
-              $api->free_result($get_workorders);
-              $api->close($get_workorders);
-            ?>
-          </tbody>
-        </table>
-      </form>
-      <h1 class="display-6">Finished Workorders</h1>
-      <?php
-        try {
-          $get_workorders_finished = $api->prepare("SELECT * FROM workorder WHERE status=?");
-          if($get_workorders===false){
-            throw new Exception("prepare() error: The statement could not be prepared.");
-          }
-
-          $mysqli_checks = $api->bind_params($get_workorders_finished, "s", "Finished");
-          if($mysqli_checks===false){
-            throw new Exception('Execute error: The prepared statement could not be executed.');
-          }
-      
-          $mysqli_checks = $api->execute($get_workorders_finished);
-          if($mysqli_checks===false){
-            throw new Exception('Execute error: The prepared statement could not be executed.');
-          }
-      
-          $res = $api->get_result($get_workorders_finished);
-          if($res===false){
-            throw new Exception('get_result() error: Getting result set from statement failed.');
-          }
-        } catch (Exception $e){
-          exit;
-          echo $e->getMessage();
-        }
-      ?>
-      <form method="POST" action="./queries.php">
-        <button type="submit" class="btn btn-outline-danger" name="delete_workorder">Delete</button>
-        <table class="table w-100">
-          <thead class="align-middle" style="height: 4em;">
-            <tr>
-              <th scope="col"></th>
-              <th scope="col">order_id</th>
-              <th scope="col">client_id</th>
-              <th scope="col">order_date</th>
-              <th scope="col">amount_due</th>
-              <th scope="col">incentive</th>
-              <th scope="col">status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <?php
-              if($api->num_rows($res) > 0){
-                while($row = $api->fetch_assoc($res)){
-            ?>
-            <tr class="align-middle" style="height: 5em;">
-              <td scope="row"><input type="checkbox" class="workorder form-check-input" name="item[]" value="<?php echo $row['order_id']?>"/></td>
-              <th><?php echo $api->clean($row['order_id']) ?></th>
-              <td><?php echo $api->clean($row['client_id']) ?></td>
-              <td><?php echo $row['order_date'] ?></td>
-              <td><?php echo $row['amount_due'] ?></td>
-              <td><?php echo $row['amount_due'] ?></td>
-              <td><?php echo $row['incentive'] ?></td>
-              <td><?php echo $row['status'] ?></td>
-            </tr>
-            <?php } ?>
-            <?php
+              $res = $api->get_result($statement);
+              if($res===false){
+                throw new Exception('get_result() error: Getting result set from statement failed.');
               }
 
-              $api->free_result($get_workorders_finished);
-              $api->close($get_workorders_finished);
-            ?>
-          </tbody>
-        </table>
-      </form>
+              if($api->num_rows($res) > 0){
+                while($row = $api->fetch_assoc($res)){
+                  $tattoos = array_merge($tattoos, [$row['tattoo_name'] => $row['tattoo_id']]);
+                }
+              } else {
+                throw new Exception('An error occured with the server. Please try again later.');
+              }
+
+              $api->free_result($statement);
+              $mysqli_checks = $api->close($statement);
+              ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+
+              foreach($tattoos as $key => $val) {
+                $statement = $api->prepare("SELECT COALESCE(SUM(tattoo_quantity), 0) FROM (workorder JOIN (tattoo JOIN order_item ON tattoo.tattoo_id=order_item.tattoo_id) ON workorder.order_id=order_item.order_id) WHERE order_item.tattoo_id=? AND YEAR(order_date)=?");
+                if($statement===false){
+                  throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                }
+
+                $mysqli_checks = $api->bind_params($statement, "si", array($val, $mo));
+                if($mysqli_checks===false){
+                  throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
+                }
+                
+                $mysqli_checks = $api->execute($statement);
+                if($mysqli_checks===false){
+                  throw new Exception('Execute error: The prepared statement could not be executed.');
+                }
+
+                $res = $api->get_result($statement);
+                if($res===false){
+                  throw new Exception('get_result() error: Getting result set from statement failed.');
+                }
+
+                ($api->num_rows($res) > 0) ? $tattoo = $api->fetch_assoc($res) : throw new Exception('An error occured with the server. Please try again later.');
+
+                $api->free_result($statement);
+                $mysqli_checks = $api->close($statement);
+                ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+
+                echo "tattoos.push('" . $key . "');";
+                echo "quantities.push(" . $tattoo['COALESCE(SUM(tattoo_quantity), 0)'] . ");";
+                echo "colors.push('" . $api->generate_color() . "');";
+              }
+            } catch (Exception $e){
+              $_SESSION['res'] = $e->getMessage();
+              Header("Location: ./index.php");
+              exit();
+            }
+          ?>
+        </script>
+      </div>
+
+      <!-- content divider -->
+      <hr class="mx-5">
+
+      <!-- total sales monthly snapshot -->
+      <div class="position-relative p-5">
+        <h3 class="fw-bold">Total Sales Monthly</h3>
+        <p class="text-secondary">This snapshot shows the total amount of sales monthly over the last six months.</p>
+        <canvas id="monthly_sales"></canvas>
+        <script>
+          const sales = [];
+
+          <?php
+            try {            
+              for($m = date("Y-m-d", strtotime("-5 months")); $m <= $month; $m = date("Y-m-d", strtotime("+1 month", strtotime($m)))){
+                $total = (double) 0.00;
+                $mo = date("m", strtotime($m));
+
+                $statement = $api->prepare("SELECT COALESCE(amount_paid, 0), COALESCE(payment_change, 0) FROM (workorder JOIN payment ON workorder.order_id=payment.order_id) WHERE MONTH(order_date)=?");
+                if($statement===false){
+                  throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+                }
+
+                $mysqli_checks = $api->bind_params($statement, "i", $mo);
+                if($mysqli_checks===false){
+                  throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
+                }
+                
+                $mysqli_checks = $api->execute($statement);
+                if($mysqli_checks===false){
+                  throw new Exception('Execute error: The prepared statement could not be executed.');
+                }
+
+                $res = $api->get_result($statement);
+                if($res===false){
+                  throw new Exception('get_result() error: Getting result set from statement failed.');
+                }
+
+                while($row = $api->fetch_assoc($res)){
+                  $total+= (double) $row['COALESCE(amount_paid, 0)'] - $row['COALESCE(payment_change, 0)'];
+                }
+
+                $api->free_result($statement);
+                $mysqli_checks = $api->close($statement);
+                ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+
+                echo "sales.push(" . $total . ");";
+              }
+            } catch (Exception $e){
+              $_SESSION['res'] = $e->getMessage();
+              Header("Location: ./index.php");
+              exit();
+            }
+          ?>
+        </script>
+      </div>
     </div>
-    <div class="tab-pane fade show active" id="clients" role="tabpanel" aria-labelledby="clients-tab">
-      <?php
-        try {
-          $get_clients = $api->prepare("SELECT * FROM client");
-          if($get_clients===false){
-            throw new Exception("prepare() error: The statement could not be prepared.");
-          }
-      
-          $mysqli_checks = $api->execute($get_clients);
-          if($mysqli_checks===false){
-            throw new Exception('Execute error: The prepared statement could not be executed.');
-          }
-      
-          $res = $api->get_result($get_clients);
-          if($res===false){
-            throw new Exception('get_result() error: Getting result set from statement failed.');
-          }
-        } catch (Exception $e){
-          exit;
-          echo $e->getMessage();
-        }
-      ?>
-      <form method="POST" action="./queries.php">
-        <div class="form-check form-switch">
-          <input class="form-check-input" type="checkbox" id="change_client_rows" />
-          <label class="form-check-label" for="change_client_rows" id="client_editing_label">Edit</label>
-        </div>
-        <button type="button" id="client_form select-all" class="btn btn-link">Select All</button>
-        <button type="submit" class="btn btn-outline-primary" name="update_client">Update</button>
-        <button type="submit" class="btn btn-outline-danger" name="delete_client">Delete</button>
-        <table class="table w-100">
-          <thead class="align-middle" style="height: 4em;">
-            <tr>
-              <th scope="col"></th>
-              <th scope="col">client_id</th>
-              <th scope="col">client_fname</th>
-              <th scope="col">client_mi</th>
-              <th scope="col">client_lname</th>
-              <th scope="col">age</th>
-              <th scope="col">home_address</th>
-              <th scope="col">contact_number</th>
-            </tr>
-          </thead>
-          <tbody>
-            <?php
-              if($api->num_rows($res) > 0){
-                while($row = $api->fetch_assoc($res)){
-            ?>
-            <tr class="align-middle" style="height: 5em;">
-              <td scope="row"><input type="checkbox" class="client form-check-input" name="item[]" value="<?php echo $row['client_id']?>"/></td>
-              <th><input type="text" readonly class="form-control-plaintext" name="client_id[]" value="<?php echo $row['client_id']?>"/></th>
-              <td><input type="text" readonly class="client form-control-plaintext" name="client_fname[]" value="<?php echo $api->clean($row['client_fname']) ?>" minlength="2" required/></td>
-              <td><input type="text" readonly class="client form-control-plaintext" name="client_mi[]" value="<?php echo $api->clean($row['client_mi']) ?>" minlength="1" maxlength="1" /></td>
-              <td><input type="text" readonly class="client form-control-plaintext" name="client_lname[]" value="<?php echo $api->clean($row['client_lname']) ?>" minlength="2" required/></td>
-              <td><input type="text" inputmode="numeric" readonly class="client form-control-plaintext" name="age[]" min="1" value="<?php echo $row['age'] ?>" minlength="1" maxlength="3"/></td>
-              <td><input type="text" readonly class="client form-control-plaintext" name="home_address[]" value="<?php echo $api->clean($row['home_address']) ?>"/></td>
-              <td><input type="text" inputmode="numeric" readonly class="client form-control-plaintext" name="contact_number[]" value="<?php echo $api->clean($row['contact_number']) ?>" minlength="11" maxlength="11"/></td>
-            </tr>
-            <?php } ?>
-            <?php } else { ?>
-              <tfoot>
-                <td class="p-5"><h1 class="m-3 display-4 fst-italic text-muted">No entries in the client table.</h1></td>
-              </tfoot>
-            <?php
-              }
-
-              $api->free_result($get_clients);
-              $api->close($get_clients);
-            ?>
-          </tbody>
-        </table>
-      </form>
-    </div>
-    <div class="tab-pane fade" id="users" role="tabpanel" aria-labelledby="users-tab">...</div>
   </div>
 </body>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-<script src="script.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="./scripts/js/index.js"></script>
 </html>

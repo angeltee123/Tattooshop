@@ -1,0 +1,31 @@
+.Orders__order-item {
+    border-bottom: 1px solid #dee2e6 !important;
+}
+
+.controls__select-all {
+    color: #000;
+    text-decoration: none;
+    margin: 0 0.25rem 0 0 !important;
+}
+
+.controls__select-all:hover {
+    color: #000;
+    text-decoration: underline;
+}
+
+.Orders__controls__control-group > div {
+    display: inline-block;
+}
+
+.Orders__referral-form__col {
+    margin: 1.5rem 0;
+}
+
+/* REACTIVE CONTENT STYLE */
+
+/* md breakpoint */
+@media (max-width: 768px){
+    .Orders__referral-form__col {
+        margin: 0.5rem 0 !important;
+    }
+}

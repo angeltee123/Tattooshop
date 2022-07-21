@@ -1,0 +1,129 @@
+/* ORDER PAGE */
+.Orders {
+    width: 80% !important;
+}
+
+/* ORDERS */
+.Orders__order-item {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    align-items: center;
+    padding: 3rem !important;
+}
+
+.Orders__order-item__checkbox {
+    padding: 0.5rem !important;
+    border: solid 1px #212529 !important;
+}
+
+.Orders__order-item__tattoo-preview {
+    width: 275px;
+    height: 275px;
+    background-position: center !important;
+    background-size: cover !important;
+    background-repeat: no-repeat !important;
+    border-radius: 360px !important;
+}
+
+.Orders__order-item__details {
+    width: 100%;
+    margin: 0 0 0 3.5rem;
+}
+
+.Order__order__details {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 3rem !important;
+    margin: 0 0 3rem 0 !important;
+}
+
+.Order__order__details > div {
+    width: 100%;
+    align-items: flex-start;
+}
+
+/* Referral */
+.Orders__referral {
+    width: 100%;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: start;
+    align-items: center;
+    padding: 1.5rem !important;
+    border-bottom: 1px solid #dee2e6 !important;
+}
+
+.Orders__referral__input-group {
+    width: 100%;
+    margin: 0;
+    display: flex;
+    justify-content: start;
+    align-items: start;
+}
+
+/* REACTIVE CONTENT STYLES */
+
+/* sm breakpoint */
+@media (max-width: 576px){
+    .Orders__order-item__tattoo-preview {
+        width: 200px;
+        height: 200px;
+    }
+}
+
+/* lg breakpoint */
+@media (max-width: 992px){
+    .Orders__order-item {
+        flex-flow: column nowrap !important;
+    }
+
+    .Orders__order-item__details {
+        margin: 0;
+    }
+
+    .Orders__order-item__tattoo-preview {
+        width: 275px;
+        height: 275px;
+    }
+
+    .Orders__referral__input-group {
+        flex-direction: column;
+        margin: 0 !important;
+    }
+
+    .Orders__referral__input-group > div {
+        width: 100% !important;
+    }
+
+    .Orders__referral__input-group input:not([type="checkbox"]), .Orders__referral__input-group select {
+        width: 100% !important;
+        margin-top: 0.5rem !important;
+        margin-bottom: 0.5rem !important;
+    }
+}
+
+/* xl breakpoint */
+@media (max-width: 1200px){
+    .Order__order__details {
+        flex-flow: column nowrap !important;
+    }
+
+    .Orders__order-item__tattoo-preview {
+        width: 200px;
+        height: 200px;
+    }
+}
+
+/* xxl breakpoint */
+@media (max-width: 1400px){
+    .Orders__referral {
+        flex-flow: column nowrap !important;
+    }
+
+    .Orders__referral__input-group {
+        margin: 0.5rem 0;
+    }
+}

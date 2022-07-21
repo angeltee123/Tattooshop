@@ -1,24 +1,34 @@
-.tattoo-description p {
-    text-align: justify;
+.Catalogue__cards__modal__preview-body__description {
+    margin: 3rem 0;
 }
 
-.color {
-    border: #333333;
-    height: 27.5px;
-    width: 27.5px;
+.Catalogue__cards__modal__preview-body__name {
+    font-family: 'Yeseva One', cursive, serif !important;
 }
 
-.color:hover {
-    cursor: pointer;
+.Catalogue__cards__modal__preview-body__fields {
+    margin-top: 3rem !important;
+    margin-bottom: 3rem !important;
 }
 
-.color-tooltip {
-    color: #fff;
-    font-size: .93em;
-    transition: all .25s;
-    opacity: 0;
-}
+/* REACTIVE CONTENT STYLE */
 
-.color:hover + .color-tooltip {
-    opacity: 1;
+/* xxl breakpoint */
+@media (max-width: 1400px){
+    .Catalogue__cards__modal__preview-body__description {
+        margin: 1rem 0 !important;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        max-height: 4.5rem;
+    }
+    
+    .Catalogue__cards__modal__preview-body__price {
+        font-size: 1.25rem !important;
+    }
+    
+    .Catalogue__cards__modal__preview-body__fields {
+        margin-top: 2rem !important;
+        margin-bottom: 2.25rem !important;
+    }
 }

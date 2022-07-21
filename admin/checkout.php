@@ -1,75 +1,68 @@
 <?php
   session_name("sess_id");
   session_start();
+
   // navigation guard
-  // if(!isset($_SESSION['user_id']) || strcasecmp($_SESSION['user_type'], "User") == 0){
-  //   Header("Location: ./orders.php");
-  //   die();
-  // }
+  if(!isset($_SESSION['user']['user_id']) || strcasecmp($_SESSION['user']['user_type'], "Admin") != 0){
+    Header("Location: ./orders.php");
+    die();
+  }
 
-  // elseif(empty($_POST)){
-  //   $_SESSION['res'] = "Cannot log client payment without order details provided.";
-  //   Header("Location: ./orders.php");
-  //   die();
-  // }
+  elseif(empty($_POST)){
+    $_SESSION['res'] = "Cannot log client payment without order details provided.";
+    Header("Location: ./orders.php");
+    die();
+  }
 
-  // else {
+  else {
     require_once '../api/api.php';
     $api = new api();
     $client_id = $api->sanitize_data($_POST['client_id'], "string");
     $order_id = $api->sanitize_data($_POST['order_id'], "string");
-  // }
+  }
 
   try {
     // retrieve order data
     $statement = $api->prepare("SELECT client_fname, client_lname, order_date, amount_due_total, incentive FROM (workorder JOIN client ON workorder.client_id=client.client_id) WHERE order_id=? AND workorder.client_id=? ORDER BY order_date ASC LIMIT 1");
     if($statement===false){
-        throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+      throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
     }
 
     $mysqli_checks = $api->bind_params($statement, "ss", array($order_id, $client_id));
     if($mysqli_checks===false){
-        throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
+      throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
     }
     
     $mysqli_checks = $api->execute($statement);
     if($mysqli_checks===false){
-        throw new Exception('Execute error: The prepared statement could not be executed.');
+      throw new Exception('Execute error: The prepared statement could not be executed.');
     }
 
     $res = $api->get_result($statement);
     if($res===false){
-        throw new Exception('get_result() error: Getting result set from statement failed.');
+      throw new Exception('get_result() error: Getting result set from statement failed.');
     }
 
-    if($api->num_rows($res) > 0){
-      $order = $api->fetch_assoc($res);
-    } else {
-      throw new Exception('No workorder under the given IDs found.');
-    }
+    ($api->num_rows($res) > 0) ? $order = $api->fetch_assoc($res) : throw new Exception('No workorder under the given IDs found.');
 
     $api->free_result($statement);
     $mysqli_checks = $api->close($statement);
-    if($mysqli_checks===false){
-    throw new Exception('The prepared statement could not be closed.');
-    } else {
-      $statement = null;
-    }
+    ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
 
     // retrieving order items
     $statement = $api->prepare("SELECT order_item.item_id, tattoo_name, tattoo_image, tattoo_price, tattoo_quantity, order_item.tattoo_width, order_item.tattoo_height, paid, item_status, amount_addon FROM ((order_item INNER JOIN tattoo ON order_item.tattoo_id=tattoo.tattoo_id) LEFT JOIN reservation ON order_item.item_id=reservation.item_id) WHERE order_id=? ORDER BY item_status ASC, paid ASC");
     if($statement===false){
-        throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
+      throw new Exception('prepare() error: ' . $conn->errno . ' - ' . $conn->error);
     }
 
     $mysqli_checks = $api->bind_params($statement, "s", $order_id);
     if($mysqli_checks===false){
-        throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
+      throw new Exception('bind_param() error: A variable could not be bound to the prepared statement.');
     }
 
     $mysqli_checks = $api->execute($statement);
     if($mysqli_checks===false){
-        throw new Exception('Execute error: The prepared statement could not be executed.');
+      throw new Exception('Execute error: The prepared statement could not be executed.');
     }
 
     $items = $api->get_result($statement);
@@ -79,67 +72,42 @@
 
     $api->free_result($statement);
     $mysqli_checks = $api->close($statement);
-    if($mysqli_checks===false){
-      throw new Exception('The prepared statement could not be closed.');
-    } else {
-      $statement = null;
-    }
+    ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
 
     echo (strcasecmp($order['incentive'], "15% Discount") == 0) ? "<script>const discounted = true;</script>" : "<script>const discounted = false;</script>";
-  } catch (Exception $e){
-      exit();
-      $_SESSION['res'] = $e->getMessage();
-      Header("Location: ./orders.php");
+  } catch (Exception $e) {
+    $_SESSION['res'] = $e->getMessage();
+    Header("Location: ./orders.php");
+    exit();
   }
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- meta -->
   <?php require_once '../common/meta.php'; ?>
-  <!-- native style -->
-  <style>
-    .tattoo-image {
-      max-width: 275px;
-      max-height: 275px;
-      width: 275px;
-      height: 275px;
-      background-position: center;
-      background-repeat: no-repeat;
-      background-size: cover;
-    }
-  </style>
+  
+  <!-- external stylesheets -->
+  <link href="../style/checkout.css" rel="stylesheet" scoped>
   <title>Payment Logging | NJC Tattoo</title>
 </head>
 <body>
-  <header class="header border-bottom border-2">
-    <nav class="nav-bar row mx-0">
-      <ul class="col my-0" id="nav-links">
-        <li><a href="catalogue.php">Catalogue</a></li>
-        <li class="active"><a href="orders.php">Orders</a></li>
-        <li><a href="reservations.php">Bookings</a></li>
-      </ul>
-      <div class="col d-flex align-items-center justify-content-end my-0 mx-5">
-        <div class="btn-group" id="nav-user">
-          <button type="button" class="btn p-0" data-bs-toggle="dropdown" aria-expanded="false"><span class="material-icons lh-base display-5">account_circle</span></button>
-            <ul class="dropdown-menu dropdown-menu-end">
-              <li><a class="dropdown-item" href="user.php">Profile</a></li>
-              <li>
-                <form action="../api/queries.php" method="post">
-                  <button type="submit" class="dropdown-item btn-link" name="logout">Sign Out</button>
-                </form>
-              </li>
-            </ul>
-        </div>
-      </div>
-    </nav>
-  </header>
-  <div class="content w-70">
-    <form action="./queries.php" method="POST">
-      <div class="pb-6 border-bottom">
+  <!-- navigation bar -->
+  <?php require_once '../common/header.php'; ?>
+  
+  <!-- page content -->
+  <div class="Checkout content">
+    <!-- page form -->
+    <form id="Checkout__form" action="./scripts/php/queries.php" method="POST" class="Checkout__list">
+      
+      <!-- page header -->
+      <div class="page-header">
         <h2 class="fw-bold display-3">Payment Logging</h2>
         <p class="d-inline fs-5 text-muted">Log client payments for their tattoo orders here. Tick the checkboxes of the items the client paid for.</p>
       </div>
+
       <?php
+        // extract sql row data
         $item_count = 0;
 
         if($api->num_rows($items) > 0){
@@ -158,196 +126,242 @@
               $item_status = $api->sanitize_data($item['item_status'], "string");
               $addon = number_format($api->sanitize_data($item['amount_addon'], "float"), 2, '.', '');
       ?>
-      <div class="border-bottom d-flex align-items-center justify-content-between p-5">
-        <div class="d-flex align-items-center">
+
+      <!-- items for checkout -->
+      <div class="Checkout__list__item">
+        <!-- item preview -->
+        <div class="Checkout__list__item__preview">
           <div class="me-4">
             <input type="hidden" class="d-none" name="index[]" value="<?php echo $item_id; ?>" />
             <input type="checkbox" class="form-check-input p-2" name="item[]" value="<?php echo $item_id; ?>" checked/>
           </div>
-          <!-- tattoo image -->
-          <div class="tattoo-image rounded-pill shadow-sm" style="background-image: url(<?php echo $tattoo_image; ?>)"></div>
+
+          <!-- tattoo image  -->
+          <div class="Checkout__list__item__preview__image shadow-sm" style="background-image: url(<?php echo $tattoo_image; ?>)"></div>
         </div>
-        <div class="w-100 ms-6">
-          <div class="row my-5">
+
+        <!-- item details -->
+        <div class="Checkout__list__item__details">
+          <div class="row mt-5">
             <!-- tattoo name -->
-            <div class="col">
+            <div class="col-12 col-sm my-2">
               <label class="form-label fw-semibold">Item</label>
               <p><?php echo $width . "x" . $height . " " . $tattoo_name; ?></p>
             </div>
+
             <!-- item status -->
-            <div class="col">
+            <div class="col-12 col-sm my-2">
               <label for="status" class="form-label fw-semibold">Item Status</label>
               <p><?php echo $item_status; ?></p>
             </div>
+
             <!-- payment status -->
-            <div class="col">
+            <div class="col-12 col-sm my-2">
               <label class="form-label fw-semibold">Payment Status</label>
               <p><?php echo $paid; ?></p>
             </div>
           </div>
-          <div class="row my-5">
+          <div class="row mb-5 mt-0 mt-sm-5">
             <!-- quantity -->
-            <div class="col">
+            <div class="col-12 col-sm my-2">
               <label for="quantity" class="form-label fw-semibold">Quantity</label>
               <input type="hidden" class="d-none" value="<?php echo $quantity; ?>" min="<?php echo $quantity; ?>" max="<?php echo $quantity; ?>" name="quantity[]" />
               <input type="number" class="quantity form-control" value="<?php echo $quantity; ?>" min="1" max="<?php echo $quantity; ?>" name="checkout_quantity[]" />
+              <label class="error-message quantity_err d-none"><span class="material-icons-outlined fs-6 me-1">info</span><span></span></label>
             </div>
+
             <!-- price -->
-            <div class="col">
+            <div class="col-12 col-sm my-2">
               <label for="quantity" class="form-label fw-semibold">Price</label>
               <p class="prices">₱<?php echo $price; ?></p>
             </div>
+
             <!-- amount_addon -->
-            <div class="col">
+            <div class="col-12 col-sm my-2">
               <label for="status" class="form-label fw-semibold">Reservation Addon</label>
               <p class="addons"><?php echo ($addon == 0) ? "N/A" : "₱" . $addon; ?></p>
             </div>
           </div>
         </div>
       </div>
-      <?php }}} 
+      <?php }}}
+        // no items for checkout 
         if($item_count == 0){ ?>
           <div class="border-bottom px-5 py-8 no-select">
             <h1 class="display-3 fst-italic text-muted">No items available for payment.</h1>
           </div>
       <?php } ?>
-      <div class="row mx-0 p-5">
-        <!-- order id -->
-        <div class="col">
-          <label class="form-label fw-semibold">Order ID</label>
-          <p><?php echo $order_id; ?></p>
+
+      <!-- workorder summary -->
+      <div class="Checkout__summary">
+        <div class="row">
+          <div class="col-12 col-sm-6 col-md">
+            <!-- order id -->
+            <label class="form-label fw-semibold">Order ID</label>
+            <p class="w-auto"><?php echo $order_id; ?></p>
+          </div>
+
+          <?php
+            // get order date
+            $timestamp = explode(' ', $api->sanitize_data($order['order_date'], "string"));
+            $date = date("M:d:Y", strtotime($timestamp[0]));
+            $time = date("g:i A", strtotime($timestamp[1]));
+            $date = explode(':', $date);
+          ?>
+          
+          <div class="col-12 col-sm-6 col-md">
+            <!-- order date -->
+            <label class="form-label fw-semibold">Placed on</label>
+            <p class="w-auto"><?php echo $api->sanitize_data($date[0], 'string') . " " . $api->sanitize_data($date[1], 'int') . ", " . $api->sanitize_data($date[2], 'int') . ", " . $api->sanitize_data($time, 'string') ?></p>
+          </div>
         </div>
-        <?php
-          $timestamp = explode(' ', $api->sanitize_data($order['order_date'], "string"));
-          $date = date("M:d:Y", strtotime($timestamp[0]));
-          $time = date("g:i A", strtotime($timestamp[1]));
-          $date = explode(':', $date);
-        ?>
-        <div class="col">
-          <label class="form-label fw-semibold">Placed on</label>
-          <p><?php echo $api->sanitize_data($date[0], "string") . " " . $api->sanitize_data($date[1], "int") . ", " . $api->sanitize_data($date[2], "int") . ", " . $api->sanitize_data($time, "string") ?></p>
-        </div>
-        <!-- 15% discount -->
-        <div class="col">
-          <label class="form-label fw-semibold">15% Discount?</label>
-          <p class="<?php echo (strcasecmp($order['incentive'], "15% Discount") == 0) ? "text-success" : "text-muted"; ?> fw-semibold" id="discount"><?php echo (strcasecmp($order['incentive'], "15% Discount") == 0) ? "Yes" : "No"; ?></p>
-        </div>
-        <!-- amount due total -->
-        <div class="col">
-          <label class="form-label fw-semibold">Amount Due Total</label>
-          <p id="total">₱<?php echo number_format($api->sanitize_data($order['amount_due_total'], "float"), 2, '.', ''); ?></p>
+        <div class="row">
+          <div class="col-12 col-sm-6 col-md">
+            <!-- incentive -->
+            <label class="form-label fw-semibold">Incentive</label>
+            <p class="<?php echo (strcasecmp($order['incentive'], "15% Discount") == 0) ? "text-success" : "text-muted"; ?> fw-semibold" id="discount"><?php echo (strcasecmp($order['incentive'], "15% Discount") == 0) ? "Yes" : "No"; ?></p>
+          </div>
+          
+          <div class="col-12 col-sm-6 col-md">
+            <!-- amount due total -->
+            <label for="status" class="form-label fw-semibold">Amount Due Total</label>
+            <p id="total">₱<?php echo number_format($api->sanitize_data($order['amount_due_total'], "float"), 2, '.', ''); ?></p>
+          </div>
         </div>
       </div>
+
+      <!-- content divider -->
       <hr class="mb-5" />
-      <div class="mx-2">
+
+      <!-- checkout billing form -->
+      <div class="Checkout__billing-form">
         <div class="row my-4">
-          <h4 class="mb-3">Client Name</h4>
-          <div class="col">
-            <input type="text" class="form-control my-2" value="<?php echo $api->sanitize_data($order['client_fname'], "string"); ?>" name="first_name" minlength="2" maxlength="50" required>
-            <label class="form-label text-muted">First Name</label>
-            <p class="my-2 <?php echo isset($_SESSION['first_name_err']) ? "d-block" : "d-none"; ?> text-danger height_err"><?php if(isset($_SESSION['first_name_err'])){ echo $_SESSION['first_name_err']; } ?></p>
+          <!-- client name -->
+          <h4 class="mb-0 mb-md-3">Client Name</h4>
+
+          <!-- first name -->
+          <div class="col-12 col-sm">
+            <label class="form-label text-muted" for="first_name">First Name</label>
+            <input type="text" class="form-control" <?php if($item_count == 0){ echo "disabled"; }?> name="first_name" id="first_name" minlength="2" maxlength="50" required value="<?php echo $api->sanitize_data($order['client_fname'], "string"); ?>"/>
+            <label id="first_name_err" class="error-message <?php echo isset($_SESSION['first_name_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><span><?php if(isset($_SESSION['first_name_err'])) { echo $_SESSION['first_name_err']; } ?></span></label>
           </div>
-          <div class="col">
-            <input type="text" class="form-control my-2" value="<?php echo $api->sanitize_data($order['client_lname'], "string"); ?>" name="last_name" minlength="2" maxlength="50" required>
-            <label class="form-label text-muted">Last Name</label>
-            <p class="my-2 <?php echo isset($_SESSION['last_name_err']) ? "d-block" : "d-none"; ?> text-danger height_err"><?php if(isset($_SESSION['last_name_err'])){ echo $_SESSION['last_name_err']; } ?></p>
+
+          <!-- last name -->
+          <div class="col-12 col-sm">
+            <label class="form-label text-muted" for="last_name">Last Name</label>
+            <input type="text" class="form-control" <?php if($item_count == 0){ echo "disabled"; }?> name="last_name" id="last_name" minlength="2" maxlength="50" value="<?php echo $api->sanitize_data($order['client_lname'], "string"); ?>" required/>
+            <label id="last_name_err" class="error-message <?php echo isset($_SESSION['last_name_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><span><?php if(isset($_SESSION['last_name_err'])) { echo $_SESSION['last_name_err']; } ?></span></label>
           </div>
         </div>
+
         <div class="row my-3">
-          <h4 class="mb-3">Billing Address</h4>
-          <div class="col">
+          <!-- billing address -->
+          <h4 class="mb-0 mb-md-3">Billing Address</h4>
+          
+          <!-- street address -->
+          <div class="col-12 col-sm">
             <label class="form-label text-muted" for="street_address">Street Address</label>
-            <input type="text" class="form-control" <?php if($item_count == 0){ echo "disabled"; }?> name="street_address" maxlength="255" required>
-            <p class="my-2 <?php echo isset($_SESSION['street_address_err']) ? "d-block" : "d-none"; ?> text-danger height_err"><?php if(isset($_SESSION['street_address_err'])){ echo $_SESSION['street_address_err']; } ?></p>
+            <input type="text" class="form-control" <?php if($item_count == 0){ echo "disabled"; }?> name="street_address" id="street_address" maxlength="255" required/>
+            <label id="street_address_err" class="error-message <?php echo isset($_SESSION['street_address_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><span><?php if(isset($_SESSION['street_address_err'])) { echo $_SESSION['street_address_err']; } ?></span></label>
           </div>
-          <div class="col">
+
+          <!-- city -->
+          <div class="col-12 col-sm">
             <label class="form-label text-muted" for="city">City</label>
-            <input type="text" class="form-control" <?php if($item_count == 0){ echo "disabled"; }?> name="city" maxlength="35" required>
-            <p class="my-2 <?php echo isset($_SESSION['city_err']) ? "d-block" : "d-none"; ?> text-danger height_err"><?php if(isset($_SESSION['city_err'])){ echo $_SESSION['city_err']; } ?></p>
+            <input type="text" class="form-control" <?php if($item_count == 0){ echo "disabled"; }?> name="city" id="city" maxlength="35" required/>
+            <label id="city_err" class="error-message <?php echo isset($_SESSION['city_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><span><?php if(isset($_SESSION['city_err'])) { echo $_SESSION['city_err']; } ?></span></label>
           </div>
         </div>
+
         <div class="row my-3">
-          <div class="col">
+          <!-- province -->
+          <div class="col-12 col-sm">
+            
             <label class="form-label text-muted" for="province">Province</label>
-            <input type="text" class="form-control" <?php if($item_count == 0){ echo "disabled"; }?> name="province" maxlength="35">
-            <p class="my-2 <?php echo isset($_SESSION['province_err']) ? "d-block" : "d-none"; ?> text-danger height_err"><?php if(isset($_SESSION['province_err'])){ echo $_SESSION['province_err']; } ?></p>
+            <input type="text" class="form-control" <?php if($item_count == 0){ echo "disabled"; }?> name="province" id="province" maxlength="35" required />
+            <label id="province_err" class="error-message <?php echo isset($_SESSION['province_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><span><?php if(isset($_SESSION['province_err'])) { echo $_SESSION['province_err']; } ?></span></label>
           </div>
-          <div class="col">
+
+          <!-- zip/postal code -->
+          <div class="col-12 col-sm">
             <label class="form-label text-muted" for="zip">Postal / Zip Code</label>
-            <input type="text" class="form-control" value="6000" <?php if($item_count == 0){ echo "disabled"; }?> name="zip" minlength="4" maxlength="4">
-            <p class="my-2 <?php echo isset($_SESSION['zip_err']) ? "d-block" : "d-none"; ?> text-danger height_err"><?php if(isset($_SESSION['zip_err'])){ echo $_SESSION['zip_err']; } ?></p>
+            <input type="text" class="form-control" <?php if($item_count == 0){ echo "disabled"; }?> name="zip" id="zip" minlength="4" maxlength="4"  value="6000" required/>
+            <label id="zip_err" class="error-message <?php echo isset($_SESSION['zip_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><span><?php if(isset($_SESSION['zip_err'])) { echo $_SESSION['zip_err']; } ?></span></label>
           </div>
         </div>
+
         <div class="row my-4">
-          <div class="col">
+          <!-- payment amount -->
+          <div class="col-12 col-sm">
             <h4 class="mb-3">Payment Amount</h4>
             <div class="input-group">
               <span class="input-group-text">₱</span>
-              <input type="number" class="form-control" <?php if($item_count == 0){ echo "disabled"; }?> name="amount_paid" required>
+              <input type="number" class="form-control" <?php if($item_count == 0){ echo "disabled"; }?> name="amount_paid" id="amount_paid" required/>
             </div>
-            <p class="my-2 <?php echo isset($_SESSION['amount_paid_err']) ? "d-block" : "d-none"; ?> text-danger height_err"><?php if(isset($_SESSION['amount_paid_err'])){ echo $_SESSION['amount_paid_err']; } ?></p>
+            <label id="amount_paid_err" class="error-message <?php echo isset($_SESSION['amount_paid_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><span><?php if(isset($_SESSION['amount_paid_err'])) { echo $_SESSION['amount_paid_err']; } ?></span></label>
           </div>
-          <div class="col">
+
+          <!-- payment method -->
+          <div class="col-12 col-sm">
             <h4 class="mb-3">Payment Method</h4>
-              <select class="form-select" <?php if($item_count == 0){ echo "disabled"; }?> name="payment_method">
-                <option value="Cash" selected>Cash</option>
-                <option value="Check">Check</option>
-              </select>
+            <select class="form-select" <?php if($item_count == 0){ echo "disabled"; }?> name="payment_method" id="payment_method">
+              <option value="Cash" selected>Cash</option>
+              <option value="Check">Check</option>
+            </select>
+            <label id="payment_method_err" class="error-message <?php echo isset($_SESSION['payment_method_err']) ? "d-flex": "d-none"; ?>"><span class="material-icons-outlined fs-6 me-1">info</span><span><?php if(isset($_SESSION['payment_method_err'])) { echo $_SESSION['payment_method_err']; } ?></span></label>
           </div>
         </div>
       </div>
+
+      <!-- content divider -->
       <hr class="my-5" />
-      <input type="hidden" class="d-none" value="<?php echo $order_id; ?>" name="order_id" required>
-      <input type="hidden" class="d-none" value="<?php echo $client_id; ?>" name="client_id" required>
-      <button type="submit" name="log_payment" class="btn btn-primary btn-lg rounded-pill" <?php if($item_count == 0){ echo "disabled"; }?>>Checkout</button>
+      
+      <input type="hidden" class="d-none" value="<?php echo $order_id; ?>" name="order_id" required />
+      <input type="hidden" class="d-none" value="<?php echo $client_id; ?>" name="client_id" required />
+
+      <!-- log payment -->
+      <button type="submit" class="btn btn-primary btn-lg rounded-pill" <?php if($item_count == 0){ echo "disabled"; }?> name="log_payment" id="Checkout__checkout">Checkout</button>
+      
+      <?php if(isset($_SESSION['res'])){ ?>
+        <label class="error-message d-flex"><?php echo $_SESSION['res']; ?></label>
+      <?php } ?>
     </form>
   </div>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
-<script>
-  var items = Array.from(document.querySelectorAll('input[type=checkbox].form-check-input'));
-  var quantity = document.getElementsByClassName('quantity');
-  var prices = Array.from(document.querySelectorAll('.prices'));
-  var addons = Array.from(document.querySelectorAll('.addons'));
-  var amount_due_total = document.getElementById('total');
-
-  var checked = [];
-  var total = 0.00;
-
-  for(var i=0, count=items.length; i < count; i++){
-    checked = items.map(item => items.indexOf(item));
-    prices[i] = parseFloat((prices[i].innerText || textContent).substring(1));
-    addons[i] = addons[i].innerText || textContent;
-  }
-
-  for(var i=0, item_count=items.length; i < item_count; i++){
-    items[i].addEventListener('change', function(){
-      item_index = items.indexOf(this);
-      
-      if(this.checked){
-        checked.push(item_index);
-      } else {
-        var index = checked.indexOf(item_index);
-        if(index > -1){
-          checked.splice(index, 1);
-        }
-      }
-
-      total = 0.00;
-      for(var j=0, count=checked.length; j < count; j++){
-        total+= parseInt(quantity[checked[j]].value) * prices[checked[j]];
-
-        if(!(addons[checked[j]].localeCompare("N/A") == 0)){
-          total+= parseFloat(addons[checked[j]].substring(1));
-        }        
-      }
-
-      if(discounted){
-        total -= (total * .15); 
-      }
-
-      amount_due_total.innerText = "₱".concat((total.toFixed(2)).toString());
-    });
-  }
-</script>
+<script src="../api/api.js"></script>
+<script src="./scripts/js/checkout.js"></script>
 </html>
+<?php
+  // refresh back-end validation feedback
+  if(isset($_SESSION['quantity_err'])){
+    unset($_SESSION['quantity_err']);
+  }
+  if(isset($_SESSION['first_name_err'])){
+    unset($_SESSION['first_name_err']);
+  }
+  if(isset($_SESSION['last_name_err'])){
+    unset($_SESSION['last_name_err']);
+  }
+  if(isset($_SESSION['street_address_err'])){
+    unset($_SESSION['street_address_err']);
+  }
+  if(isset($_SESSION['city_err'])){
+    unset($_SESSION['city_err']);
+  }
+  if(isset($_SESSION['province_err'])){
+    unset($_SESSION['province_err']);
+  }
+  if(isset($_SESSION['zip_err'])){
+    unset($_SESSION['zip_err']);
+  }
+  if(isset($_SESSION['amount_paid_err'])){
+    unset($_SESSION['amount_paid_err']);
+  }
+  if(isset($_SESSION['payment_method_err'])){
+    unset($_SESSION['payment_method_err']);
+  }
+  if(isset($_SESSION['res'])){
+    unset($_SESSION['res']);
+  }
+?>
