@@ -1,4 +1,4 @@
-# NJC Tattoo Order & Booking Management System
+# :art: NJC Tattoo Order & Booking Management System
 NJC Tattoo is a small-scale growing tattoo business based in Mandaue City, Cebu, Philippines. It is run and owned by Mr. Noel John Cabahug, a freelance tattoo artist with a passion for art.
 
 ## Project Description
@@ -11,9 +11,134 @@ The primary objective of this project is to develop an online Information System
 ## Project Setup
 ### XAMPP
 1. Run Apache and MySQL server on XAMPP
-2. Create `njctattoo_db` schema in phpMyAdmin
-3. Import `njctattoo_db.sql` to phpMyAdmin
-4. Access app on http://localhost/NJCTattoo/client/index.php
+2. Import `njctattoo_db.sql` to phpMyAdmin
+3. Access app on http://localhost/NJCTattoo/client/index.php
+
+## Screenshots
+<details>
+<summary>General Views</summary>
+<br>
+  <div style="display:flex">
+    <div align="center">
+      <img src="https://github.com/heischichou/NJC-Tattoo/blob/dev/screenshots/Login.PNG?raw=true"></img>
+      <p>Login</p>
+    </div>
+    <div align="center">
+      <img src="https://github.com/heischichou/NJC-Tattoo/blob/dev/screenshots/Register.PNG?raw=true"></img>
+      <p>Register</p>
+    </div>
+  </div>
+</details>
+
+<details>
+<summary>Admin View</summary>
+<br>
+<div style="display:flex">
+  <div align="center">
+    <img src="https://github.com/heischichou/NJC-Tattoo/blob/dev/screenshots/admin/Analytics.PNG?raw=true"></img>
+    <p>Analytics</p>
+  </div>
+  <div align="center">
+    <img src="https://github.com/heischichou/NJC-Tattoo/blob/dev/screenshots/admin/Catalog.PNG?raw=true"></img>
+    <p>Catalogue</p>
+  </div>
+  <div align="center">
+    <img src="https://github.com/heischichou/NJC-Tattoo/blob/dev/screenshots/admin/New%20Tattoo.PNG?raw=true"></img>
+    <p>Catalog New Tattoo</p>
+  </div>
+  <div align="center">
+    <img src="https://github.com/heischichou/NJC-Tattoo/blob/dev/screenshots/admin/Catalog%20-%20Tattoo%20Modal.PNG?raw=true"></img>
+    <p>Catalog - View Tattoo</p>
+  </div>
+  <div align="center">
+    <img src="https://github.com/heischichou/NJC-Tattoo/blob/dev/screenshots/admin/Orders.PNG?raw=true"></img>
+    <p>Orders</p>
+  </div>
+  <div align="center">
+    <img src="https://github.com/heischichou/NJC-Tattoo/blob/dev/screenshots/admin/Orders%20-%20Orders%20only.PNG?raw=true"></img>
+    <p>Orders - Show Orders only</p>
+  </div>
+  <div align="center">
+    <img src="https://github.com/heischichou/NJC-Tattoo/blob/dev/screenshots/admin/Orders%20-%20Referrals%20only.PNG?raw=true"></img>
+    <p>Orders - Show Referrals only</p>
+  </div>
+  <div align="center">
+    <img src="https://github.com/heischichou/NJC-Tattoo/blob/dev/screenshots/admin/Log%20Payment.PNG?raw=true"></img>
+    <p>Log Client Payment</p>
+  </div>
+  <div align="center">
+    <img src="https://github.com/heischichou/NJC-Tattoo/blob/dev/screenshots/admin/Bookings.PNG?raw=true"></img>
+    <p>Bookings</p>
+  </div>
+  <div align="center">
+    <img src="https://github.com/heischichou/NJC-Tattoo/blob/dev/screenshots/admin/Bookings%20-%20Start%20Worksession.PNG?raw=true"></img>
+    <p>Bookings - Start Worksession</p>
+  </div>
+  <div align="center">
+    <img src="https://github.com/heischichou/NJC-Tattoo/blob/dev/screenshots/admin/Bookings%20-%20Finish%20Worksession.PNG?raw=true"></img>
+    <p>Bookings - Finish Worksession</p>
+  </div>
+</div>
+</details>
+
+<details>
+<summary>Client View</summary>
+<br>
+<div style="display:flex">
+  <div align="center">
+    <img src="https://github.com/heischichou/NJC-Tattoo/blob/dev/screenshots/client/Explore.PNG?raw=true"></img>
+    <p>Explore</p>
+  </div>
+  <div align="center">
+    <img src="https://github.com/heischichou/NJC-Tattoo/blob/dev/screenshots/client/Explore%20-%20Tattoo%20Modal.PNG?raw=true"></img>
+    <p>Explore - View Tattoo</p>
+  </div>
+  <div align="center">
+    <img src="https://github.com/heischichou/NJC-Tattoo/blob/dev/screenshots/client/Orders.PNG?raw=true"></img>
+    <p>Orders</p>
+  </div>
+  <div align="center">
+    <img src="https://github.com/heischichou/NJC-Tattoo/blob/dev/screenshots/client/Orders%20-%20Referrals.PNG?raw=true"></img>
+    <p>Referrals</p>
+  </div>
+  <div align="center">
+    <img src="https://github.com/heischichou/NJC-Tattoo/blob/dev/screenshots/client/Orders%20-%20Avail%20Incentive.PNG?raw=true"></img>
+    <p>Orders - Avail Incentive</p>
+  </div>
+  <div align="center">
+    <img src="https://github.com/heischichou/NJC-Tattoo/blob/dev/screenshots/client/Orders%20-%20Avail%20Free%203x3%20Tattoo.PNG?raw=true"></img>
+    <p>Orders - Avail Free 3x3 Tattoo</p>
+  </div>
+  <div align="center">
+    <img src="https://github.com/heischichou/NJC-Tattoo/blob/dev/screenshots/client/Checkout.PNG?raw=true"></img>
+    <p>Checkout</p>
+  </div>
+  <div align="center">
+    <img src="https://github.com/heischichou/NJC-Tattoo/blob/dev/screenshots/client/Bookings.PNG?raw=true"></img>
+    <p>Bookings</p>
+  </div>
+  <div align="center">
+    <img src="https://github.com/heischichou/NJC-Tattoo/blob/dev/screenshots/client/Bookings%20-%20No%20Reservations.PNG?raw=true"></img>
+    <p>Bookings - Select Tattoo for Reservation Booking</p>
+  </div>
+  <div align="center">
+    <img src="https://github.com/heischichou/NJC-Tattoo/blob/dev/screenshots/client/New%20Reservation.PNG?raw=true"></img>
+    <p>New Reservation</p>
+  </div>
+  <div align="center">
+    <img src="https://github.com/heischichou/NJC-Tattoo/blob/dev/screenshots/client/Bookings%20-%20Enable%20Editing.PNG?raw=true"></img>
+    <p>Bookings - Enable Editing</p>
+  </div>
+  <div align="center">
+    <img src="https://github.com/heischichou/NJC-Tattoo/blob/dev/screenshots/client/Profile%20-%20Account%20Details.PNG?raw=true"></img>
+    <p>Profile - Account Details</p>
+  </div>
+  <div align="center">
+    <img src="https://github.com/heischichou/NJC-Tattoo/blob/dev/screenshots/client/Profile%20-%20Change%20Password.PNG?raw=true"></img>
+    <p>Profile - Change Password</p>
+  </div>
+</div>
+</details>
 
 ## API Documentation
 
