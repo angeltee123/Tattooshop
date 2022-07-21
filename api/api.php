@@ -2,11 +2,16 @@
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 date_default_timezone_set("Asia/Manila");
 
+/*
+ * Copyright 2021-2022 NJC Tattoo
+ * Copyright 2021-2022 NJC Tattoo Order & Booking Management Devs (https://github.com/heischichou/NJC-Tattoo)
+ * Copyright 2021-2022 Jan Michael Garot (https://github.com/heischichou)
+*/
 class API {
     private $server = "localhost";
     private $user = "root";
     private $password = "";
-    private $db = "njctattoodb";
+    private $db = "njctattoo_db";
     private $port = 3306;
     private $conn = null;
 
