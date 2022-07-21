@@ -1,4 +1,4 @@
-# NJC Tattoo
+# NJC Tattoo Order & Booking Management System
 NJC Tattoo is a small-scale growing tattoo business based in Mandaue City, Cebu, Philippines. It is run and owned by Mr. Noel John Cabahug, a freelance tattoo artist with a passion for art.
 
 ## Project Description
@@ -7,6 +7,13 @@ The primary objective of this project is to develop an online Information System
 ## Links
 * [Facebook Page](https://www.facebook.com/getinkedbyNJCTattoo/)
 * [Proposal Document](https://docs.google.com/document/d/1QtkuUKhs3iTo1Qr1rWOsPFMz4suSzS6ggTEr0WGX9q0/edit?usp=sharing)
+
+## Project Setup
+### XAMPP
+1. Run Apache and MySQL server on XAMPP
+2. Create `njctattoo_db` schema in phpMyAdmin
+3. Import `njctattoo_db.sql` to phpMyAdmin
+4. Access app on http://localhost/NJCTattoo/client/index.php
 
 ## API Documentation
 
@@ -589,4 +596,4 @@ $boolean = $api->close($statement);
   - Dustin Adrianne Zanoria
 
 ## Project Status
-Ongoing
+✅ Complete - July 21, 2022
