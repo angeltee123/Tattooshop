@@ -39,7 +39,11 @@
 
     $api->free_result($statement);
     $mysqli_checks = $api->close($statement);
-    ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+    if($mysqli_checks===false){
+      throw new Exception('The prepared statement could not be closed.');
+    } else {
+      $statement = null;
+    }
 
     // retrieving ongoing reservations
     $statement = $api->prepare("SELECT workorder.client_id, client_fname, client_mi, client_lname, user_avatar, reservation_id, reservation_status, reservation.item_id, tattoo_name, tattoo_image, tattoo_quantity, paid, order_item.tattoo_width, order_item.tattoo_height, service_type, amount_addon, scheduled_date, scheduled_time, reservation_address, reservation_description FROM (((((workorder INNER JOIN order_item ON workorder.order_id=order_item.order_id) INNER JOIN client ON workorder.client_id=client.client_id) INNER JOIN user ON workorder.client_id=user.client_id) INNER JOIN reservation ON reservation.item_id=order_item.item_id) INNER JOIN tattoo ON tattoo.tattoo_id=order_item.tattoo_id) WHERE reservation_id NOT IN (SELECT reservation_id FROM worksession) AND item_status=? AND reservation_status IN (?, ?) ORDER BY scheduled_date ASC");

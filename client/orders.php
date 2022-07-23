@@ -54,7 +54,11 @@
 
     $api->free_result($statement);
     $mysqli_checks = $api->close($statement);
-    ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+    if($mysqli_checks===false){
+      throw new Exception('The prepared statement could not be closed.');
+    } else {
+      $statement = null;
+    }
 
     if(!empty($_SESSION['order']['order_id'])){
       // retrieve editable order item count
@@ -112,7 +116,11 @@
 
       $api->free_result($statement);
       $mysqli_checks = $api->close($statement);
-      ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+      if($mysqli_checks===false){
+        throw new Exception('The prepared statement could not be closed.');
+      } else {
+        $statement = null;
+      }
 
       if(strcasecmp($incentive, "None") == 0){
         // retrieve confirmed referral count

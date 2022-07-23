@@ -234,7 +234,11 @@ if(isset($_POST['login'])){
     if($mysqli_checks==!true){
         Header("Location: ../../client/index.php");
     } else {
-        (strcasecmp($_SESSION['user']['user_type'], 'User') == 0) ? Header("Location: ../../client/explore.php") : Header("Location: ../../admin/index.php");
+        if(strcasecmp($_SESSION['user']['user_type'], 'User') == 0){
+            Header("Location: ../../client/explore.php");
+        } else {
+            Header("Location: ../../admin/index.php");
+        }
     }
 }
 
@@ -422,7 +426,11 @@ if(isset($_POST['update_profile'])){
             }
     
             $mysqli_checks = $api->close($statement);
-            ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+            if($mysqli_checks===false){
+                throw new Exception('The prepared statement could not be closed.');
+            } else {
+                $statement = null;
+            }
 
             // check if image has been changed
             if($upload_file){
@@ -711,7 +719,11 @@ if(isset($_POST['order_item'])){
 
                         $api->free_result($statement);
                         $mysqli_checks = $api->close($statement);
-                        ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+                        if($mysqli_checks===false){
+                            throw new Exception('The prepared statement could not be closed.');
+                        } else {
+                            $statement = null;
+                        }
 
                         // updating existing order item
                         $statement = $api->prepare("UPDATE order_item SET tattoo_quantity=? WHERE item_id=?");
@@ -731,14 +743,22 @@ if(isset($_POST['order_item'])){
                         }
 
                         $mysqli_checks = $api->close($statement);
-                        ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+                        if($mysqli_checks===false){
+                            throw new Exception('The prepared statement could not be closed.');
+                        } else {
+                            $statement = null;
+                        }
                     } else {
                         // no existing similar order item found, creating new order item
                         $item_id = bin2hex(openssl_random_pseudo_bytes(11, $cstrong));
 
                         $api->free_result($statement);
                         $mysqli_checks = $api->close($statement);
-                        ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+                        if($mysqli_checks===false){
+                            throw new Exception('The prepared statement could not be closed.');
+                        } else {
+                            $statement = null;
+                        }
 
                         // creating order_item                
                         $statement = $api->prepare("INSERT INTO order_item (item_id, order_id, tattoo_id, tattoo_quantity, tattoo_width, tattoo_height, item_status, paid) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
@@ -757,7 +777,11 @@ if(isset($_POST['order_item'])){
                         }
 
                         $mysqli_checks = $api->close($statement);
-                        ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+                        if($mysqli_checks===false){
+                            throw new Exception('The prepared statement could not be closed.');
+                        } else {
+                            $statement = null;
+                        }
                     }
                 }
             } catch (Exception $e) {
@@ -789,7 +813,11 @@ if(isset($_POST['order_item'])){
                 }
 
                 $mysqli_checks = $api->close($statement);
-                ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+                if($mysqli_checks===false){
+                    throw new Exception('The prepared statement could not be closed.');
+                } else {
+                    $statement = null;
+                }
 
                 // creating order_item                
                 $statement = $api->prepare("INSERT INTO order_item (item_id, order_id, tattoo_id, tattoo_quantity, tattoo_width, tattoo_height, item_status, paid) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
@@ -808,7 +836,11 @@ if(isset($_POST['order_item'])){
                 }
 
                 $mysqli_checks = $api->close($statement);
-                ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+                if($mysqli_checks===false){
+                    throw new Exception('The prepared statement could not be closed.');
+                } else {
+                    $statement = null;
+                }
             } catch (Exception $e) {
                 $_SESSION['res'] = $e->getMessage();
                 Header("Location: ../../client/explore.php#".$name);
@@ -917,7 +949,11 @@ if(isset($_POST['refer']) && isset($_SESSION['order']['order_id']) && !empty($_S
 
         $api->free_result($statement);
         $mysqli_checks = $api->close($statement);
-        ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+        if($mysqli_checks===false){
+            throw new Exception('The prepared statement could not be closed.');
+        } else {
+            $statement = null;
+        }
 
         // email validation
         if(empty($email)){
@@ -1421,7 +1457,11 @@ if(isset($_POST['update_items']) && isset($_SESSION['order']['order_id']) && !em
 
                             $api->free_result($statement);
                             $mysqli_checks = $api->close($statement);
-                            ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+                            if($mysqli_checks===false){
+                                throw new Exception('The prepared statement could not be closed.');
+                            } else {
+                                $statement = null;
+                            }
 
                             // updating existing order item
                             $statement = $api->prepare("UPDATE order_item SET tattoo_quantity=? WHERE order_id=? AND item_id=?");
@@ -1441,7 +1481,11 @@ if(isset($_POST['update_items']) && isset($_SESSION['order']['order_id']) && !em
                             }
 
                             $mysqli_checks = $api->close($statement);
-                            ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+                            if($mysqli_checks===false){
+                                throw new Exception('The prepared statement could not be closed.');
+                            } else {
+                                $statement = null;
+                            }
 
                             // merging down order item
                             $statement = $api->prepare("DELETE FROM order_item WHERE order_id=? AND item_id=?");
@@ -1460,12 +1504,20 @@ if(isset($_POST['update_items']) && isset($_SESSION['order']['order_id']) && !em
                             }
 
                             $mysqli_checks = $api->close($statement);
-                            ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+                            if($mysqli_checks===false){
+                                throw new Exception('The prepared statement could not be closed.');
+                            } else {
+                                $statement = null;
+                            }
                         } else {
                             // no existing similar order item found
                             $api->free_result($statement);
                             $mysqli_checks = $api->close($statement);
-                            ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+                            if($mysqli_checks===false){
+                                throw new Exception('The prepared statement could not be closed.');
+                            } else {
+                                $statement = null;
+                            }
 
                             $statement = $api->prepare("UPDATE order_item SET tattoo_width=?, tattoo_height=?, tattoo_quantity=? WHERE order_id=? AND item_id=?");
                             if($statement===false){
@@ -1483,7 +1535,11 @@ if(isset($_POST['update_items']) && isset($_SESSION['order']['order_id']) && !em
                             }
                     
                             $mysqli_checks = $api->close($statement);
-                            ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+                            if($mysqli_checks===false){
+                                throw new Exception('The prepared statement could not be closed.');
+                            } else {
+                                $statement = null;
+                            }
                         }
                     }
                 } else {
@@ -1533,7 +1589,11 @@ if(isset($_POST['remove_items']) && isset($_SESSION['order']['order_id']) && !em
                 }
         
                 $mysqli_checks = $api->close($statement);
-                ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+                if($mysqli_checks===false){
+                    throw new Exception('The prepared statement could not be closed.');
+                } else {
+                    $statement = null;
+                }
             }
         
             // update amount due total for current order
@@ -1652,7 +1712,11 @@ if(isset($_POST['book']) && isset($_SESSION['order']['order_id']) && !empty($_SE
 
                     $api->free_result($res);
                     $mysqli_checks = $api->close($statement);
-                    ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+                    if($mysqli_checks===false){
+                        throw new Exception('The prepared statement could not be closed.');
+                    } else {
+                        $statement = null;
+                    }
 
                     $reservation_id = bin2hex(openssl_random_pseudo_bytes(11, $cstrong));
                     $reservation_addon = (double) 300.00;
@@ -1690,7 +1754,11 @@ if(isset($_POST['book']) && isset($_SESSION['order']['order_id']) && !empty($_SE
                         }
 
                         $mysqli_checks = $api->close($statement);
-                        ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+                        if($mysqli_checks===false){
+                            throw new Exception('The prepared statement could not be closed.');
+                        } else {
+                            $statement = null;
+                        }
                     } else {
                         $item_id = bin2hex(openssl_random_pseudo_bytes(11, $cstrong));
 
@@ -1721,7 +1789,11 @@ if(isset($_POST['book']) && isset($_SESSION['order']['order_id']) && !empty($_SE
                         }
 
                         $mysqli_checks = $api->close($statement);
-                        ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+                        if($mysqli_checks===false){
+                            throw new Exception('The prepared statement could not be closed.');
+                        } else {
+                            $statement = null;
+                        }
 
                         // updating predecessor item quantity
                         $statement = $api->prepare("UPDATE order_item SET tattoo_quantity=? WHERE item_id=?");
@@ -1740,7 +1812,11 @@ if(isset($_POST['book']) && isset($_SESSION['order']['order_id']) && !empty($_SE
                         }
 
                         $mysqli_checks = $api->close($statement);
-                        ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+                        if($mysqli_checks===false){
+                            throw new Exception('The prepared statement could not be closed.');
+                        } else {
+                            $statement = null;
+                        }
                     }
 
                     // creating reservation
@@ -1766,7 +1842,11 @@ if(isset($_POST['book']) && isset($_SESSION['order']['order_id']) && !empty($_SE
                     }
 
                     $mysqli_checks = $api->close($statement);
-                    ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+                    if($mysqli_checks===false){
+                        throw new Exception('The prepared statement could not be closed.');
+                    } else {
+                        $statement = null;
+                    }
                 } else {
                     throw new Exception('No order item with the given ID could be found.');
                 }
@@ -1958,7 +2038,11 @@ if(isset($_POST['cancel_reservation'])){
 
                 $api->free_result($res);
                 $mysqli_checks = $api->close($statement);
-                ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $res = $statement = null;
+                if($mysqli_checks===false){
+                    throw new Exception('The prepared statement could not be closed.');
+                } else {
+                    $res = $statement = null;
+                }
 
                 // deleting reservation
                 $statement = $api->prepare("DELETE FROM reservation WHERE reservation_id=? AND item_id=?");
@@ -1977,7 +2061,11 @@ if(isset($_POST['cancel_reservation'])){
                 }
 
                 $mysqli_checks = $api->close($statement);
-                ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+                if($mysqli_checks===false){
+                    throw new Exception('The prepared statement could not be closed.');
+                } else {
+                    $statement = null;
+                }
 
                 // finding similar item
                 $statement = $api->prepare("SELECT item_id, tattoo_quantity FROM order_item WHERE order_id=? AND tattoo_width=? AND tattoo_height=? AND paid=? AND item_id!=? AND item_status=? LIMIT ?");
@@ -2005,7 +2093,11 @@ if(isset($_POST['cancel_reservation'])){
         
                         $api->free_result($res);
                         $mysqli_checks = $api->close($statement);
-                        ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $res = $statement = null;
+                        if($mysqli_checks===false){
+                            throw new Exception('The prepared statement could not be closed.');
+                        } else {
+                            $res = $statement = null;
+                        }
 
                         // updating order item_quantity
                         $row['tattoo_quantity'] += $quantity;
@@ -2025,7 +2117,11 @@ if(isset($_POST['cancel_reservation'])){
                         }
 
                         $mysqli_checks = $api->close($statement);
-                        ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+                        if($mysqli_checks===false){
+                            throw new Exception('The prepared statement could not be closed.');
+                        } else {
+                            $statement = null;
+                        }
 
                         $statement = $api->prepare("DELETE FROM order_item WHERE item_id=?");
                         if($statement===false){
@@ -2043,7 +2139,11 @@ if(isset($_POST['cancel_reservation'])){
                         }
 
                         $mysqli_checks = $api->close($statement);
-                        ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+                        if($mysqli_checks===false){
+                            throw new Exception('The prepared statement could not be closed.');
+                        } else {
+                            $statement = null;
+                        }
                     } else {
                         // no similar item found
                         $statement = $api->prepare("UPDATE order_item SET item_status=? WHERE item_id=?");
@@ -2062,7 +2162,11 @@ if(isset($_POST['cancel_reservation'])){
                         }
 
                         $mysqli_checks = $api->close($statement);
-                        ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+                        if($mysqli_checks===false){
+                            throw new Exception('The prepared statement could not be closed.');
+                        } else {
+                            $statement = null;
+                        }
                     }
                 }
             } else {
@@ -2268,7 +2372,11 @@ if(isset($_POST['checkout']) && isset($_SESSION['order']['order_id']) && !empty(
 
                 $api->free_result($statement);
                 $mysqli_checks = $api->close($statement);
-                ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $res = $statement = null;
+                if($mysqli_checks===false){
+                    throw new Exception('The prepared statement could not be closed.');
+                } else {
+                    $res = $statement = null;
+                }
 
                 if(isset($discount) && !empty($discount) && strcasecmp($discount, "15% discount") == 0){
                     $total = (double) 0.00;
@@ -2327,7 +2435,11 @@ if(isset($_POST['checkout']) && isset($_SESSION['order']['order_id']) && !empty(
 
                             $api->free_result($statement);
                             $mysqli_checks = $api->close($statement);
-                            ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+                            if($mysqli_checks===false){
+                                throw new Exception('The prepared statement could not be closed.');
+                            } else {
+                                $statement = null;
+                            }
 
                             $tattoo_id = $api->sanitize_data($row['tattoo_id'], 'string');
                             $width = $api->sanitize_data($row['tattoo_width'], 'int');
@@ -2376,7 +2488,11 @@ if(isset($_POST['checkout']) && isset($_SESSION['order']['order_id']) && !empty(
                                         $api->free_result($res);
     
                                         $mysqli_checks = $api->close($statement);
-                                        ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $res = $statement = null;
+                                        if($mysqli_checks===false){
+                                            throw new Exception('The prepared statement could not be closed.');
+                                        } else {
+                                            $res = $statement = null;
+                                        }
     
                                         if($checkout_quantity == $quantity){
                                             // merging down checkout item
@@ -2396,7 +2512,11 @@ if(isset($_POST['checkout']) && isset($_SESSION['order']['order_id']) && !empty(
                                             }
     
                                             $mysqli_checks = $api->close($statement);
-                                            ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+                                            if($mysqli_checks===false){
+                                                throw new Exception('The prepared statement could not be closed.');
+                                            } else {
+                                                $statement = null;
+                                            }
                                         } else {
                                             $quantity -= $checkout_quantity;
                                             $statement = $api->prepare("UPDATE order_item SET tattoo_quantity=? WHERE order_id=? AND item_id=?");
@@ -2415,7 +2535,11 @@ if(isset($_POST['checkout']) && isset($_SESSION['order']['order_id']) && !empty(
                                             }
     
                                             $mysqli_checks = $api->close($statement);
-                                            ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+                                            if($mysqli_checks===false){
+                                                throw new Exception('The prepared statement could not be closed.');
+                                            } else {
+                                                $statement = null;
+                                            }
                                         }
     
                                         // updating found Standing Partially Paid item
@@ -2436,13 +2560,21 @@ if(isset($_POST['checkout']) && isset($_SESSION['order']['order_id']) && !empty(
                                         }
     
                                         $mysqli_checks = $api->close($statement);
-                                        ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+                                        if($mysqli_checks===false){
+                                            throw new Exception('The prepared statement could not be closed.');
+                                        } else {
+                                            $statement = null;
+                                        }
                                     } else {
                                         // No similar item found
                                         $api->free_result($res);
     
                                         $mysqli_checks = $api->close($statement);
-                                        ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+                                        if($mysqli_checks===false){
+                                            throw new Exception('The prepared statement could not be closed.');
+                                        } else {
+                                            $statement = null;
+                                        }
     
                                         if($checkout_quantity == $quantity){
                                             // updating item payment status
@@ -2462,7 +2594,11 @@ if(isset($_POST['checkout']) && isset($_SESSION['order']['order_id']) && !empty(
                                             }
     
                                             $mysqli_checks = $api->close($statement);
-                                            ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+                                            if($mysqli_checks===false){
+                                                throw new Exception('The prepared statement could not be closed.');
+                                            } else {
+                                                $statement = null;
+                                            }
                                         } else {
                                             $item_id = bin2hex(openssl_random_pseudo_bytes(11, $cstrong));
                                             $quantity -= $checkout_quantity;
@@ -2483,7 +2619,11 @@ if(isset($_POST['checkout']) && isset($_SESSION['order']['order_id']) && !empty(
                                             }
     
                                             $mysqli_checks = $api->close($statement);
-                                            ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+                                            if($mysqli_checks===false){
+                                                throw new Exception('The prepared statement could not be closed.');
+                                            } else {
+                                                $statement = null;
+                                            }
     
                                             $statement = $api->prepare("UPDATE order_item SET tattoo_quantity=? WHERE order_id=? AND item_id=?");
                                             if($statement===false){
@@ -2501,7 +2641,11 @@ if(isset($_POST['checkout']) && isset($_SESSION['order']['order_id']) && !empty(
                                             }
     
                                             $mysqli_checks = $api->close($statement);
-                                            ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+                                            if($mysqli_checks===false){
+                                                throw new Exception('The prepared statement could not be closed.');
+                                            } else {
+                                                $statement = null;
+                                            }
                                         }
                                     }
                                 }
@@ -2525,7 +2669,11 @@ if(isset($_POST['checkout']) && isset($_SESSION['order']['order_id']) && !empty(
                                     }
     
                                     $mysqli_checks = $api->close($statement);
-                                    ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+                                    if($mysqli_checks===false){
+                                        throw new Exception('The prepared statement could not be closed.');
+                                    } else {
+                                        $statement = null;
+                                    }
                                 }
     
                                 // Case - Applied
@@ -2557,7 +2705,11 @@ if(isset($_POST['checkout']) && isset($_SESSION['order']['order_id']) && !empty(
                                         $api->free_result($res);
     
                                         $mysqli_checks = $api->close($statement);
-                                        ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+                                        if($mysqli_checks===false){
+                                            throw new Exception('The prepared statement could not be closed.');
+                                        } else {
+                                            $statement = null;
+                                        }
     
                                         if($checkout_quantity == $quantity){
                                             // updating reservation foreign key
@@ -2577,7 +2729,11 @@ if(isset($_POST['checkout']) && isset($_SESSION['order']['order_id']) && !empty(
                                             }
     
                                             $mysqli_checks = $api->close($statement);
-                                            ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+                                            if($mysqli_checks===false){
+                                                throw new Exception('The prepared statement could not be closed.');
+                                            } else {
+                                                $statement = null;
+                                            }
     
                                             // merging down checkout item
                                             $statement = $api->prepare("DELETE FROM order_item WHERE order_id=? AND item_id=?");
@@ -2596,7 +2752,11 @@ if(isset($_POST['checkout']) && isset($_SESSION['order']['order_id']) && !empty(
                                             }
     
                                             $mysqli_checks = $api->close($statement);
-                                            ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+                                            if($mysqli_checks===false){
+                                                throw new Exception('The prepared statement could not be closed.');
+                                            } else {
+                                                $statement = null;
+                                            }
                                         } else {
                                             $quantity -= $checkout_quantity;
                                             $statement = $api->prepare("UPDATE order_item SET tattoo_quantity=? WHERE order_id=? AND item_id=?");
@@ -2615,7 +2775,11 @@ if(isset($_POST['checkout']) && isset($_SESSION['order']['order_id']) && !empty(
                                             }
     
                                             $mysqli_checks = $api->close($statement);
-                                            ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+                                            if($mysqli_checks===false){
+                                                throw new Exception('The prepared statement could not be closed.');
+                                            } else {
+                                                $statement = null;
+                                            }
                                         }
     
                                         // updating found Applied Fully Paid item
@@ -2636,13 +2800,21 @@ if(isset($_POST['checkout']) && isset($_SESSION['order']['order_id']) && !empty(
                                         }
     
                                         $mysqli_checks = $api->close($statement);
-                                        ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+                                        if($mysqli_checks===false){
+                                            throw new Exception('The prepared statement could not be closed.');
+                                        } else {
+                                            $statement = null;
+                                        }
                                     } else {
                                         // No similar item found
                                         $api->free_result($res);
     
                                         $mysqli_checks = $api->close($statement);
-                                        ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+                                        if($mysqli_checks===false){
+                                            throw new Exception('The prepared statement could not be closed.');
+                                        } else {
+                                            $statement = null;
+                                        }
     
                                         if($checkout_quantity == $quantity){
                                             // updating item payment status
@@ -2662,7 +2834,11 @@ if(isset($_POST['checkout']) && isset($_SESSION['order']['order_id']) && !empty(
                                             }
     
                                             $mysqli_checks = $api->close($statement);
-                                            ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+                                            if($mysqli_checks===false){
+                                                throw new Exception('The prepared statement could not be closed.');
+                                            } else {
+                                                $statement = null;
+                                            }
                                         } else {
                                             $item_id = bin2hex(openssl_random_pseudo_bytes(11, $cstrong));
                                             $quantity -= $checkout_quantity;
@@ -2683,7 +2859,11 @@ if(isset($_POST['checkout']) && isset($_SESSION['order']['order_id']) && !empty(
                                             }
     
                                             $mysqli_checks = $api->close($statement);
-                                            ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+                                            if($mysqli_checks===false){
+                                                throw new Exception('The prepared statement could not be closed.');
+                                            } else {
+                                                $statement = null;
+                                            }
     
                                             $statement = $api->prepare("UPDATE order_item SET tattoo_quantity=? WHERE order_id=? AND item_id=?");
                                             if($statement===false){
@@ -2701,7 +2881,11 @@ if(isset($_POST['checkout']) && isset($_SESSION['order']['order_id']) && !empty(
                                             }
     
                                             $mysqli_checks = $api->close($statement);
-                                            ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+                                            if($mysqli_checks===false){
+                                                throw new Exception('The prepared statement could not be closed.');
+                                            } else {
+                                                $statement = null;
+                                            }
                                         }
                                     }
                                 }
@@ -2744,7 +2928,11 @@ if(isset($_POST['checkout']) && isset($_SESSION['order']['order_id']) && !empty(
                 }
 
                 $mysqli_checks = $api->close($statement);
-                ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+                if($mysqli_checks===false){
+                    throw new Exception('The prepared statement could not be closed.');
+                } else {
+                    $statement = null;
+                }
 
                 // logging transaction - inserting in card table
                 $statement = $api->prepare("INSERT INTO card (payment_id, card_payment_id, card_number, card_holder_fname, card_holder_lname, bank_name, card_type) VALUES (?, ?, ?, ?, ?, ?, ?)");

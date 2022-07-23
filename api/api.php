@@ -318,7 +318,11 @@ class API {
 
                             $this->free_result($statement);
                             $mysqli_checks = $this->close($statement);
-                            ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+                            if($mysqli_checks===false){
+                                throw new Exception('The prepared statement could not be closed.');
+                            } else {
+                                $statement = null;
+                            }
 
                             $_SESSION['user'] = array();
                             $hash = $user['user_password'];
@@ -363,12 +367,20 @@ class API {
                     
                                         $this->free_result($statement);
                                         $mysqli_checks = $this->close($statement);
-                                        ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+                                        if($mysqli_checks===false){
+                                            throw new Exception('The prepared statement could not be closed.');
+                                        } else {
+                                            $statement = null;
+                                        }
                                     } else {
                                         // no ongoing order found
                                         $this->free_result($statement);
                                         $mysqli_checks = $this->close($statement);
-                                        ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+                                        if($mysqli_checks===false){
+                                            throw new Exception('The prepared statement could not be closed.');
+                                        } else {
+                                            $statement = null;
+                                        }
                     
                                         $_SESSION['order']['order_id'] = "";
                                     }
@@ -441,7 +453,11 @@ class API {
 
                     $this->free_result($statement);
                     $mysqli_checks = $this->close($statement);
-                    ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+                    if($mysqli_checks===false){
+                        throw new Exception('The prepared statement could not be closed.');
+                    } else {
+                        $statement = null;
+                    }
 
                     // updating status of existing order - retrieving all order items                
                     $statement = $this->prepare("SELECT * FROM order_item WHERE order_id=?");
@@ -468,7 +484,11 @@ class API {
             
                     $this->free_result($statement);
                     $mysqli_checks = $this->close($statement);
-                    ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $res = $statement = null;
+                    if($mysqli_checks===false){
+                        throw new Exception('The prepared statement could not be closed.');
+                    } else {
+                        $res = $statement = null;
+                    }
 
                     if($item_count == 0){
                         $statement = $this->prepare("SELECT referral_id FROM referral WHERE order_id=? AND client_id=?");
@@ -492,7 +512,11 @@ class API {
                         }
 
                         $this->free_result($statement);
-                        ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+                        if($mysqli_checks===false){
+                            throw new Exception('The prepared statement could not be closed.');
+                        } else {
+                            $statement = null;
+                        }
 
                         if($this->num_rows($res) > 0){
                             while($referral = $this->fetch_assoc($res)){
@@ -512,7 +536,11 @@ class API {
                                 }
 
                                 $mysqli_checks = $this->close($statement);
-                                ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+                                if($mysqli_checks===false){
+                                    throw new Exception('The prepared statement could not be closed.');
+                                } else {
+                                    $statement = null;
+                                }
                             }
                         }
 
@@ -532,7 +560,11 @@ class API {
                         }
 
                         $mysqli_checks = $this->close($statement);
-                        ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+                        if($mysqli_checks===false){
+                            throw new Exception('The prepared statement could not be closed.');
+                        } else {
+                            $statement = null;
+                        }
 
                         unset($_SESSION['order']);
                         $_SESSION['order']['order_id'] = "";
@@ -562,7 +594,11 @@ class API {
                 
                         $this->free_result($statement);
                         $mysqli_checks = $this->close($statement);
-                        ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+                        if($mysqli_checks===false){
+                            throw new Exception('The prepared statement could not be closed.');
+                        } else {
+                            $statement = null;
+                        }
 
                         // updating status of existing order - finishing order
                         if($item_count == $finished_item_count && $amount_due_total == 0){
@@ -582,7 +618,11 @@ class API {
                             }
 
                             $mysqli_checks = $this->close($statement);
-                            ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+                            if($mysqli_checks===false){
+                                throw new Exception('The prepared statement could not be closed.');
+                            } else {
+                                $statement = null;
+                            }
 
                             unset($_SESSION['order']);
                             $_SESSION['order']['order_id'] = "";
@@ -592,7 +632,11 @@ class API {
                     // no exsiting order found
                     $this->free_result($statement);
                     $mysqli_checks = $this->close($statement);
-                    ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+                    if($mysqli_checks===false){
+                        throw new Exception('The prepared statement could not be closed.');
+                    } else {
+                        $statement = null;
+                    }
 
                     $_SESSION['order']['order_id'] = "";
                 }
@@ -665,7 +709,11 @@ class API {
 
                 $this->free_result($statement);
                 $mysqli_checks = $this->close($statement);
-                ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $res = $statement = null;
+                if($mysqli_checks===false){
+                    throw new Exception('The prepared statement could not be closed.');
+                } else {
+                    $res = $statement = null;
+                }
 
                 // checking for discount
                 $statement = $this->prepare("SELECT incentive FROM workorder WHERE order_id=? AND client_id=? AND status=? ORDER BY order_date ASC LIMIT 1");
@@ -692,7 +740,11 @@ class API {
 
                 $this->free_result($statement);
                 $mysqli_checks = $this->close($statement);
-                ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+                if($mysqli_checks===false){
+                    throw new Exception('The prepared statement could not be closed.');
+                } else {
+                    $statement = null;
+                }
 
                 if(isset($discount) && !empty($discount) && strcasecmp($discount, "15% discount") == 0){
                     $total -= ($total * .15);

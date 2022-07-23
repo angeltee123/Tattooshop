@@ -70,11 +70,19 @@
                   throw new Exception('get_result() error: Getting result set from statement failed.');
                 }
 
-                ($api->num_rows($res) > 0) ? $order = $api->fetch_assoc($res) : throw new Exception('An error occured with the server. Please try again later.');
+                if($api->num_rows($res) > 0){
+                  $order = $api->fetch_assoc($res);
+                } else {
+                  throw new Exception('An error occured with the server. Please try again later.');
+                }
 
                 $api->free_result($statement);
                 $mysqli_checks = $api->close($statement);
-                ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+                if($mysqli_checks===false){
+                  throw new Exception('The prepared statement could not be closed.');
+                } else {
+                  $statement = null;
+                }
 
                 echo "months.push('" . date("F", strtotime($m)) . "');";
                 echo "orders.push(" . $order['COUNT(item_id)'] . ");";
@@ -131,7 +139,11 @@
 
               $api->free_result($statement);
               $mysqli_checks = $api->close($statement);
-              ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+              if($mysqli_checks===false){
+                throw new Exception('The prepared statement could not be closed.');
+              } else {
+                $statement = null;
+              }
 
               foreach($tattoos as $key => $val) {
                 $statement = $api->prepare("SELECT COALESCE(SUM(tattoo_quantity), 0) FROM (workorder JOIN (tattoo JOIN order_item ON tattoo.tattoo_id=order_item.tattoo_id) ON workorder.order_id=order_item.order_id) WHERE order_item.tattoo_id=? AND YEAR(order_date)=?");
@@ -154,11 +166,19 @@
                   throw new Exception('get_result() error: Getting result set from statement failed.');
                 }
 
-                ($api->num_rows($res) > 0) ? $tattoo = $api->fetch_assoc($res) : throw new Exception('An error occured with the server. Please try again later.');
+                if($api->num_rows($res) > 0){
+                  $tattoo = $api->fetch_assoc($res);
+                } else {
+                  throw new Exception('An error occured with the server. Please try again later.');
+                }
 
                 $api->free_result($statement);
                 $mysqli_checks = $api->close($statement);
-                ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+                if($mysqli_checks===false){
+                  throw new Exception('The prepared statement could not be closed.');
+                } else {
+                  $statement = null;
+                }
 
                 echo "tattoos.push('" . $key . "');";
                 echo "quantities.push(" . $tattoo['COALESCE(SUM(tattoo_quantity), 0)'] . ");";
@@ -216,7 +236,11 @@
 
                 $api->free_result($statement);
                 $mysqli_checks = $api->close($statement);
-                ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+                if($mysqli_checks===false){
+                  throw new Exception('The prepared statement could not be closed.');
+                } else {
+                  $statement = null;
+                }
 
                 echo "sales.push(" . $total . ");";
               }

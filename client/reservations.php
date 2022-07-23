@@ -15,7 +15,11 @@
   try {
     $client_id = $api->sanitize_data($_SESSION['user']['client_id'], 'string');
     $mysqli_checks = $api->get_workorder($client_id);
-    ($mysqli_checks!==true) ? throw new Exception('Error: Retrieving client workorder failed.') : $order_id = $api->sanitize_data($_SESSION['order']['order_id'], 'string');
+    if($mysqli_checks!==true){
+      throw new Exception('Error: Retrieving client workorder failed.');
+    } else {
+      $order_id = $api->sanitize_data($_SESSION['order']['order_id'], 'string');
+    }
     
     $statement = $api->prepare("SELECT reservation.reservation_id, reservation_status, reservation.item_id, tattoo_name, tattoo_image, tattoo_quantity, paid, order_item.tattoo_width, order_item.tattoo_height, service_type, scheduled_date, scheduled_time, reservation_address, reservation_description, amount_addon FROM (((reservation INNER JOIN order_item ON reservation.item_id=order_item.item_id) INNER JOIN tattoo ON tattoo.tattoo_id=order_item.tattoo_id) LEFT JOIN worksession ON worksession.reservation_id=reservation.reservation_id) WHERE order_id=? AND item_status=? AND reservation_status IN (?, ?) AND session_id IS NULL ORDER BY scheduled_date ASC, scheduled_time ASC, reservation_status ASC");
     if($statement===false){
@@ -39,7 +43,11 @@
 
     $api->free_result($statement);
     $mysqli_checks = $api->close($statement);
-    ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+    if($mysqli_checks===false){
+      throw new Exception('The prepared statement could not be closed.');
+    } else {
+      $statement = null;
+    }
 
     // retrieve all standing order items
     $statement = $api->prepare("SELECT item_id, paid, tattoo_name, tattoo_quantity FROM ((tattoo JOIN order_item ON tattoo.tattoo_id=order_item.tattoo_id) JOIN workorder ON order_item.order_id=workorder.order_id) WHERE client_id=? AND item_status=? AND tattoo_quantity !=?");

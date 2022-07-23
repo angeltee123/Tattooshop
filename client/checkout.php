@@ -50,7 +50,11 @@
 
       $api->free_result($statement);
       $mysqli_checks = $api->close($statement);
-      ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+      if($mysqli_checks===false){
+        throw new Exception('The prepared statement could not be closed.');
+      } else {
+        $statement = null;
+      }
 
       // retrieve order items
       $statement = $api->prepare("SELECT order_item.item_id, tattoo_name, tattoo_image, tattoo_price, tattoo_quantity, order_item.tattoo_width, order_item.tattoo_height, paid, item_status, amount_addon FROM ((order_item INNER JOIN tattoo ON order_item.tattoo_id=tattoo.tattoo_id) LEFT JOIN reservation ON order_item.item_id=reservation.item_id) WHERE order_id=? ORDER BY item_status ASC, paid ASC");
@@ -75,7 +79,11 @@
 
       $api->free_result($statement);
       $mysqli_checks = $api->close($statement);
-      ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+      if($mysqli_checks===false){
+        throw new Exception('The prepared statement could not be closed.');
+      } else {
+        $statement = null;
+      }
 
       echo (strcasecmp($incentive, "15% Discount") == 0) ? "<script>var total = ". $total . " * .15; const discounted = true;</script>" : "<script>var total = ". $total ."; const discounted = false;</script>";
     } catch (Exception $e) {

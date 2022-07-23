@@ -34,7 +34,11 @@
 
     $api->free_result($statement);
     $mysqli_checks = $api->close($statement);
-    ($mysqli_checks===false) ? throw new Exception('The prepared statement could not be closed.') : $statement = null;
+    if($mysqli_checks===false){
+      throw new Exception('The prepared statement could not be closed.');
+    } else {
+      $statement = null;
+    }
   } catch (Exception $e) {
     $_SESSION['res'] = $e->getMessage();
     Header("Location: ./index.php");
