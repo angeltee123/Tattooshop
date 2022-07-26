@@ -6,7 +6,7 @@ The primary objective of this project is to develop an online Information System
 
 ## Links
 * [Facebook Page](https://www.facebook.com/getinkedbyNJCTattoo/)
-* [Proposal Document](https://docs.google.com/document/d/1QtkuUKhs3iTo1Qr1rWOsPFMz4suSzS6ggTEr0WGX9q0/edit?usp=sharing)
+* [Proposal Document](https://docs.google.com/document/d/1a-E0DnND4W7iXzSl7HR2oyuH19hQoSzDKT4deE5cRI8/edit?usp=sharing)
 
 ## Project Setup
 ### XAMPP
