@@ -21,7 +21,7 @@ if(isset($_POST['catalog_tattoo'])){
         $complexity = $api->sanitize_data($_POST['complexity_level'], "string");
 
         // file upload
-        $path = "../images/uploads/";
+        $path = "../../../images/uploads/";
         $ext_whitelist= array('jpg','jpeg','png','gif');
         $type_whitelist = array('image/jpg', 'image/jpeg', 'image/png', 'image/gif');
 

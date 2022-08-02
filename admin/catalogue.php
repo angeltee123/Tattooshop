@@ -102,7 +102,7 @@
             $price = number_format($api->sanitize_data($tattoo['tattoo_price'], "float"), 2, '.', '');
             $height = $api->sanitize_data($tattoo['tattoo_height'], "int");
             $width = $api->sanitize_data($tattoo['tattoo_width'], "int");
-            $image = $api->sanitize_data($tattoo['tattoo_image'], "string");
+            $image = str_replace("../../../", "../", $api->sanitize_data($tattoo['tattoo_image'], "string"));
             $description = $api->sanitize_data($tattoo['tattoo_description'], "string");
             $color_scheme = $api->sanitize_data($tattoo['color_scheme'], "string");
             $complexity = $api->sanitize_data($tattoo['complexity_level'], "string");  
