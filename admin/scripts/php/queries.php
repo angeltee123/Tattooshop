@@ -234,7 +234,7 @@ if(isset($_POST['update_tattoo'])){
     $upload_file = boolval(!empty($_FILES['image']['name']) && !empty($_FILES['image']['type']));
     if($upload_file){
         // file upload
-        $path = "../images/uploads/";
+        $path = "../../../images/uploads/";
         $ext_whitelist= array('jpg','jpeg','png','gif');
         $type_whitelist = array('image/jpg', 'image/jpeg', 'image/png', 'image/gif');
 
